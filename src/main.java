@@ -1,18 +1,28 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 public class main {
     public static void main(String[] args) {
         // Thông tin kết nối
         String url = "jdbc:mysql://localhost:3306/qlthitracnghiem";
-        String username = "root";
-        String password = ""; // Mặc định XAMPP không có mật khẩu
+        String user = "root";
+        String pass = ""; // Mặc định XAMPP không có mật khẩu
 
         try {
-            // Kết nối đến cơ sở dữ liệu
-            Connection conn = DriverManager.getConnection(url, username, password);
-            System.out.println("Kết nối thành công đến MySQL!");
-            // Đóng kết nối
+            Connection conn = DriverManager.getConnection(url, user, pass);
+            System.out.println("✅ Kết nối thành công!");
+
+            String sql = "SELECT MaMH, TenMH FROM monhoc";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            System.out.println("📘 Danh sách môn học:");
+            while (rs.next()) {
+                String maMH = rs.getString("MaMH");
+                String tenMH = rs.getString("TenMH");
+                System.out.println("- " + maMH + ": " + tenMH);
+            }
+
+            rs.close();
+            stmt.close();
             conn.close();
         } catch (SQLException e) {
             System.out.println("Kết nối thất bại!");
