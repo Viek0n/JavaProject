@@ -1,14 +1,16 @@
 package DTO;
+
+import mics.Enums;
 public class User {
     private String ID;
     private String LoginName;
     private String Name;
     private String Pass;
-    private int Status;
+    private Enums.StatusValue Status;
     private Role x;
 
     //Cons
-    public User(String ID, String LoginName, String Name, String Pass, int Status, Role x) {
+    public User(String ID, String LoginName, String Name, String Pass, Enums.StatusValue Status, Role x) {
         this.ID = ID;
         this.LoginName = LoginName;
         this.Name = Name;
@@ -50,11 +52,11 @@ public class User {
         this.Pass = Pass;
     }
 
-    public int getStatus() {
+    public Enums.StatusValue getStatus() {
         return Status;
     }
 
-    public void setStatus(int Status) {
+    public void setStatus(Enums.StatusValue Status) {
         this.Status = Status;
     }
 

@@ -1,8 +1,9 @@
 package DTO;
+import mics.Enums;
 public class Question {
     int ID;
     String text;
-    int difficult;
+    Enums.DifficultValue difficult;
     String ChapterID;
     String Chapter;
     String Subject;
@@ -11,7 +12,7 @@ public class Question {
     Answer ans;
 
     //Cons
-    public Question(String Chapter, String ChapterID, String CreatedBy, int ID, String Subject, String SubjectID, Answer ans, int difficult, String text) {
+    public Question(String Chapter, String ChapterID, String CreatedBy, int ID, String Subject, String SubjectID, Answer ans, Enums.DifficultValue difficult, String text) {
         this.Chapter = Chapter;
         this.ChapterID = ChapterID;
         this.CreatedBy = CreatedBy;
@@ -40,11 +41,11 @@ public class Question {
         this.text = text;
     }
 
-    public int getDifficult() {
+    public Enums.DifficultValue getDifficult() {
         return difficult;
     }
 
-    public void setDifficult(int difficult) {
+    public void setDifficult(Enums.DifficultValue difficult) {
         this.difficult = difficult;
     }
 
