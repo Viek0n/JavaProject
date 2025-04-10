@@ -1,33 +1,30 @@
 package DTO;
 
 import mics.Enums;
-public class User {
-    private String ID;
+public class UserDTO {
     private String LoginName;
     private String Name;
     private String Pass;
     private Enums.StatusValue Status;
-    private Role x;
+    private RoleDTO Role;
 
+    @Override
+    public String toString(){
+        return LoginName+" - "+Name+" Role: "+ Role;
+    }
     //Cons
-    public User(String ID, String LoginName, String Name, String Pass, Enums.StatusValue Status, Role x) {
-        this.ID = ID;
+    public UserDTO(String LoginName, String Name, String Pass, Enums.StatusValue Status, RoleDTO Role) {
         this.LoginName = LoginName;
         this.Name = Name;
         this.Pass = Pass;
         this.Status = Status;
-        this.x = x;
+        this.Role = Role;
+    }
+
+    public UserDTO() {
     }
 
     //Getter&stetter
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
     public String getLoginName() {
         return LoginName;
     }
@@ -60,12 +57,12 @@ public class User {
         this.Status = Status;
     }
 
-    public Role getX() {
-        return x;
+    public RoleDTO getRole() {
+        return Role;
     }
 
-    public void setX(Role x) {
-        this.x = x;
+    public void setRole(RoleDTO Role) {
+        this.Role = Role;
     }
 
 }

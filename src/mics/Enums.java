@@ -1,13 +1,13 @@
 package mics;
 public class Enums {
     public enum StatusValue{
-        NORMAL,
-        LOCK
+        HOATDONG,
+        KHOA
     }
 
     public enum DifficultValue{
-        EASY,
-        MEDIUM,
-        HARD
+        DE,
+        TRUNGBINH,
+        KHO
     }
 }

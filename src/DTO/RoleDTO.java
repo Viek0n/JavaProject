@@ -1,45 +1,39 @@
 package DTO;
 
-public class Role {
-    private String ID;
-    private String name;
+public class RoleDTO {
+    private int ID;
+    private String Name;
     private Boolean takeExam;
     private Boolean seeQuest, updateQuest, deleteQuest;
     private Boolean seeUser , updateUser, deleteUser;
     private Boolean seeExam, updateExam, deleteExam;
     private Boolean seeRole, updateRole, deleteRole;
     
+    @Override
+    public String toString(){
+        return ID + "/ "+ Name;
+    }
     //Cons
-    public Role(String ID, Boolean deleteExam, Boolean deleteQuest, Boolean deleteRole, Boolean deleteUser, String name, Boolean seeExam, Boolean seeQuest, Boolean seeRole, Boolean seeUser, Boolean takeExam, Boolean updateExam, Boolean updateQuest, Boolean updateRole, Boolean updateUser) {
+    public RoleDTO(int ID, String Name) {
         this.ID = ID;
-        this.deleteExam = deleteExam;
-        this.deleteQuest = deleteQuest;
-        this.deleteRole = deleteRole;
-        this.deleteUser = deleteUser;
-        this.name = name;
-        this.seeExam = seeExam;
-        this.seeQuest = seeQuest;
-        this.seeRole = seeRole;
-        this.seeUser = seeUser;
-        this.takeExam = takeExam;
-        this.updateExam = updateExam;
-        this.updateQuest = updateQuest;
-        this.updateRole = updateRole;
-        this.updateUser = updateUser;
+        this.Name = Name;
+    }
+
+    public RoleDTO() {
     }
 
     //Getter&stetter
-    public String getID() {
+    public int getID() {
         return ID;
     }
-    public void setID(String iD) {
+    public void setID(int iD) {
         ID = iD;
     }
     public String getName() {
-        return name;
+        return Name;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String Name) {
+        this.Name = Name;
     }
     public Boolean getTakeExam() {
         return takeExam;
