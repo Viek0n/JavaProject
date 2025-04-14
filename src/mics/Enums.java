@@ -10,4 +10,10 @@ public class Enums {
         TRUNGBINH,
         KHO
     }
+
+    public enum UserError{
+        NORMAL,
+        NOUSER,
+        WRONGPASS
+    }
 }

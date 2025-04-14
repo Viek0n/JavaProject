@@ -4,19 +4,61 @@ public class RoleDTO {
     private int ID;
     private String Name;
     private Boolean takeExam;
-    private Boolean seeQuest, updateQuest, deleteQuest;
-    private Boolean seeUser , updateUser, deleteUser;
-    private Boolean seeExam, updateExam, deleteExam;
-    private Boolean seeRole, updateRole, deleteRole;
+    private Boolean seeQuest, addQuest, updateQuest, deleteQuest;
+    private Boolean seeUser , addUser, updateUser, deleteUser;
+    private Boolean seeExam, addExam, updateExam, deleteExam;
+    private Boolean seeRole, addRole, updateRole, deleteRole;
+
+    private void init(){
+        this.addExam = false;
+        this.addQuest = false;
+        this.addRole = false;
+        this.addUser = false;
+        this.deleteExam = false;
+        this.deleteQuest = false;
+        this.deleteRole = false;
+        this.deleteUser = false;
+        this.seeExam = false;
+        this.seeQuest = false;
+        this.seeRole = false;
+        this.seeUser = false;
+        this.takeExam = false;
+        this.updateExam = false;
+        this.updateQuest = false;
+        this.updateRole = false;
+        this.updateUser = false;
+    }
     
     @Override
-    public String toString(){
-        return ID + "/ "+ Name;
+    public String toString() {
+        return  "\nID = " + ID +
+                "\nName = '" + Name + '\'' +
+                "\ntakeExam = " + takeExam +
+                "\nseeQuest = " + seeQuest +
+                ", addQuest = " + addQuest +
+                ", updateQuest = " + updateQuest +
+                ", deleteQuest = " + deleteQuest +
+                "\nseeUser = " + seeUser +
+                ", addUser = " + addUser +
+                ", updateUser = " + updateUser +
+                ", deleteUsers = " + deleteUser +
+                "\nseeExam = " + seeExam +
+                ", addExam = " + addExam +
+                ", updateExam = " + updateExam +
+                ", deleteExam = " + deleteExam +
+                "\nseeRole = " + seeRole +
+                ", addRole = " + addRole +
+                ", updateRole = " + updateRole +
+                ", deleteRole = " + deleteRole +
+                "\n}";
     }
+    //init
+    
     //Cons
     public RoleDTO(int ID, String Name) {
         this.ID = ID;
         this.Name = Name;
+        init();
     }
 
     public RoleDTO() {
@@ -113,4 +155,37 @@ public class RoleDTO {
     public void setDeleteRole(Boolean deleteRole) {
         this.deleteRole = deleteRole;
     }
+
+    public Boolean getAddQuest() {
+        return addQuest;
+    }
+
+    public void setAddQuest(Boolean addQuest) {
+        this.addQuest = addQuest;
+    }
+
+    public Boolean getAddUser() {
+        return addUser;
+    }
+
+    public void setAddUser(Boolean addUser) {
+        this.addUser = addUser;
+    }
+
+    public Boolean getAddExam() {
+        return addExam;
+    }
+
+    public void setAddExam(Boolean addExam) {
+        this.addExam = addExam;
+    }
+
+    public Boolean getAddRole() {
+        return addRole;
+    }
+
+    public void setAddRole(Boolean addRole) {
+        this.addRole = addRole;
+    }
+
 }
