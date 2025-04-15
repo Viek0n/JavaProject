@@ -3,16 +3,14 @@ package DTO;
 public class AnswerDTO {
     String A,B,C,D;
     int RightAns;
-    int RandVal;
 
     //Cons
-    public AnswerDTO(String A, String B, String C, String D, int RightAns, int RandVal) {
+    public AnswerDTO(String A, String B, String C, String D, int RightAns) {
         this.A = A;
         this.B = B;
         this.C = C;
         this.D = D;
         this.RightAns = RightAns;
-        this.RandVal = RandVal;
     }
 
     public AnswerDTO() {
@@ -49,13 +47,4 @@ public class AnswerDTO {
     public void setRightAns(int rightAns) {
         RightAns = rightAns;
     }
-
-    public int getRandVal() {
-        return RandVal;
-    }
-
-    public void setRandVal(int randVal) {
-        RandVal = randVal;
-    }
-    
 }
