@@ -5,10 +5,6 @@ import DTO.RoleDTO;
 import DTO.UserDTO;
 
 public class RoleBLL {
-    UserDTO user;
-    public RoleBLL(UserDTO x){
-        user = x;
-    }
     //Insert
     public static Boolean addRole(RoleDTO a){
         if(!RoleDAL.searchByID(a.getID())){
