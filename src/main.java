@@ -10,7 +10,7 @@ import DTO.AnswerDTO;
 import DTO.QuestionDTO;
 import DTO.RoleDTO;
 import DTO.UserDTO;
-import mics.Enums;
+import MICS.Enums;
 public class main {
     public static void main(String[] args) {
         //QuestionDAL.addQuestion(new QuestionDTO("841107C1", "Sys", Enums.DifficultValue.DE, "testing", new AnswerDTO("A", "B", "C", "D", 1)));

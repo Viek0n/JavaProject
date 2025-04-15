@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import DTO.AnswerDTO;
-import mics.Connect;
+import MICS.Connect;
 
 public class AnswerDAL {
     //Add

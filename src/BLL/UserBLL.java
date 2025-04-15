@@ -1,7 +1,7 @@
 package BLL;
 import DAL.UserDAL;
 import DTO.UserDTO;
-import mics.Enums;
+import MICS.Enums;
 public class UserBLL {
     private UserDTO cur;
     //Cons

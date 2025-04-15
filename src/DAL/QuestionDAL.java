@@ -6,9 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import DTO.QuestionDTO;
+import MICS.Connect;
+
 import java.sql.ResultSet;
 import java.sql.Statement;
-import mics.Connect;
 
 public class QuestionDAL {
     //Add

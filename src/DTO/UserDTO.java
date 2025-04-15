@@ -1,6 +1,6 @@
 package DTO;
 
-import mics.Enums;
+import MICS.Enums;
 public class UserDTO {
     private String LoginName;
     private String Name;

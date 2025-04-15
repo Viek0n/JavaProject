@@ -1,4 +1,4 @@
-package mics;
+package MICS;
 public class Enums {
     public enum StatusValue{
         HOATDONG,

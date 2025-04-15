@@ -1,12 +1,13 @@
 package DAL;
 import DTO.UserDTO;
+import MICS.Connect;
+import MICS.Enums;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import mics.Connect;
-import mics.Enums;
 
 public class UserDAL {
     //Locate User

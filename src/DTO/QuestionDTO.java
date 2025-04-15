@@ -1,5 +1,5 @@
 package DTO;
-import mics.Enums;
+import MICS.Enums;
 public class QuestionDTO {
     int ID;
     String text;
