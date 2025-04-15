@@ -1,5 +1,7 @@
 package BLL;
 
+import DTO.AnswerDTO;
+
 public class AnswerBLL {
     //Insert
     public static Boolean addAnswer(){

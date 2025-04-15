@@ -2,7 +2,6 @@ package BLL;
 
 import DAL.RoleDAL;
 import DTO.RoleDTO;
-import DTO.UserDTO;
 
 public class RoleBLL {
     //Insert
@@ -18,7 +17,7 @@ public class RoleBLL {
     //Update
     public static Boolean updateRole(RoleDTO a){
         if(RoleDAL.searchByID(a.getID()))
-            return updateRole(a);
+            return RoleDAL.updateRole(a);
         return false;
     }
 

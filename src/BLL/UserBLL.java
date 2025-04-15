@@ -9,6 +9,10 @@ public class UserBLL {
         cur = null;
     }
 
+    //Get
+    public UserDTO getCurUser(){
+        return cur;
+    }
     //SelfManage
     public Enums.UserError loginUser(String LoginName, String Pass){
         UserDTO tmp = UserDAL.getByLoginName(LoginName);

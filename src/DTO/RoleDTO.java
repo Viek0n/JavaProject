@@ -13,7 +13,7 @@ public class RoleDTO {
     private Boolean Permit[] = new Boolean[16];
 
     private void init(){
-        takeExam = null;
+        takeExam = false;
         for(int i = 0; i < 16; i++)
             Permit[i] = false;
     }
@@ -73,109 +73,119 @@ public class RoleDTO {
     public void setTakeExam(Boolean takeExam) {
         this.takeExam = takeExam;
     }
+
+    //Permit
     public Boolean getSeeQuest() {
         return Permit[0];
     }
+
     public void setSeeQuest(Boolean seeQuest) {
         this.Permit[0] = seeQuest;
     }
-    public Boolean getUpdateQuest() {
-        return Permit[1];
-    }
-    public void setUpdateQuest(Boolean updateQuest) {
-        this.Permit[1] = updateQuest;
-    }
-    public Boolean getDeleteQuest() {
-        return Permit[2];
-    }
-    public void setDeleteQuest(Boolean deleteQuest) {
-        this.Permit[2] = deleteQuest;
-    }
-    public Boolean getSeeUser() {
-        return Permit[3];
-    }
-    public void setSeeUser(Boolean seeUser) {
-        this.Permit[3] = seeUser;
-    }
-    public Boolean getUpdateUser() {
-        return Permit[4];
-    }
-    public void setUpdateUser(Boolean updateUser) {
-        this.Permit[4] = updateUser;
-    }
-    public Boolean getDeleteUser() {
-        return Permit[5];
-    }
-    public void setDeleteUser(Boolean deleteUser) {
-        this.Permit[5] = deleteUser;
-    }
-    public Boolean getSeeExam() {
-        return Permit[6];
-    }
-    public void setSeeExam(Boolean seeExam) {
-        this.Permit[6] = seeExam;
-    }
-    public Boolean getUpdateExam() {
-        return Permit[7];
-    }
-    public void setUpdateExam(Boolean updateExam) {
-        this.Permit[7] = updateExam;
-    }
-    public Boolean getDeleteExam() {
-        return Permit[8];
-    }
-    public void setDeleteExam(Boolean deleteExam) {
-        this.Permit[8] = deleteExam;
-    }
-    public Boolean getSeeRole() {
-        return Permit[9];
-    }
-    public void setSeeRole(Boolean seeRole) {
-        this.Permit[9] = seeRole;
-    }
-    public Boolean getUpdateRole() {
-        return Permit[10];
-    }
-    public void setUpdateRole(Boolean updateRole) {
-        this.Permit[10] = updateRole;
-    }
-    public Boolean getDeleteRole() {
-        return Permit[11];
-    }
-    public void setDeleteRole(Boolean deleteRole) {
-        this.Permit[11] = deleteRole;
-    }
 
     public Boolean getAddQuest() {
-        return Permit[12];
+        return Permit[1];
     }
 
     public void setAddQuest(Boolean addQuest) {
-        this.Permit[12] = addQuest;
+        this.Permit[1] = addQuest;
+    }
+
+    public Boolean getUpdateQuest() {
+        return Permit[2];
+    }
+    public void setUpdateQuest(Boolean updateQuest) {
+        this.Permit[2] = updateQuest;
+    }
+
+    public Boolean getDeleteQuest() {
+        return Permit[3];
+    }
+    public void setDeleteQuest(Boolean deleteQuest) {
+        this.Permit[3] = deleteQuest;
+    }
+
+    public Boolean getSeeUser() {
+        return Permit[4];
+    }
+    public void setSeeUser(Boolean seeUser) {
+        this.Permit[4] = seeUser;
     }
 
     public Boolean getAddUser() {
-        return Permit[13];
+        return Permit[5];
+    }
+    public void setAddUser(Boolean addUser) {
+        this.Permit[5] = addUser;
     }
 
-    public void setAddUser(Boolean addUser) {
-        this.Permit[13] = addUser;
+    public Boolean getUpdateUser() {
+        return Permit[6];
+    }
+    public void setUpdateUser(Boolean updateUser) {
+        this.Permit[6] = updateUser;
+    }
+
+    public Boolean getDeleteUser() {
+        return Permit[7];
+    }
+    public void setDeleteUser(Boolean deleteUser) {
+        this.Permit[7] = deleteUser;
+    }
+
+    public Boolean getSeeExam() {
+        return Permit[8];
+    }
+    public void setSeeExam(Boolean seeExam) {
+        this.Permit[8] = seeExam;
     }
 
     public Boolean getAddExam() {
-        return Permit[14];
+        return Permit[9];
+    }
+    public void setAddExam(Boolean addExam) {
+        this.Permit[9] = addExam;
     }
 
-    public void setAddExam(Boolean addExam) {
-        this.Permit[14] = addExam;
+    public Boolean getUpdateExam() {
+        return Permit[10];
+    }
+    public void setUpdateExam(Boolean updateExam) {
+        this.Permit[10] = updateExam;
+    }
+
+    public Boolean getDeleteExam() {
+        return Permit[11];
+    }
+    public void setDeleteExam(Boolean deleteExam) {
+        this.Permit[11] = deleteExam;
+    }
+
+    public Boolean getSeeRole() {
+        return Permit[12];
+    }
+    public void setSeeRole(Boolean seeRole) {
+        this.Permit[12] = seeRole;
     }
 
     public Boolean getAddRole() {
-        return Permit[15];
+        return Permit[13];
+    }
+    public void setAddRole(Boolean addRole) {
+        this.Permit[13] = addRole;
     }
 
-    public void setAddRole(Boolean addRole) {
-        this.Permit[15] = addRole;
+    public Boolean getUpdateRole() {
+        return Permit[14];
+    }
+    public void setUpdateRole(Boolean updateRole) {
+        this.Permit[14] = updateRole;
+    }
+    public Boolean getDeleteRole() {
+        return Permit[15];
+    }
+    public void setDeleteRole(Boolean deleteRole) {
+        this.Permit[15] = deleteRole;
     }
 
     public Boolean[] getPermit() {

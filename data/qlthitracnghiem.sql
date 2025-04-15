@@ -43,7 +43,7 @@ CREATE TABLE `baikiemtra` (
 --
 
 CREATE TABLE `bangchiaquyen` (
-  `MaNhom` int(11) NOT NULL,
+  `MaNQ` int(11) NOT NULL,
   `MaQuyen` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
@@ -51,7 +51,7 @@ CREATE TABLE `bangchiaquyen` (
 -- Dumping data for table `bangchiaquyen`
 --
 
-INSERT INTO `bangchiaquyen` (`MaNhom`, `MaQuyen`) VALUES
+INSERT INTO `bangchiaquyen` (`MaNQ`, `MaQuyen`) VALUES
 (1, 'CH02'),
 (1, 'CH03'),
 (1, 'CH04'),
@@ -77,7 +77,7 @@ INSERT INTO `bangchiaquyen` (`MaNhom`, `MaQuyen`) VALUES
 --
 
 CREATE TABLE `bangphancong` (
-  `MaGV` varchar(50) NOT NULL,
+  `MaND` varchar(50) NOT NULL,
   `MaMH` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
@@ -85,7 +85,7 @@ CREATE TABLE `bangphancong` (
 -- Dumping data for table `bangphancong`
 --
 
-INSERT INTO `bangphancong` (`MaGV`, `MaMH`) VALUES
+INSERT INTO `bangphancong` (`MaND`, `MaMH`) VALUES
 ('Sys', '841048'),
 ('Sys', '841107');
 
@@ -100,14 +100,14 @@ CREATE TABLE `cauhoi` (
   `NoiDung` text NOT NULL,
   `DoKho` enum('DE','TRUNGBINH','KHO') NOT NULL,
   `MaChuong` varchar(50) NOT NULL,
-  `MaGV` varchar(50) NOT NULL
+  `MaND` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
 -- Dumping data for table `cauhoi`
 --
 
-INSERT INTO `cauhoi` (`MaCH`, `NoiDung`, `DoKho`, `MaChuong`, `MaGV`) VALUES
+INSERT INTO `cauhoi` (`MaCH`, `NoiDung`, `DoKho`, `MaChuong`, `MaND`) VALUES
 (1, 'Entry point của 1 chương trình java là gì?', 'DE', '841107C1', 'Sys');
 
 -- --------------------------------------------------------
@@ -200,18 +200,18 @@ INSERT INTO `monhoc` (`MaMH`, `TenMH`) VALUES
 --
 
 CREATE TABLE `nguoidung` (
-  `TenDangNhap` varchar(50) NOT NULL,
+  `MaND` varchar(50) NOT NULL,
   `Ten` text NOT NULL,
   `MatKhau` text NOT NULL,
   `TrangThai` enum('HOATDONG','KHOA') NOT NULL,
-  `NhomQuyen` int(11) NOT NULL
+  `MaNQ` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
 -- Dumping data for table `nguoidung`
 --
 
-INSERT INTO `nguoidung` (`TenDangNhap`, `Ten`, `MatKhau`, `TrangThai`, `NhomQuyen`) VALUES
+INSERT INTO `nguoidung` (`MaND`, `Ten`, `MatKhau`, `TrangThai`, `MaNQ`) VALUES
 ('3123560069', 'Nguyễn Thanh Quang', '12345', 'HOATDONG', 2),
 ('3123560096', 'NgVi', '12345', 'HOATDONG', 1),
 ('3123560097', 'Hoàng Vũ', '12345', 'HOATDONG', 3),
@@ -225,7 +225,7 @@ INSERT INTO `nguoidung` (`TenDangNhap`, `Ten`, `MatKhau`, `TrangThai`, `NhomQuye
 --
 
 CREATE TABLE `nhomquyen` (
-  `MaNhom` int(11) NOT NULL,
+  `MaNQ` int(11) NOT NULL,
   `TenNhom` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
@@ -233,7 +233,7 @@ CREATE TABLE `nhomquyen` (
 -- Dumping data for table `nhomquyen`
 --
 
-INSERT INTO `nhomquyen` (`MaNhom`, `TenNhom`) VALUES
+INSERT INTO `nhomquyen` (`MaNQ`, `TenNhom`) VALUES
 (1, 'Admin'),
 (2, 'Giảng viên'),
 (3, 'Sinh viên');
@@ -287,14 +287,14 @@ ALTER TABLE `baikiemtra`
 -- Indexes for table `bangchiaquyen`
 --
 ALTER TABLE `bangchiaquyen`
-  ADD KEY `fk_bangchiaquyen_nhomquyen` (`MaNhom`),
+  ADD KEY `fk_bangchiaquyen_nhomquyen` (`MaNQ`),
   ADD KEY `fk_bangchiaquyen_quyen` (`MaQuyen`);
 
 --
 -- Indexes for table `bangphancong`
 --
 ALTER TABLE `bangphancong`
-  ADD KEY `fk_bangphancong_nguoidung` (`MaGV`),
+  ADD KEY `fk_bangphancong_nguoidung` (`MaND`),
   ADD KEY `fk_bangphancong_monhoc` (`MaMH`);
 
 --
@@ -303,7 +303,7 @@ ALTER TABLE `bangphancong`
 ALTER TABLE `cauhoi`
   ADD PRIMARY KEY (`MaCH`),
   ADD KEY `fk_cauhoi_chuong` (`MaChuong`),
-  ADD KEY `fk_cauhoi_nguoidung` (`MaGV`);
+  ADD KEY `fk_cauhoi_nguoidung` (`MaND`);
 
 --
 -- Indexes for table `cautrucde`
@@ -335,14 +335,14 @@ ALTER TABLE `monhoc`
 -- Indexes for table `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  ADD PRIMARY KEY (`TenDangNhap`),
-  ADD KEY `fk_nguoidung_nhomquyen` (`NhomQuyen`);
+  ADD PRIMARY KEY (`MaND`),
+  ADD KEY `fk_nguoidung_nhomquyen` (`MaNQ`);
 
 --
 -- Indexes for table `nhomquyen`
 --
 ALTER TABLE `nhomquyen`
-  ADD PRIMARY KEY (`MaNhom`);
+  ADD PRIMARY KEY (`MaNQ`);
 
 --
 -- Indexes for table `quyen`
@@ -370,7 +370,7 @@ ALTER TABLE `cautrucde`
 -- AUTO_INCREMENT for table `nhomquyen`
 --
 ALTER TABLE `nhomquyen`
-  MODIFY `MaNhom` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `MaNQ` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -381,13 +381,13 @@ ALTER TABLE `nhomquyen`
 --
 ALTER TABLE `baikiemtra`
   ADD CONSTRAINT `fk_baikiemtra_cautrucde` FOREIGN KEY (`MaCT`) REFERENCES `cautrucde` (`MaCT`),
-  ADD CONSTRAINT `fk_baikiemtra_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`TenDangNhap`);
+  ADD CONSTRAINT `fk_baikiemtra_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
 -- Constraints for table `bangchiaquyen`
 --
 ALTER TABLE `bangchiaquyen`
-  ADD CONSTRAINT `fk_bangchiaquyen_nhomquyen` FOREIGN KEY (`MaNhom`) REFERENCES `nhomquyen` (`MaNhom`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_bangchiaquyen_nhomquyen` FOREIGN KEY (`MaNQ`) REFERENCES `nhomquyen` (`MaNQ`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_bangchiaquyen_quyen` FOREIGN KEY (`MaQuyen`) REFERENCES `quyen` (`MaQuyen`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -395,14 +395,14 @@ ALTER TABLE `bangchiaquyen`
 --
 ALTER TABLE `bangphancong`
   ADD CONSTRAINT `fk_bangphancong_monhoc` FOREIGN KEY (`MaMH`) REFERENCES `monhoc` (`MaMH`),
-  ADD CONSTRAINT `fk_bangphancong_nguoidung` FOREIGN KEY (`MaGV`) REFERENCES `nguoidung` (`TenDangNhap`);
+  ADD CONSTRAINT `fk_bangphancong_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
 -- Constraints for table `cauhoi`
 --
 ALTER TABLE `cauhoi`
   ADD CONSTRAINT `fk_cauhoi_chuong` FOREIGN KEY (`MaChuong`) REFERENCES `chuong` (`MaChuong`),
-  ADD CONSTRAINT `fk_cauhoi_nguoidung` FOREIGN KEY (`MaGV`) REFERENCES `nguoidung` (`TenDangNhap`);
+  ADD CONSTRAINT `fk_cauhoi_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
 -- Constraints for table `cautrucde`
@@ -426,7 +426,7 @@ ALTER TABLE `dapan`
 -- Constraints for table `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  ADD CONSTRAINT `fk_nguoidung_nhomquyen` FOREIGN KEY (`NhomQuyen`) REFERENCES `nhomquyen` (`MaNhom`);
+  ADD CONSTRAINT `fk_nguoidung_nhomquyen` FOREIGN KEY (`MaNQ`) REFERENCES `nhomquyen` (`MaNQ`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
