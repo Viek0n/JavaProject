@@ -1,4 +1,4 @@
-package mics;
+package MICS;
 
 public class Connect {
     public static String url = "jdbc:mysql://localhost:3306/qlthitracnghiem";

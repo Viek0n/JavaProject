@@ -1,4 +1,4 @@
-package mics;
+package MICS;
 public class Enums {
     public enum StatusValue{
         HOATDONG,
@@ -9,5 +9,12 @@ public class Enums {
         DE,
         TRUNGBINH,
         KHO
+    }
+
+    public enum UserError{
+        NORMAL,
+        NOUSER,
+        WRONGPASS,
+        LOCKED
     }
 }

@@ -1,24 +1,18 @@
 package DTO;
-import mics.Enums;
+import MICS.Enums;
 public class QuestionDTO {
     int ID;
     String text;
     Enums.DifficultValue difficult;
     String ChapterID;
     String Chapter;
-    String Subject;
-    String SubjectID;
     String CreatedBy;
     AnswerDTO ans;
 
     //Cons
-    public QuestionDTO(String Chapter, String ChapterID, String CreatedBy, int ID, String Subject, String SubjectID, AnswerDTO ans, Enums.DifficultValue difficult, String text) {
-        this.Chapter = Chapter;
+    public QuestionDTO(String ChapterID, String CreatedBy, Enums.DifficultValue difficult, String text, AnswerDTO ans) {
         this.ChapterID = ChapterID;
         this.CreatedBy = CreatedBy;
-        this.ID = ID;
-        this.Subject = Subject;
-        this.SubjectID = SubjectID;
         this.ans = ans;
         this.difficult = difficult;
         this.text = text;
@@ -66,22 +60,6 @@ public class QuestionDTO {
 
     public void setChapter(String Chapter) {
         this.Chapter = Chapter;
-    }
-
-    public String getSubject() {
-        return Subject;
-    }
-
-    public void setSubject(String Subject) {
-        this.Subject = Subject;
-    }
-
-    public String getSubjectID() {
-        return SubjectID;
-    }
-
-    public void setSubjectID(String SubjectID) {
-        this.SubjectID = SubjectID;
     }
 
     public String getCreatedBy() {
