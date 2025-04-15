@@ -1,13 +1,20 @@
-package mics;
+package MICS;
 public class Enums {
     public enum StatusValue{
-        normal,
-        lock
+        HOATDONG,
+        KHOA
     }
 
-    enum difficultValue{
-        easy,
-        medium,
-        hard
+    public enum DifficultValue{
+        DE,
+        TRUNGBINH,
+        KHO
+    }
+
+    public enum UserError{
+        NORMAL,
+        NOUSER,
+        WRONGPASS,
+        LOCKED
     }
 }

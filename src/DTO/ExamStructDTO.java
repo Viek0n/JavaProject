@@ -3,7 +3,7 @@ package DTO;
 import java.sql.Time;
 import java.util.Date;
 
-public class ExamStruct {
+public class ExamStructDTO {
     int ID;
     String Name;
     String Style;
@@ -11,7 +11,8 @@ public class ExamStruct {
     Time ExamTime;
     String Subject;
     
-    public ExamStruct(int iD, String name, String style, Date start, Date end, Time examTime, String subject) {
+    //Cons
+    public ExamStructDTO(int iD, String name, String style, Date start, Date end, Time examTime, String subject) {
         ID = iD;
         Name = name;
         Style = style;
@@ -20,7 +21,11 @@ public class ExamStruct {
         ExamTime = examTime;
         Subject = subject;
     }
+
+    public ExamStructDTO() {
+    }
     
+    //Getters&Setters
     public int getID() {
         return ID;
     }

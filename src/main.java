@@ -1,32 +1,18 @@
-import java.sql.*;
+import BLL.AnswerBLL;
+import BLL.QuestionBLL;
+import BLL.RoleBLL;
+import BLL.UserBLL;
+import DAL.AnswerDAL;
+import DAL.QuestionDAL;
+import DAL.RoleDAL;
+import DAL.UserDAL;
+import DTO.AnswerDTO;
+import DTO.QuestionDTO;
+import DTO.RoleDTO;
+import DTO.UserDTO;
+import MICS.Enums;
 public class main {
     public static void main(String[] args) {
-        // Thông tin kết nối
-        String url = "jdbc:mysql://localhost:3306/qlthitracnghiem";
-        String user = "root";
-        String pass = ""; // Mặc định XAMPP không có mật khẩu
-
-        try {
-            Connection conn = DriverManager.getConnection(url, user, pass);
-            System.out.println("✅ Kết nối thành công!");
-
-            String sql = "SELECT MaMH, TenMH FROM monhoc";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            System.out.println("📘 Danh sách môn học:");
-            while (rs.next()) {
-                String maMH = rs.getString("MaMH");
-                String tenMH = rs.getString("TenMH");
-                System.out.println("- " + maMH + ": " + tenMH);
-            }
-
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println("Kết nối thất bại!");
-            e.printStackTrace();
-        }
+        //QuestionDAL.addQuestion(new QuestionDTO("841107C1", "Sys", Enums.DifficultValue.DE, "testing", new AnswerDTO("A", "B", "C", "D", 1)));
     }
 }

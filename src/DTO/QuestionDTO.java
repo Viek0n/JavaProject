@@ -1,26 +1,24 @@
 package DTO;
-public class Question {
+import MICS.Enums;
+public class QuestionDTO {
     int ID;
     String text;
-    int difficult;
+    Enums.DifficultValue difficult;
     String ChapterID;
     String Chapter;
-    String Subject;
-    String SubjectID;
     String CreatedBy;
-    Answer ans;
+    AnswerDTO ans;
 
     //Cons
-    public Question(String Chapter, String ChapterID, String CreatedBy, int ID, String Subject, String SubjectID, Answer ans, int difficult, String text) {
-        this.Chapter = Chapter;
+    public QuestionDTO(String ChapterID, String CreatedBy, Enums.DifficultValue difficult, String text, AnswerDTO ans) {
         this.ChapterID = ChapterID;
         this.CreatedBy = CreatedBy;
-        this.ID = ID;
-        this.Subject = Subject;
-        this.SubjectID = SubjectID;
         this.ans = ans;
         this.difficult = difficult;
         this.text = text;
+    }
+
+    public QuestionDTO() {
     }
 
     //Setters&Getters
@@ -40,11 +38,11 @@ public class Question {
         this.text = text;
     }
 
-    public int getDifficult() {
+    public Enums.DifficultValue getDifficult() {
         return difficult;
     }
 
-    public void setDifficult(int difficult) {
+    public void setDifficult(Enums.DifficultValue difficult) {
         this.difficult = difficult;
     }
 
@@ -64,22 +62,6 @@ public class Question {
         this.Chapter = Chapter;
     }
 
-    public String getSubject() {
-        return Subject;
-    }
-
-    public void setSubject(String Subject) {
-        this.Subject = Subject;
-    }
-
-    public String getSubjectID() {
-        return SubjectID;
-    }
-
-    public void setSubjectID(String SubjectID) {
-        this.SubjectID = SubjectID;
-    }
-
     public String getCreatedBy() {
         return CreatedBy;
     }
@@ -88,11 +70,11 @@ public class Question {
         this.CreatedBy = CreatedBy;
     }
 
-    public Answer getAns() {
+    public AnswerDTO getAns() {
         return ans;
     }
 
-    public void setAns(Answer ans) {
+    public void setAns(AnswerDTO ans) {
         this.ans = ans;
     }
 }
