@@ -9,6 +9,7 @@ import mics.Connect;
 import mics.Enums;
 
 public class UserDAL {
+    //Locate User
     public static UserDTO getByLoginName(String LoginName){
         String sql = "SELECT * FROM nguoidung WHERE TenDangNhap = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -44,7 +45,8 @@ public class UserDAL {
         return null;
     }
 
-    public static Boolean pushUser(UserDTO a){
+    //Add user
+    public static Boolean addUser(UserDTO a){
         String sql = "INSERT INTO nguoidung (TenDangNhap, Ten, MatKhau, TrangThai, NhomQuyen) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -63,6 +65,7 @@ public class UserDAL {
         return false;
     }
     
+    //Delete user
     public static Boolean deleteUserByLoginName(String LoginName){
         String sql = "DELETE FROM nguoidung WHERE TenDangNhap = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -77,14 +80,15 @@ public class UserDAL {
         return false;
     }
 
+    //update user
     public static Boolean updateUser(UserDTO user){
         String sql = "UPDATE nguoidung SET Ten = ?, MatKhau = ?, TrangThai = ?, NhomQuyen = ? WHERE TenDangNhap = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getPass());
-            stmt.setString(3, user.getPass());
-            stmt.setString(4, user.getStatus().name());
+            stmt.setString(3, user.getStatus().name());
+            stmt.setInt(4, user.getRole().getID());
             stmt.setString(5, user.getLoginName());
 
             return stmt.executeUpdate() > 0;

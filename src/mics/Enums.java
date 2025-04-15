@@ -14,6 +14,7 @@ public class Enums {
     public enum UserError{
         NORMAL,
         NOUSER,
-        WRONGPASS
+        WRONGPASS,
+        LOCKED
     }
 }
