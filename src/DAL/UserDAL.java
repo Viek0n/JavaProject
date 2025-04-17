@@ -2,7 +2,6 @@ package DAL;
 import DTO.UserDTO;
 import MICS.Connect;
 import MICS.Enums;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -82,15 +81,15 @@ public class UserDAL {
     }
 
     //update user
-    public static Boolean updateUser(UserDTO user){
+    public static Boolean updateUser(UserDTO a){
         String sql = "UPDATE nguoidung SET Ten = ?, MatKhau = ?, TrangThai = ?, MaNQ = ? WHERE MaND = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getPass());
-            stmt.setString(3, user.getStatus().name());
-            stmt.setInt(4, user.getRole().getID());
-            stmt.setString(5, user.getLoginName());
+            stmt.setString(1, a.getName());
+            stmt.setString(2, a.getPass());
+            stmt.setString(3, a.getStatus().name());
+            stmt.setInt(4, a.getRole().getID());
+            stmt.setString(5, a.getLoginName());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {

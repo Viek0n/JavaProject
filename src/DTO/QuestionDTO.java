@@ -10,6 +10,15 @@ public class QuestionDTO {
     AnswerDTO ans;
 
     //Cons
+    public QuestionDTO(int ID, String ChapterID, String CreatedBy, Enums.DifficultValue difficult, String text, AnswerDTO ans) {
+        this.ID = ID;
+        this.ChapterID = ChapterID;
+        this.CreatedBy = CreatedBy;
+        this.ans = ans;
+        this.difficult = difficult;
+        this.text = text;
+    }
+
     public QuestionDTO(String ChapterID, String CreatedBy, Enums.DifficultValue difficult, String text, AnswerDTO ans) {
         this.ChapterID = ChapterID;
         this.CreatedBy = CreatedBy;
