@@ -4,22 +4,22 @@ import DAL.QuestionDAL;
 import DTO.QuestionDTO;
 
 public class QuestionBLL {
+    //Valid check
+    
+    //Get
     public static QuestionDTO get(String ID){
         return QuestionDAL.getByID(ID);
     }
     //Insert
     public static Boolean add(QuestionDTO quest){
-        QuestionDAL.add(quest);
-        return false;
+        return QuestionDAL.add(quest);
     }
     //Update
     public static Boolean update(QuestionDTO quest){
-        QuestionDAL.update(quest);
-        return false;
+        return QuestionDAL.update(quest);
     }
     //Delete
     public static Boolean delete(String ID){
-        QuestionDAL.deleteByID(ID);
-        return false;
+        return QuestionDAL.deleteByID(ID);
     }
 }

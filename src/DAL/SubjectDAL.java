@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 public class SubjectDAL {
-    public static SubjectDTO getCourseByChapID(String ID){
+    public static SubjectDTO getByChapID(String ID){
         String sql = "SELECT chuong.MaChuong, chuong.TenChuong, monhoc.TenMH FROM chuong LEFT JOIN monhoc ON chuong.MonHoc = monhoc.MaMH WHERE MaChuong = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
         PreparedStatement stmt = conn.prepareStatement(sql)){
