@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import MICS.*;
+import java.net.ConnectException;
 
 public class HomePanel{
 
@@ -42,11 +44,11 @@ public class HomePanel{
         menuPanel.setBounds(0,0,214,900);
         menuPanel.setLayout(null);
         
-        JLabel graduation = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\profile-user.png", 50, 50, 100, 100);
+        JLabel graduation = AddImage.createImageLabel(Connect."profile-user.png", 50, 50, 100, 100);
         menuPanel.add(graduation);
-        JLabel test = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\test.png", 80, 280, 80, 80);
+        JLabel test = AddImage.createImageLabel("test.png", 80, 280, 80, 80);
         menuPanel.add(test);
-        JLabel graduationLabel = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\analysis.png", 80, 450, 80, 80);
+        JLabel graduationLabel = AddImage.createImageLabel("analysis.png", 80, 450, 80, 80);
         menuPanel.add(graduationLabel);
 
 
@@ -90,8 +92,5 @@ public class HomePanel{
         homeFrame.add(menuPanel);
         homeFrame.add(homePanel);
         homeFrame.setVisible(true);
-    }
-    public static void main(String[] args) {
-        HomePanel hp = new HomePanel();
     }
 }
