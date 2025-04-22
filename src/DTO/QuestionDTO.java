@@ -1,17 +1,45 @@
 package DTO;
 import MICS.Enums;
+import java.util.ArrayList;
 public class QuestionDTO {
-    int ID;
+    String ID;
     String text;
     Enums.DifficultValue difficult;
-    String ChapterID;
-    String Chapter;
+    ChapterDTO chap;
+    SubjectDTO subject;
     String CreatedBy;
-    AnswerDTO ans;
+    ArrayList<AnswerDTO> ans; 
 
+    @Override
+    public String toString(){
+        String tmp = "======================\nID: "+ID+"\nDo kho: "+difficult.toString()+"\n"+chap+ "\n"+ subject + "\n"+text;
+        tmp+= "\nA." + ans.get(0);
+        tmp+= "\nB." + ans.get(1);
+        tmp+= "\nC." + ans.get(2);
+        tmp+= "\nD." + ans.get(3);
+        return tmp;
+    }
+    
     //Cons
-    public QuestionDTO(String ChapterID, String CreatedBy, Enums.DifficultValue difficult, String text, AnswerDTO ans) {
-        this.ChapterID = ChapterID;
+    public QuestionDTO(String ID, ChapterDTO chap, String CreatedBy, Enums.DifficultValue difficult, String text) {
+        this.ID = ID;
+        this.chap = chap;
+        this.CreatedBy = CreatedBy;
+        this.difficult = difficult;
+        this.text = text;
+    }
+
+    public QuestionDTO(String ID, ChapterDTO chap, String CreatedBy, Enums.DifficultValue difficult, String text, ArrayList<AnswerDTO> ans) {
+        this.ID = ID;
+        this.chap = chap;
+        this.CreatedBy = CreatedBy;
+        this.ans = ans;
+        this.difficult = difficult;
+        this.text = text;
+    }
+
+    public QuestionDTO(ChapterDTO chap, String CreatedBy, Enums.DifficultValue difficult, String text, ArrayList<AnswerDTO> ans) {
+        this.chap = chap;
         this.CreatedBy = CreatedBy;
         this.ans = ans;
         this.difficult = difficult;
@@ -22,11 +50,11 @@ public class QuestionDTO {
     }
 
     //Setters&Getters
-    public int getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -46,20 +74,12 @@ public class QuestionDTO {
         this.difficult = difficult;
     }
 
-    public String getChapterID() {
-        return ChapterID;
+    public ChapterDTO getChapter() {
+        return chap;
     }
 
-    public void setChapterID(String ChapterID) {
-        this.ChapterID = ChapterID;
-    }
-
-    public String getChapter() {
-        return Chapter;
-    }
-
-    public void setChapter(String Chapter) {
-        this.Chapter = Chapter;
+    public void setChapter(ChapterDTO chap) {
+        this.chap = chap;
     }
 
     public String getCreatedBy() {
@@ -70,11 +90,19 @@ public class QuestionDTO {
         this.CreatedBy = CreatedBy;
     }
 
-    public AnswerDTO getAns() {
+    public ArrayList<AnswerDTO> getAns() {
         return ans;
     }
 
-    public void setAns(AnswerDTO ans) {
+    public void setAns(ArrayList<AnswerDTO> ans) {
         this.ans = ans;
+    }
+
+    public SubjectDTO getSubject() {
+        return subject;
+    }
+
+    public void setSubject(SubjectDTO subject) {
+        this.subject = subject;
     }
 }

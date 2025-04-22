@@ -6,23 +6,24 @@ import java.util.Date;
 public class ExamStructDTO {
     int ID;
     String Name;
-    String Style;
+    String Desc;
     Date Start, End;
     Time ExamTime;
-    String Subject;
+    SubjectDTO subject;
     
     //Cons
-    public ExamStructDTO(int iD, String name, String style, Date start, Date end, Time examTime, String subject) {
-        ID = iD;
-        Name = name;
-        Style = style;
-        Start = start;
-        End = end;
-        ExamTime = examTime;
-        Subject = subject;
-    }
+
 
     public ExamStructDTO() {
+    }
+
+    public ExamStructDTO(String Desc, Date End, Time ExamTime, String Name, Date Start, SubjectDTO subject) {
+        this.Desc = Desc;
+        this.End = End;
+        this.ExamTime = ExamTime;
+        this.Name = Name;
+        this.Start = Start;
+        this.subject = subject;
     }
     
     //Getters&Setters
@@ -37,12 +38,6 @@ public class ExamStructDTO {
     }
     public void setName(String name) {
         Name = name;
-    }
-    public String getStyle() {
-        return Style;
-    }
-    public void setStyle(String style) {
-        Style = style;
     }
     public Date getStart() {
         return Start;
@@ -61,12 +56,22 @@ public class ExamStructDTO {
     }
     public void setExamTime(Time examTime) {
         ExamTime = examTime;
+    } 
+
+    public String getDesc() {
+        return Desc;
     }
-    public String getSubject() {
-        return Subject;
+
+    public void setDesc(String Desc) {
+        this.Desc = Desc;
     }
-    public void setSubject(String subject) {
-        Subject = subject;
+
+    public SubjectDTO getSubject() {
+        return subject;
     }
-    
+
+    public void setSubject(SubjectDTO subject) {
+        this.subject = subject;
+    }
+
 }

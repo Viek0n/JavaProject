@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2025 at 08:48 AM
+-- Generation Time: Apr 22, 2025 at 08:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,13 +28,19 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `baikiemtra` (
-  `MaCT` int(11) NOT NULL,
+  `MaCT` varchar(50) NOT NULL,
   `MaND` varchar(50) NOT NULL,
   `BaiLam` text NOT NULL,
   `Diem` double NOT NULL,
-  `CauHoi` text NOT NULL,
   `ThoiGianLam` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+--
+-- Dumping data for table `baikiemtra`
+--
+
+INSERT INTO `baikiemtra` (`MaCT`, `MaND`, `BaiLam`, `Diem`, `ThoiGianLam`) VALUES
+('CT1', 'Test', 'GG', 0, '00:45:00');
 
 -- --------------------------------------------------------
 
@@ -96,7 +102,7 @@ INSERT INTO `bangphancong` (`MaND`, `MaMH`) VALUES
 --
 
 CREATE TABLE `cauhoi` (
-  `MaCH` int(50) NOT NULL,
+  `MaCH` varchar(50) NOT NULL,
   `NoiDung` text NOT NULL,
   `DoKho` enum('DE','TRUNGBINH','KHO') NOT NULL,
   `MaChuong` varchar(50) NOT NULL,
@@ -108,7 +114,27 @@ CREATE TABLE `cauhoi` (
 --
 
 INSERT INTO `cauhoi` (`MaCH`, `NoiDung`, `DoKho`, `MaChuong`, `MaND`) VALUES
-(1, 'Entry point của 1 chương trình java là gì?', 'DE', '841107C1', 'Sys');
+('CH1', 'Entry point của 1 chương trình java là gì?', 'DE', '841107C1', 'Sys'),
+('CH2', 'test', 'KHO', '841107C2', 'Sys');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cauhoituychon`
+--
+
+CREATE TABLE `cauhoituychon` (
+  `MaCT` varchar(50) NOT NULL,
+  `MaCH` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+--
+-- Dumping data for table `cauhoituychon`
+--
+
+INSERT INTO `cauhoituychon` (`MaCT`, `MaCH`) VALUES
+('CT1', 'CH1'),
+('CT1', 'CH2');
 
 -- --------------------------------------------------------
 
@@ -117,14 +143,42 @@ INSERT INTO `cauhoi` (`MaCH`, `NoiDung`, `DoKho`, `MaChuong`, `MaND`) VALUES
 --
 
 CREATE TABLE `cautrucde` (
-  `MaCT` int(11) NOT NULL,
+  `MaCT` varchar(50) NOT NULL,
   `TenCT` text NOT NULL,
-  `DangDe` text NOT NULL,
+  `MoTa` text NOT NULL,
   `ThoiGianBD` datetime NOT NULL,
   `ThoiGianKT` datetime NOT NULL,
   `ThoiGianLamBai` time NOT NULL,
   `MonHoc` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+--
+-- Dumping data for table `cautrucde`
+--
+
+INSERT INTO `cautrucde` (`MaCT`, `TenCT`, `MoTa`, `ThoiGianBD`, `ThoiGianKT`, `ThoiGianLamBai`, `MonHoc`) VALUES
+('CT1', 'Testing', 'test', '2025-04-22 12:36:31', '2025-04-24 12:36:31', '01:00:00', '841048');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chitietde`
+--
+
+CREATE TABLE `chitietde` (
+  `MaCT` varchar(50) NOT NULL,
+  `MaChuong` varchar(50) NOT NULL,
+  `DoKho` enum('DE','TRUNGBINH','KHO','') NOT NULL,
+  `SoLuong` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+--
+-- Dumping data for table `chitietde`
+--
+
+INSERT INTO `chitietde` (`MaCT`, `MaChuong`, `DoKho`, `SoLuong`) VALUES
+('CT1', '841107C1', 'DE', 10),
+('CT1', '841107C2', 'DE', 5);
 
 -- --------------------------------------------------------
 
@@ -159,20 +213,24 @@ INSERT INTO `chuong` (`MaChuong`, `TenChuong`, `MonHoc`) VALUES
 --
 
 CREATE TABLE `dapan` (
-  `MaCH` int(11) NOT NULL,
-  `A` text NOT NULL,
-  `B` text NOT NULL,
-  `C` text NOT NULL,
-  `D` text NOT NULL,
-  `DapAnDung` int(11) NOT NULL
+  `MaCH` varchar(50) NOT NULL,
+  `NoiDung` text NOT NULL,
+  `Dung` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
 -- Dumping data for table `dapan`
 --
 
-INSERT INTO `dapan` (`MaCH`, `A`, `B`, `C`, `D`, `DapAnDung`) VALUES
-(1, 'Một phương thức bất kỳ có trong class đầu tiên', 'Phương thức có tên là start()', 'Phương thức main() với cú pháp chuẩn public static void main(String[] args)', 'Bất kỳ phương thức nào có từ khóa static', 3);
+INSERT INTO `dapan` (`MaCH`, `NoiDung`, `Dung`) VALUES
+('CH1', 'Một phương thức bất kỳ có trong class đầu tiên', 0),
+('CH1', 'Phương thức có tên là start()', 0),
+('CH1', 'Phương thức main() với cú pháp chuẩn public static void main(String[] args)', 1),
+('CH1', 'Bất kỳ phương thức nào có từ khóa static', 0),
+('CH2', 'test A', 1),
+('CH2', 'test B', 0),
+('CH2', 'test C', 0),
+('CH2', 'test D', 0);
 
 -- --------------------------------------------------------
 
@@ -306,11 +364,25 @@ ALTER TABLE `cauhoi`
   ADD KEY `fk_cauhoi_nguoidung` (`MaND`);
 
 --
+-- Indexes for table `cauhoituychon`
+--
+ALTER TABLE `cauhoituychon`
+  ADD KEY `fk_cauhoituychon_cauhoi` (`MaCH`),
+  ADD KEY `fk_cauhoituychon_cautrucde` (`MaCT`);
+
+--
 -- Indexes for table `cautrucde`
 --
 ALTER TABLE `cautrucde`
   ADD PRIMARY KEY (`MaCT`),
   ADD KEY `fk_cautrucde_monhoc` (`MonHoc`);
+
+--
+-- Indexes for table `chitietde`
+--
+ALTER TABLE `chitietde`
+  ADD KEY `fk_chitietde_cautrucde` (`MaCT`),
+  ADD KEY `fk_chitietde_chuong` (`MaChuong`);
 
 --
 -- Indexes for table `chuong`
@@ -355,18 +427,6 @@ ALTER TABLE `quyen`
 --
 
 --
--- AUTO_INCREMENT for table `cauhoi`
---
-ALTER TABLE `cauhoi`
-  MODIFY `MaCH` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `cautrucde`
---
-ALTER TABLE `cautrucde`
-  MODIFY `MaCT` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `nhomquyen`
 --
 ALTER TABLE `nhomquyen`
@@ -405,10 +465,24 @@ ALTER TABLE `cauhoi`
   ADD CONSTRAINT `fk_cauhoi_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
+-- Constraints for table `cauhoituychon`
+--
+ALTER TABLE `cauhoituychon`
+  ADD CONSTRAINT `fk_cauhoituychon_cauhoi` FOREIGN KEY (`MaCH`) REFERENCES `cauhoi` (`MaCH`),
+  ADD CONSTRAINT `fk_cauhoituychon_cautrucde` FOREIGN KEY (`MaCT`) REFERENCES `cautrucde` (`MaCT`);
+
+--
 -- Constraints for table `cautrucde`
 --
 ALTER TABLE `cautrucde`
   ADD CONSTRAINT `fk_cautrucde_monhoc` FOREIGN KEY (`MonHoc`) REFERENCES `monhoc` (`MaMH`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `chitietde`
+--
+ALTER TABLE `chitietde`
+  ADD CONSTRAINT `fk_chitietde_cautrucde` FOREIGN KEY (`MaCT`) REFERENCES `cautrucde` (`MaCT`),
+  ADD CONSTRAINT `fk_chitietde_chuong` FOREIGN KEY (`MaChuong`) REFERENCES `chuong` (`MaChuong`);
 
 --
 -- Constraints for table `chuong`
