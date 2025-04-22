@@ -9,7 +9,6 @@ public class Connect {
     public static String user = "root";
     public static String pass = "";
     public static String img = "res/";
-
     public static Connection getConnection() throws SQLException{
         return DriverManager.getConnection(url, user, pass);
     }

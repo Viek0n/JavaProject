@@ -1,16 +1,7 @@
-import BLL.AnswerBLL;
-import BLL.QuestionBLL;
-import DAL.AnswerDAL;
-import DAL.ChapterDAL;
-import DAL.QuestionDAL;
-import DTO.AnswerDTO;
-import DTO.ChapterDTO;
-import DTO.QuestionDTO;
-import MICS.Enums;
 
-import java.util.ArrayList;
+import GUI.MainFrame;
+
 public class main {
     public static void main(String[] args) {
-        
-    }
-}
+        // Tạo và hiển thị JFrame
+        MainFrame mf = new MainFrame();
