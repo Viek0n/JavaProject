@@ -1,9 +1,8 @@
 package GUI;
 
-import javax.swing.*;
-import BLL.UserBLL.*;
 import MICS.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class User_GUI {
 
@@ -12,7 +11,7 @@ public class User_GUI {
 
     JFrame User_frame;
     JPanel Main_panel, Left_panel,Right_panel,Test_panel;
-    JLabel Test_title, Code_Exam,Test_img; 
+    JLabel Test_title, Code_Exam1,Code_Exam2,Test_img; 
     JButton Answer1, Answer2, Answer3, Answer4, Submit_Answer;
     
     public User_GUI(){
@@ -31,9 +30,9 @@ public class User_GUI {
         Left_panel = new JPanel();
         Left_panel.setBackground(Color.white);
         Left_panel.setBounds(0, 0, 214, 900);
-        // Sử dụng BoxLayout cho Left_panel
-        Left_panel.setLayout(new BoxLayout(Left_panel, BoxLayout.Y_AXIS)); // Sắp xếp theo trục dọc
+        Left_panel.setLayout(new BoxLayout(Left_panel, BoxLayout.Y_AXIS)); 
         Left_panel.setBackground(Color.white);
+        Main_panel.add(Left_panel);
 
 
         //Tạo ô panel kiểm tra nhỏ
@@ -45,24 +44,45 @@ public class User_GUI {
 
         // Tạo JPanel chứa cả chữ và ảnh
         JPanel Test_title_img_panel = new JPanel();
-        Test_title_img_panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Căn trái, khoảng cách giữa các thành phần
-        Test_title_img_panel.setBounds(0, 0, 214, 60); // Kích thước của panel
+        Test_title_img_panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); 
+        Test_title_img_panel.setBounds(0, 0, 214, 60); 
         Test_title_img_panel.setBackground(Color.white);
 
         // Tạo JLabel cho chữ "Kiểm tra"
         Test_title = new JLabel("Kiểm tra");
         Test_title.setFont(new Font("Arial", Font.BOLD, 24));
         Test_title.setForeground(Color.black);
-
-        // Tạo JLabel cho ảnh
         Test_img = AddImage.createImageLabel(Connect.img + "test.png", 0, 0, 50, 50);
-
-        // Thêm chữ và ảnh vào panel
         Test_title_img_panel.add(Test_title);
         Test_title_img_panel.add(Test_img);
-
         // Thêm panel vào Test_panel
         Test_panel.add(Test_title_img_panel);
+        // Thêm Test_panel vào Left_panel
+        Left_panel.add(Box.createVerticalStrut(10)); // Thêm khoảng cách dọc
+        Left_panel.add(Test_panel);
+
+        // Tạo JLabel cho Code_Exam1
+        Code_Exam1 = new JLabel("Mã đề thi", SwingConstants.CENTER);
+        Code_Exam1.setFont(new Font("Arial", Font.PLAIN, 32));
+        Code_Exam1.setForeground(Color.black); // Đặt màu chữ
+        Code_Exam1.setBackground(Color.white); // Đặt màu nền
+        Code_Exam1.setOpaque(true); // Bật chế độ hiển thị màu nền
+        Code_Exam1.setAlignmentX(Component.CENTER_ALIGNMENT); // Căn giữa theo chiều ngang
+
+        // Thêm khoảng cách dọc và thêm Code_Exam1 vào Left_panel
+        Left_panel.add(Box.createVerticalStrut(10)); // Thêm khoảng cách dọc
+        Left_panel.add(Code_Exam1);
+
+
+
+
+        
+
+      
+
+        
+
+
                 
 
 
@@ -74,9 +94,8 @@ public class User_GUI {
         Right_panel.setBounds(214, 0, 1386, 900);
 
 
-        Main_panel.add(Left_panel);
+     
         Main_panel.add(Right_panel);
-        Left_panel.add(Test_panel);
         User_frame.add(Main_panel);
         User_frame.setVisible(true);
 
