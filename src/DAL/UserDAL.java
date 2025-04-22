@@ -7,8 +7,27 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class UserDAL {
+    public static ArrayList<UserDTO> getAll(){
+        ArrayList<UserDTO> array = new ArrayList<>();
+        String sql = "SELECT * FROM nguoidung GROUP BY MaND";
+        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                array.add(new UserDTO(rs.getString("MaND"), 
+                        rs.getString("Ten"), rs.getString("MatKhau"), 
+                        Enums.StatusValue.valueOf(rs.getString("TrangThai")), 
+                        RoleDAL.getByID(rs.getInt("MaNQ"))));
+            }
+        }catch (SQLException e) {
+            System.out.println("Kết nối nguoidung thất bại!");
+            e.printStackTrace();
+        }
+        return array;
+    }
     //Locate User
     public static UserDTO getByLoginName(String LoginName){
         String sql = "SELECT * FROM nguoidung WHERE MaND = ?";
@@ -46,7 +65,7 @@ public class UserDAL {
     }
 
     //Add user
-    public static Boolean addUser(UserDTO a){
+    public static Boolean add(UserDTO a){
         String sql = "INSERT INTO nguoidung (MaND, Ten, MatKhau, TrangThai, NhomQuyen) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -66,7 +85,7 @@ public class UserDAL {
     }
     
     //Delete user
-    public static Boolean deleteUserByLoginName(String LoginName){
+    public static Boolean deleteByLoginName(String LoginName){
         String sql = "DELETE FROM nguoidung WHERE MaND = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -81,7 +100,7 @@ public class UserDAL {
     }
 
     //update user
-    public static Boolean updateUser(UserDTO a){
+    public static Boolean update(UserDTO a){
         String sql = "UPDATE nguoidung SET Ten = ?, MatKhau = ?, TrangThai = ?, MaNQ = ? WHERE MaND = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {

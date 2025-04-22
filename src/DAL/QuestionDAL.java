@@ -1,40 +1,74 @@
 package DAL;
 
+import DTO.AnswerDTO;
 import DTO.QuestionDTO;
 import MICS.Connect;
+import MICS.Enums;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class QuestionDAL {
-    //Search
-    public static Boolean searchQuestByID(int i){
+     public static ArrayList<QuestionDTO> getAll(){
+        ArrayList<QuestionDTO> array = new ArrayList<>();
+        String sql = "SELECT * FROM nhomquyen";
+        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                array.add(new QuestionDTO(rs.getString("MaCH"),
+                        rs.getString("MaChuong"),
+                        rs.getString("MaND"),
+                        Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                        rs.getString("NoiDung")));
+            }
+        }catch (SQLException e) {
+            System.out.println("Kết nối cauhoi thất bại!");
+            e.printStackTrace();
+        }
+        return array;
+    }
+    //Get
+    public static QuestionDTO getByID(String ID){
         String sql = "SELECT * FROM cauhoi WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, i);
+                stmt.setString(1, ID);
 
                 ResultSet rs = stmt.executeQuery();
-                return rs.next();
+                if(rs.next()){
+                    QuestionDTO newQues = new QuestionDTO(rs.getString("MaCH"),
+                                                        rs.getString("MaChuong"),
+                                                        rs.getString("MaND"),
+                                                        Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                                                        rs.getString("NoiDung"));
+                    newQues.setAns(AnswerDAL.getAllByQId(newQues.getID()));
+                    newQues.setChapter(MiscDAL.getChapter(newQues.getChapterID()));
+                    newQues.setCourse(MiscDAL.getCourseByChapID(newQues.getChapterID()));
+                    return newQues;
+                }
             } catch(SQLException e){
                 System.out.println("Kết nối cauhoi thất bại!");
                 e.printStackTrace();
             }
-        return false;
+        return null;
     }
     //Update
-    public static Boolean updateQuestion(QuestionDTO a){
+    public static Boolean update(QuestionDTO a){
         String sql = "UPDATE cauhoi SET NoiDung = ?, DoKho = ?, MaChuong = ? WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, a.getText());
             stmt.setString(2, a.getDifficult().name());
             stmt.setString(3, a.getChapterID());
-            stmt.setInt(4, a.getID());
-            AnswerDAL.updateAns(a.getAns(), a.getID());
+            stmt.setString(4, a.getID());
+            AnswerDAL.deleteByQID(a.getID());
+            for(AnswerDTO ans: a.getAns())
+                AnswerDAL.add(ans, a.getID());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Kết nối cauhoi thất bại!");
@@ -43,18 +77,19 @@ public class QuestionDAL {
         return false;
     }
     //Add
-    public static Boolean addQuestion(QuestionDTO a){
-        String sql = "INSERT INTO cauhoi (NoiDung, DoKho, MaChuong, MaND) VALUES (?, ?, ?, ?)";
+    public static Boolean add(QuestionDTO a){
+        String sql = "INSERT INTO cauhoi (MaCH, NoiDung, DoKho, MaChuong, MaND) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, a.getText());
-            stmt.setString(2, a.getDifficult().name());
-            stmt.setString(3, a.getChapterID());
-            stmt.setString(4, a.getCreatedBy());
+            a.setID(MiscDAL.getNextId("cauhoi"));
+            stmt.setString(1, a.getID());
+            stmt.setString(2, a.getText());
+            stmt.setString(3, a.getDifficult().name());
+            stmt.setString(4, a.getChapterID());
+            stmt.setString(5, a.getCreatedBy());
             stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if(rs.next())
-                AnswerDAL.addAnswer(a.getAns(),rs.getInt(1));
+            for(AnswerDTO ans : a.getAns())
+                AnswerDAL.add(ans,a.getID());
             return true;
         } catch (SQLException e) {
             System.out.println("Kết nối cauhoi thất bại!");
@@ -63,12 +98,12 @@ public class QuestionDAL {
         return false;
     }
     //Delete
-    public static Boolean deleteQuestByID(int ID){
+    public static Boolean deleteByID(String ID){
         String sql = "DELETE FROM cauhoi WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, ID);
-            AnswerDAL.deleteAnsByQID(ID);
+            stmt.setString(1, ID);
+            AnswerDAL.deleteByQID(ID);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Kết nối cauhoi thất bại!");

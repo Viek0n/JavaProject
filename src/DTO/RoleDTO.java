@@ -39,7 +39,7 @@ public class RoleDTO {
                 ", addRole = " + Permit[13] +
                 ", updateRole = " + Permit[14] +
                 ", deleteRole = " + Permit[15] +
-                "\n}";
+                "\n";
     }
     //init
     
