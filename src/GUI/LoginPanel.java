@@ -73,8 +73,7 @@ public class LoginPanel extends JPanel {
                 confirmButton.setBackground(new Color(255, 0, 0, 100));
                 buttonTitle.setVisible(false);
                 buttonTitle2.setVisible(true);
-                mainFrame.showPanel("HomePanel");
-                if (new UserBLL().loginUser(mssv, password) == Enums.UserError.NORMAL) {
+                if (new UserBLL().login(mssv, password) == Enums.UserError.NORMAL) {
                     // Chuyển sang HomePanel
                     mainFrame.showPanel("HomePanel");
                 }
