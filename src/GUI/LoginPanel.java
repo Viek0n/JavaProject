@@ -1,127 +1,96 @@
 package GUI;
-import BLL.UserBLL;
-import MICS.Enums;
+
+import BLL.*;
+import MICS.*;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-public class LoginPanel{
-    private int FrameWidth = 1600;
-    private int FrameHeight = 900;
 
+public class LoginPanel extends JPanel {
+    private Color MainColor = Ulti.MainColor;
+    private Color BananaLeaf = Ulti.BananaLeaf;
+    private JTextField mssvField;
+    private JTextField passField;
+    private RoundedButton confirmButton;
+    private JLabel buttonTitle;
+    private JLabel buttonTitle2;
+    private JButton backbutton;
+    private MainFrame mainFrame; // Tham chiếu đến MainFrame
 
-    Color MainColor = Ulti.MainColor;
-    Color BananaLeaf = Ulti.BananaLeaf;
-    JTextField mssvField;
-    // JLabel mssvTitle;
-    JTextField passField;
-    RoundedButton confirmButton;
-    JLabel buttonTitle;
-    JLabel buttonTitle2;
-    JLabel backIcon;
-    JButton backbutton;
-
-    JLabel loginTitle;
-    RoundedPanel loginPanel;
-    JFrame MainFrame;
-    JPanel mainPanel;
-    public LoginPanel() {
+    public LoginPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
         init();
     }
-    
-    
 
-    private void init(){
-        UserBLL userBLL = new UserBLL();
-        MainFrame = new JFrame("Stress Portal");
-        MainFrame.setSize(FrameWidth,FrameHeight);
-        MainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        MainFrame.setLocationRelativeTo(null);
-        MainFrame.setResizable(false);
+    private void init() {
+        setLayout(null);
+        setBackground(MainColor);
 
-        mainPanel = new JPanel();
-        mainPanel.setBackground(MainColor);
-        mainPanel.setLayout(null);
-
-    //khung trắng
-        loginPanel = new RoundedPanel(100);
+        // Khung trắng
+        RoundedPanel loginPanel = new RoundedPanel(100);
         loginPanel.setLayout(null);
         loginPanel.setBackground(Color.WHITE);
         loginPanel.setBounds(300, 211, 1000, 500);
-        
-        loginTitle = new JLabel("Đăng Nhập",SwingConstants.CENTER);
-        loginTitle.setFont(new Font("Inter",Font.BOLD,50));
-        loginTitle.setBounds(330,10,340,60);
 
-        mssvField = new RoundedTextField(45); // Bo tròn với bán kính 30
+        JLabel loginTitle = new JLabel("Đăng Nhập", SwingConstants.CENTER);
+        loginTitle.setFont(new Font("Inter", Font.BOLD, 50));
+        loginTitle.setBounds(330, 10, 340, 60);
+
+        mssvField = new RoundedTextField(45);
         mssvField.setFont(new Font("Arial", Font.PLAIN, 28));
         mssvField.setBounds(70, 180, 858, 56);
         mssvField.setBackground(Color.white);
         mssvField.setForeground(Color.black);
-        mssvField.setCaretColor(Color.black); // Màu con trỏ
+        mssvField.setCaretColor(Color.black);
         mssvField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         mssvField.setOpaque(false);
-
-       
-        /* 
-        mssvTitle = new JLabel("MSSV",SwingConstants.LEFT);
-        mssvTitle.setFont(new Font("Inter",Font.ITALIC,32));
-        mssvTitle.setBounds(10,10,240,40);
-        mssvField.add(mssvTitle);
-        */
 
         passField = new RoundedTextField(45);
         passField.setFont(new Font("Arial", Font.PLAIN, 28));
         passField.setBounds(70, 267, 858, 56);
         passField.setBackground(Color.white);
         passField.setForeground(Color.black);
-        passField.setCaretColor(Color.black); // Màu con trỏ
+        passField.setCaretColor(Color.black);
         passField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         passField.setOpaque(false);
 
-        confirmButton = new RoundedButton("",20);
-        confirmButton.setBounds(375,356,250,75);
+        confirmButton = new RoundedButton("", 20);
+        confirmButton.setBounds(375, 356, 250, 75);
         confirmButton.setBackground(BananaLeaf);
-        confirmButton.addActionListener(e -> {
-            
-            
-            String mssv = mssvField.getText().trim();
-            String password = passField.getText().trim();
+        confirmButton.addActionListener(b -> {
+            String mssv = mssvField.getText();
+            String password = passField.getText();
 
-                // Kiểm tra nếu các trường để trống
             if (mssv.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(MainFrame, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            } else{
-                confirmButton.setBackground(new Color(255,0,0,100));
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } else {
+                confirmButton.setBackground(new Color(255, 0, 0, 100));
                 buttonTitle.setVisible(false);
                 buttonTitle2.setVisible(true);
-                //MainFrame.setVisible(false);
-                if(userBLL.loginUser(mssv, password) == Enums.UserError.NORMAL){
-                    // Nếu đăng nhập thành công, chuyển đến trang chính
-                    MainFrame.setVisible(false);
-                    new HomePanel();
-
+                mainFrame.showPanel("HomePanel");
+                if (new UserBLL().loginUser(mssv, password) == Enums.UserError.NORMAL) {
+                    // Chuyển sang HomePanel
+                    mainFrame.showPanel("HomePanel");
+                }
             }
-        }
         });
-        
-        buttonTitle = new JLabel("Xác Nhận",SwingConstants.CENTER);
-        buttonTitle.setFont(new Font("Arial",Font.BOLD,38));
-        buttonTitle.setBounds(375,355,250,75);
-        
-        buttonTitle2 = new JLabel("Đang Xử Lý...",SwingConstants.CENTER);
-        buttonTitle2.setFont(new Font("Arial",Font.BOLD,38));
-        buttonTitle2.setBounds(375,355,250,75);
+
+        buttonTitle = new JLabel("Xác Nhận", SwingConstants.CENTER);
+        buttonTitle.setFont(new Font("Arial", Font.BOLD, 38));
+        buttonTitle.setBounds(375, 355, 250, 75);
+
+        buttonTitle2 = new JLabel("Something Wrong", SwingConstants.CENTER);
+        buttonTitle2.setFont(new Font("Arial", Font.BOLD, 38));
+        buttonTitle2.setBounds(375, 355, 250, 75);
         buttonTitle2.setVisible(false);
-        
-        JLabel arrow = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\arrow.png", 20, 20, 70, 70);
-        loginPanel.add(arrow);
+
+        JLabel arrow = AddImage.createImageLabel(Connect.img + "arrow.png", 20,20,70,70);
 
         backbutton = new JButton();
         backbutton.setBounds(20, 20, 70, 70);
@@ -129,31 +98,23 @@ public class LoginPanel{
         backbutton.setContentAreaFilled(false);
         backbutton.setBorderPainted(false);
         backbutton.addActionListener(b -> {
-           
-            MainFrame.setVisible(false);
-            new LoginPanel(); // Chuyển đến trang đăng nhập
-        });
-       
-        
-        JLabel graduation = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\graduation.png",860, 0, 105, 105);
-        loginPanel.add(graduation);
-        
+            LoginPanel newLoginPanel = new LoginPanel(mainFrame);
 
-        
-        //loginPanel
+            // Thêm LoginPanel mới vào CardLayout
+            mainFrame.addPanel(newLoginPanel, "LoginPanel");
+    
+            // Chuyển sang LoginPanel mới
+            mainFrame.showPanel("LoginPanel");
+        });
+        loginPanel.add(arrow);
         loginPanel.add(backbutton);
         loginPanel.add(buttonTitle2);
         loginPanel.add(loginTitle);
-        loginPanel.add(buttonTitle); 
+        loginPanel.add(buttonTitle);
         loginPanel.add(mssvField);
         loginPanel.add(passField);
         loginPanel.add(confirmButton);
-        
-        MainFrame.add(loginPanel);
-        MainFrame.add(mainPanel);
-        MainFrame.setVisible(true);
-    }
-    public static void main(String[] args) {
-        LoginPanel lp = new LoginPanel();
+
+        add(loginPanel);
     }
 }
