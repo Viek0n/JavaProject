@@ -5,7 +5,7 @@ import MICS.Enums;
 public class UserBLL {
     private UserDTO cur;
     //Cons
-    UserBLL(){
+    public UserBLL(){
         cur = null;
     }
 
@@ -16,10 +16,10 @@ public class UserBLL {
     //SelfManage
     public Enums.UserError login(String LoginName, String Pass){
         UserDTO tmp = UserDAL.getByLoginName(LoginName);
-        if(cur != null){
-            if(!Pass.equals(cur.getPass()))
+        if(tmp != null){
+            if(!Pass.equals(tmp.getPass()))
                 return Enums.UserError.WRONGPASS;
-            if(cur.getStatus() == Enums.StatusValue.KHOA)
+            if(tmp.getStatus() == Enums.StatusValue.KHOA)
                 return Enums.UserError.LOCKED;
             cur = tmp;
             return Enums.UserError.NORMAL;

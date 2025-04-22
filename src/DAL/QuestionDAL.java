@@ -57,6 +57,25 @@ public class QuestionDAL {
             }
         return null;
     }
+
+    public static String getNextId(){
+        String sql = "SELECT * FROM cauhoi ORDER BY CAST(SUBSTRING(MaCH, 3) AS UNSIGNED) DESC LIMIT 1";
+        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+        PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String lastId = rs.getString(1);
+                int number = Integer.parseInt(lastId.substring(2)); 
+                String nextId = "CH"+(number+1);
+                return nextId;
+            }
+        }catch(SQLException e){
+            System.out.println("Kết nối cauhoi thất bại! Không tìm được Id tiếp theo");
+            e.printStackTrace();
+        }
+        return "";
+    }
     //Update
     public static Boolean update(QuestionDTO a){
         String sql = "UPDATE cauhoi SET NoiDung = ?, DoKho = ?, MaChuong = ? WHERE MaCH = ?";
@@ -64,7 +83,7 @@ public class QuestionDAL {
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, a.getText());
             stmt.setString(2, a.getDifficult().name());
-            stmt.setString(3, a.getChapterID());
+            stmt.setString(3, a.getChapter().getID());
             stmt.setString(4, a.getID());
             AnswerDAL.deleteByQID(a.getID());
             for(AnswerDTO ans: a.getAns())
@@ -81,13 +100,14 @@ public class QuestionDAL {
         String sql = "INSERT INTO cauhoi (MaCH, NoiDung, DoKho, MaChuong, MaND) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            a.setID(MiscDAL.getNextId("cauhoi"));
+            a.setID(getNextId());
             stmt.setString(1, a.getID());
             stmt.setString(2, a.getText());
             stmt.setString(3, a.getDifficult().name());
-            stmt.setString(4, a.getChapterID());
+            stmt.setString(4, a.getChapter().getID());
             stmt.setString(5, a.getCreatedBy());
             stmt.executeUpdate();
+
             for(AnswerDTO ans : a.getAns())
                 AnswerDAL.add(ans,a.getID());
             return true;
