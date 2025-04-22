@@ -11,4 +11,5 @@ public class Connect {
     public static String img = "res/";
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url,user, pass);
+    }
 }
