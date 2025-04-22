@@ -21,11 +21,11 @@ public class QuestionDAL {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
                 QuestionDTO ques = new QuestionDTO(rs.getString("MaCH"),
-                ChapterDAL.get(rs.getString("MaChuong")),
-                rs.getString("MaND"),
-                Enums.DifficultValue.valueOf(rs.getString("DoKho")),
-                rs.getString("NoiDung"));
-                ques.setAns(AnswerDAL.getAllByQId(ques.getID()));
+                                                ChapterDAL.get(rs.getString("MaChuong")),
+                                                rs.getString("MaND"),
+                                                Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                                                rs.getString("NoiDung"));
+                                                ques.setAns(AnswerDAL.getAllByQId(ques.getID()));
                 array.add(ques);
             }
         }catch (SQLException e) {
@@ -100,7 +100,7 @@ public class QuestionDAL {
     public static Boolean add(QuestionDTO a){
         String sql = "INSERT INTO cauhoi (MaCH, NoiDung, DoKho, MaChuong, MaND) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             a.setID(getNextId());
             stmt.setString(1, a.getID());
             stmt.setString(2, a.getText());
