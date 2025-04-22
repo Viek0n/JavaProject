@@ -11,8 +11,8 @@ public class User_GUI {
     private int FrameHeight = 900;
 
     JFrame User_frame;
-    JPanel Main_panel, Left_panel,Right_panel;
-    JLabel Test_title, Code_Exam; 
+    JPanel Main_panel, Left_panel,Right_panel,Test_panel;
+    JLabel Test_title, Code_Exam,Test_img; 
     JButton Answer1, Answer2, Answer3, Answer4, Submit_Answer;
     
     public User_GUI(){
@@ -31,17 +31,59 @@ public class User_GUI {
         Left_panel = new JPanel();
         Left_panel.setBackground(Color.white);
         Left_panel.setBounds(0, 0, 214, 900);
-        Left_panel.setLayout(null);
-
-        //Tạo bên trên left_panel là label Kiem tra
-        Test_title = new JLabel("Kiểm Tra", SwingConstants.CENTER);
-        Test_title = AddImage.createImageLabel(Connect.img+"test.png", 50, 50, 100, 100);
-
-        
+        // Sử dụng BoxLayout cho Left_panel
+        Left_panel.setLayout(new BoxLayout(Left_panel, BoxLayout.Y_AXIS)); // Sắp xếp theo trục dọc
+        Left_panel.setBackground(Color.white);
 
 
+        //Tạo ô panel kiểm tra nhỏ
+        Test_panel = new JPanel();
+        Test_panel.setBackground(Color.white);
+        Test_panel.setBounds(0, 0, 150, 100);
+        Test_panel.setLayout(null);
+        Test_panel.setOpaque(false);
+
+        // Tạo JPanel chứa cả chữ và ảnh
+        JPanel Test_title_img_panel = new JPanel();
+        Test_title_img_panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Căn trái, khoảng cách giữa các thành phần
+        Test_title_img_panel.setBounds(0, 0, 214, 60); // Kích thước của panel
+        Test_title_img_panel.setBackground(Color.white);
+
+        // Tạo JLabel cho chữ "Kiểm tra"
+        Test_title = new JLabel("Kiểm tra");
+        Test_title.setFont(new Font("Arial", Font.BOLD, 24));
+        Test_title.setForeground(Color.black);
+
+        // Tạo JLabel cho ảnh
+        Test_img = AddImage.createImageLabel(Connect.img + "test.png", 0, 0, 50, 50);
+
+        // Thêm chữ và ảnh vào panel
+        Test_title_img_panel.add(Test_title);
+        Test_title_img_panel.add(Test_img);
+
+        // Thêm panel vào Test_panel
+        Test_panel.add(Test_title_img_panel);
+                
 
 
 
+
+        //Tạo right_panel chứa các thành phần về câu hỏi và đáp án
+        Right_panel = new JPanel();
+        Right_panel.setBackground(Ulti.MainColor);
+        Right_panel.setBounds(214, 0, 1386, 900);
+
+
+        Main_panel.add(Left_panel);
+        Main_panel.add(Right_panel);
+        Left_panel.add(Test_panel);
+        User_frame.add(Main_panel);
+        User_frame.setVisible(true);
+
+    
+    }
+
+    public static void main(String[] args) {
+        new User_GUI();
     }
 }
