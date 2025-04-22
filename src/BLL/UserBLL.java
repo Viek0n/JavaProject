@@ -5,7 +5,7 @@ import MICS.Enums;
 public class UserBLL {
     private UserDTO cur;
     //Cons
-    UserBLL(){
+    public UserBLL(){
         cur = null;
     }
 
