@@ -16,7 +16,7 @@ public class QuestionDAL {
      public static ArrayList<QuestionDTO> getAll(){
         ArrayList<QuestionDTO> array = new ArrayList<>();
         String sql = "SELECT * FROM cauhoi";
-        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+        try(Connection conn = Connect.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
@@ -49,7 +49,7 @@ public class QuestionDAL {
                                                         Enums.DifficultValue.valueOf(rs.getString("DoKho")),
                                                         rs.getString("NoiDung"));
                     newQues.setAns(AnswerDAL.getAllByQId(newQues.getID()));
-                    newQues.setSubject(SubjectDAL.getCourseByChapID(ID));
+                    newQues.setSubject(SubjectDAL.getByChapID(ID));
                     return newQues;
                 }
             } catch(SQLException e){
