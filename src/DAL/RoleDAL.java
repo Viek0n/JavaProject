@@ -1,12 +1,29 @@
 package DAL;
 import DTO.RoleDTO;
+import MICS.Connect;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import mics.Connect;
+import java.util.ArrayList;
+
 public class RoleDAL {
+    public static ArrayList<RoleDTO> getAll(){
+        ArrayList<RoleDTO> array = new ArrayList<>();
+        String sql = "SELECT * FROM nhomquyen";
+        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                array.add(new RoleDTO(rs.getInt("MaNQ"), rs.getString("TenNhom")));
+            }
+        }catch (SQLException e) {
+            System.out.println("Kết nối nguoidung thất bại!");
+            e.printStackTrace();
+        }
+        return array;
+    }
     //Locate
     public static RoleDTO getByID(int ID){
         String sql = "SELECT * FROM nhomquyen WHERE MaNQ = ?";
@@ -16,7 +33,7 @@ public class RoleDAL {
             ResultSet rs = stmt.executeQuery();
             if(rs.next()){
                 RoleDTO Role = new RoleDTO(rs.getInt("MaNQ"),rs.getString("TenNhom"));
-                RoleLoad(Role);
+                load(Role);
                 return Role;
             }
         }catch(SQLException e){
@@ -41,7 +58,7 @@ public class RoleDAL {
     }
 
     //Load role
-    public static void RoleLoad(RoleDTO Role){
+    public static void load(RoleDTO Role){
         String sql = "SELECT * FROM bangchiaquyen WHERE MaNQ = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url,Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -114,7 +131,7 @@ public class RoleDAL {
     }
 
     //Add role
-    public static Boolean addRoleGroup(RoleDTO a){
+    public static Boolean addGroup(RoleDTO a){
         String sql = "INSERT INTO nhomquyen (MaNQ, TenNhom) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -130,7 +147,7 @@ public class RoleDAL {
         return false;
     }
     //Update role
-    public static Boolean updateRole(RoleDTO a){
+    public static Boolean update(RoleDTO a){
         String sql = "UPDATE nhomquyen SET TenNhom = ? WHERE MaNQ = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {

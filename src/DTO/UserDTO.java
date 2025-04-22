@@ -1,6 +1,6 @@
 package DTO;
 
-import mics.Enums;
+import MICS.Enums;
 public class UserDTO {
     private String LoginName;
     private String Name;
@@ -10,7 +10,7 @@ public class UserDTO {
 
     @Override
     public String toString(){
-        return LoginName+" - "+Name+ Role;
+        return "======================\n"+LoginName+" - "+Name + Role;
     }
     //Cons
     public UserDTO(String LoginName, String Name, String Pass, Enums.StatusValue Status, RoleDTO Role) {
