@@ -1,50 +1,36 @@
 package DTO;
 
 public class AnswerDTO {
-    String A,B,C,D;
-    int RightAns;
+    String Text;
+    Boolean right;
 
-    //Cons
-    public AnswerDTO(String A, String B, String C, String D, int RightAns) {
-        this.A = A;
-        this.B = B;
-        this.C = C;
-        this.D = D;
-        this.RightAns = RightAns;
+    @Override
+    public String toString(){
+        return " "+Text + " " + (right ? 1 : 0);
     }
-
+    //Cons
     public AnswerDTO() {
     }
 
+    public AnswerDTO(String Text, Boolean right) {
+        this.Text = Text;
+        this.right = right;
+    }
+
     //Setters&Getters
-    public String getA() {
-        return A;
+    public String getText() {
+        return Text;
     }
-    public void setA(String a) {
-        A = a;
+
+    public void setText(String text) {
+        Text = text;
     }
-    public String getB() {
-        return B;
+
+    public Boolean getRight() {
+        return right;
     }
-    public void setB(String b) {
-        B = b;
-    }
-    public String getC() {
-        return C;
-    }
-    public void setC(String c) {
-        C = c;
-    }
-    public String getD() {
-        return D;
-    }
-    public void setD(String d) {
-        D = d;
-    }
-    public int getRightAns() {
-        return RightAns;
-    }
-    public void setRightAns(int rightAns) {
-        RightAns = rightAns;
+
+    public void setRight(Boolean right) {
+        this.right = right;
     }
 }

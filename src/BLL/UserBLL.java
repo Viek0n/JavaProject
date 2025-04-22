@@ -5,21 +5,21 @@ import MICS.Enums;
 public class UserBLL {
     private UserDTO cur;
     //Cons
-    UserBLL(){
+    public UserBLL(){
         cur = null;
     }
 
     //Get
-    public UserDTO getCurUser(){
+    public UserDTO getCurrent(){
         return cur;
     }
     //SelfManage
-    public Enums.UserError loginUser(String LoginName, String Pass){
+    public Enums.UserError login(String LoginName, String Pass){
         UserDTO tmp = UserDAL.getByLoginName(LoginName);
-        if(cur != null){
-            if(!Pass.equals(cur.getPass()))
+        if(tmp != null){
+            if(!Pass.equals(tmp.getPass()))
                 return Enums.UserError.WRONGPASS;
-            if(cur.getStatus() == Enums.StatusValue.KHOA)
+            if(tmp.getStatus() == Enums.StatusValue.KHOA)
                 return Enums.UserError.LOCKED;
             cur = tmp;
             return Enums.UserError.NORMAL;
@@ -27,24 +27,24 @@ public class UserBLL {
         return Enums.UserError.NOUSER;
     }
 
-    public void logoutUser(){
+    public void logout(){
         cur = null;
     }
 
     //Insert
-    public Boolean addUser(UserDTO user){
+    public Boolean add(UserDTO user){
         if(!UserDAL.searchByLoginName(user.getLoginName()))
-            return UserDAL.addUser(user);
+            return UserDAL.add(user);
         return false;
     }
 
     //Update
-    public Boolean updateUser(UserDTO user){
-        return UserDAL.updateUser(user);
+    public Boolean update(UserDTO user){
+        return UserDAL.update(user);
     }
 
     //Delete
-    public Boolean deleteUser(String LoginName){
-        return UserDAL.deleteUserByLoginName(LoginName);
+    public Boolean delete(String LoginName){
+        return UserDAL.deleteByLoginName(LoginName);
     }
 }
