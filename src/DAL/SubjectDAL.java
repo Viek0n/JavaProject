@@ -10,9 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import DTO.SubjectDTO;
-import MICS.Connect;
-
 public class SubjectDAL {
     public static List<SubjectDTO> getAllSubjects() {
         List<SubjectDTO> subjects = new ArrayList<>();

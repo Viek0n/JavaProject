@@ -49,7 +49,7 @@ public class QuestionDAL {
                                                         Enums.DifficultValue.valueOf(rs.getString("DoKho")),
                                                         rs.getString("NoiDung"));
                     newQues.setAns(AnswerDAL.getAllByQId(newQues.getID()));
-                    newQues.setSubject(SubjectDAL.getCourseByChapID(ID));
+                    
                     return newQues;
                 }
             } catch(SQLException e){
