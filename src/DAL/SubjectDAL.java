@@ -71,7 +71,7 @@ public class SubjectDAL {
         return false;
     }
      public static SubjectDTO getByChapID(String ID){
-        String sql = "SELECT chuong.MaChuong, chuong.TenChuong, monhoc.TenMH FROM chuong LEFT JOIN monhoc ON chuong.MonHoc = monhoc.MaMH WHERE MaChuong = ?";
+        String sql = "SELECT chuong.MaChuong, chuong.TenChuong, monhoc.TenMH, monhoc.MaMH FROM chuong LEFT JOIN monhoc ON chuong.MonHoc = monhoc.MaMH WHERE MaChuong = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
         PreparedStatement stmt = conn.prepareStatement(sql)){
 

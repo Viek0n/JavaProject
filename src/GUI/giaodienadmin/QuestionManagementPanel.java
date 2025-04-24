@@ -1,22 +1,26 @@
 package GUI.giaodienadmin;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import DAL.QuestionDAL;
+import DTO.QuestionDTO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JTable questionTable;
     private DefaultTableModel tableModel;
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton;
+    private ArrayList<QuestionDTO> bank;
 
     public QuestionManagementPanel() {
         initComponent();
     }
 
     private void initComponent() {
+        bank = QuestionDAL.getAll();
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(Color.decode("#ecf0f1"));
 
@@ -39,7 +43,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         this.add(topPanel, BorderLayout.NORTH);
 
         // Table for displaying questions
-        String[] columnNames = {"Question ID", "Content", "Option A", "Option B", "Option C", "Option D", "Answer"};
+        String[] columnNames = {"Question ID", "Content", "Subject", "Chapter", "Detail"};
         tableModel = new DefaultTableModel(columnNames, 0);
         questionTable = new JTable(tableModel);
         questionTable.setRowHeight(30);
@@ -55,6 +59,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
+        loadQuestions();
     }
 
     private JButton createButton(String text) {
@@ -113,10 +118,10 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     }
 
 
-    public void loadQuestions(Object[][] data) {
+    public void loadQuestions() {
         tableModel.setRowCount(0);
-        for (Object[] row : data) {
-            tableModel.addRow(row);
+        for (QuestionDTO row : bank) {
+            tableModel.insertRow(0, new Object[] {row.getID(),row.getText(),row.getSubject().getName(),row.getChapter().getName()});
         }
     }
 }

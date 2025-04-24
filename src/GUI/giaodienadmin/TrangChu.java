@@ -84,9 +84,4 @@ public class TrangChu extends JFrame implements ActionListener {
             }
         }
     }
-
-    public static void main(String[] args) {
-        TrangChu home = new TrangChu();
-        home.setVisible(true);
-    }
 }

@@ -9,7 +9,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public class QuestionDAL {
@@ -26,6 +25,7 @@ public class QuestionDAL {
                                                 Enums.DifficultValue.valueOf(rs.getString("DoKho")),
                                                 rs.getString("NoiDung"));
                                                 ques.setAns(AnswerDAL.getAllByQId(ques.getID()));
+                ques.setSubject(SubjectDAL.getByChapID(ques.getChapter().getID()));
                 array.add(ques);
             }
         }catch (SQLException e) {

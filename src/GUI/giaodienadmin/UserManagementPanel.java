@@ -1,10 +1,13 @@
 package GUI.giaodienadmin;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import DAL.UserDAL;
+import DTO.UserDTO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class UserManagementPanel extends JPanel implements ActionListener {
     private JTable userTable;
@@ -12,11 +15,13 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton;
 
+    private ArrayList<UserDTO> users;
     public UserManagementPanel() {
         initComponent();
     }
 
     private void initComponent() {
+        users = UserDAL.getAll();
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(Color.decode("#ecf0f1"));
 
@@ -39,7 +44,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         this.add(topPanel, BorderLayout.NORTH);
 
         // Table for displaying users
-        String[] columnNames = {"User ID", "Username", "Email", "Role"};
+        String[] columnNames = {"User ID", "Username", "Status", "Role"};
         tableModel = new DefaultTableModel(columnNames, 0);
         userTable = new JTable(tableModel);
         userTable.setRowHeight(30);
@@ -55,6 +60,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
+        loadUsers();
     }
 
     private JButton createButton(String text) {
@@ -116,10 +122,10 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     }
 
     // Method to populate the table with data (for demonstration purposes)
-    public void loadUsers(Object[][] data) {
+    public void loadUsers() {
         tableModel.setRowCount(0); // Clear existing rows
-        for (Object[] row : data) {
-            tableModel.addRow(row);
+        for (UserDTO row : users) {
+            tableModel.insertRow(0,new Object[]{row.getLoginName(),row.getName(),row.getStatus().name(),row.getRole().getName()});
         }
     }
 }
