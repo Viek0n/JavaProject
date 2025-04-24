@@ -21,13 +21,13 @@ public class SubjectDTO {
         return ID;
     }
     public void setID(String iD) {
-        ID = iD;
+        this.ID = iD;
     }
     public String getName() {
         return Name;
     }
     public void setName(String name) {
-        Name = name;
+        this.Name = name;
     }
     
 }
