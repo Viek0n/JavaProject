@@ -10,8 +10,9 @@ public class User_GUI {
     private int FrameHeight = 900;
 
     JFrame User_frame;
-    JPanel Main_panel, Left_panel, Right_panel, Test_panel;
+    JPanel Main_panel, Left_panel, Right_panel, Test_panel,dynamicNumberPanel,gridPanel;
     JLabel Test_title, Code_Exam1, Code_Exam2, Test_img;
+    JTextField leftField,rightField; 
     JButton Answer1, Answer2, Answer3, Answer4, Submit_Answer;
 
     public User_GUI() {
@@ -79,8 +80,100 @@ public class User_GUI {
 
         // Thêm Code_Exam2 vào Left_panel
         Left_panel.add(Code_Exam2);
-                
 
+        // Tạo một JPanel để chứa các thành phần của DynamicNumberDisplay
+        dynamicNumberPanel = new JPanel();
+        dynamicNumberPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5)); // Căn giữa các thành phần
+        dynamicNumberPanel.setBounds(49, 322, 150, 48); // Đặt vị trí và kích thước
+        dynamicNumberPanel.setBackground(Color.white); // Đặt màu nền
+
+        // Tạo các thành phần từ DynamicNumberDisplay
+        leftField = new JTextField("4"); // Số bên trái
+        leftField.setFont(new Font("Arial", Font.BOLD, 30)); // Cỡ chữ lớn hơn
+        leftField.setEditable(false);
+        leftField.setFocusable(false);
+        leftField.setBorder(null);
+        leftField.setPreferredSize(new Dimension(40, 40)); // Đặt kích thước đủ lớn để hiển thị số
+
+        JLabel slashLabel = new JLabel("/"); // Dấu "/"
+        slashLabel.setFont(new Font("Arial", Font.BOLD, 30));
+
+        rightField = new JTextField("40"); // Số bên phải
+        rightField.setFont(new Font("Arial", Font.BOLD, 30)); // Cỡ chữ lớn hơn
+        rightField.setEditable(false);
+        rightField.setFocusable(false);
+        rightField.setBorder(null);
+        rightField.setPreferredSize(new Dimension(60, 40)); // Đặt kích thước đủ lớn để hiển thị số
+
+        // Thêm các thành phần vào dynamicNumberPanel
+        dynamicNumberPanel.add(leftField);
+        dynamicNumberPanel.add(slashLabel);
+        dynamicNumberPanel.add(rightField);
+
+        // Thêm dynamicNumberPanel vào Left_panel
+        Left_panel.add(dynamicNumberPanel);   
+
+        //Tạo ô hiển thị các câu đã làm
+        gridPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Khoảng cách giữa các ô
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // Tạo lưới 5x5 (25 ô vuông)
+        int totalCells = 25;
+        int columns = 5;
+
+        for (int i = 0; i < totalCells; i++) {
+            gbc.gridx = i % columns; // Cột
+            gbc.gridy = i / columns; // Hàng
+
+            JPanel cell = new JPanel();
+            cell.setPreferredSize(new Dimension(30, 30)); // Kích thước ô vuông (nhỏ hơn để vừa Left_panel)
+            cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            // Tô màu: 2 ô màu xanh nhạt (0,2), 1 ô màu xanh đậm (3)
+            if (i == 0 || i == 2) {
+                cell.setBackground(new Color(144, 238, 144)); // Xanh nhạt
+            } else if (i == 3) {
+                cell.setBackground(new Color(100, 149, 237)); // Xanh đậm
+            } else {
+                cell.setBackground(Color.LIGHT_GRAY); // Xám
+            }
+
+            gridPanel.add(cell, gbc);
+        }
+
+        // Đặt vị trí cho gridPanel trong Left_panel
+        gridPanel.setBounds(17, 400, 180, 180); // Đặt bên dưới dynamicNumberPanel
+        gridPanel.setBackground(Color.white);
+        Left_panel.add(gridPanel);
+
+
+        //Thêm button log out
+        // Tạo JButton cho Logout
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setFont(new Font("Arial", Font.BOLD, 16)); // Đặt font chữ
+        logoutButton.setForeground(Color.BLACK); // Đặt màu chữ
+        logoutButton.setBackground(Color.WHITE); // Đặt màu nền
+        logoutButton.setFocusPainted(false); // Tắt viền focus
+        logoutButton.setBounds(60, 400, 100, 40); // Đặt vị trí và kích thước
+
+        // Thêm biểu tượng cho nút Logout
+        ImageIcon logoutIcon = new ImageIcon(Connect.img + "logout.png"); // Đường dẫn đến biểu tượng
+        logoutButton.setIcon(logoutIcon);
+        logoutButton.setHorizontalTextPosition(SwingConstants.RIGHT); // Đặt chữ bên phải biểu tượng
+        logoutButton.setVerticalTextPosition(SwingConstants.CENTER); // Căn giữa chữ theo chiều dọc
+
+        // Thêm sự kiện cho nút Logout
+        logoutButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, "Bạn đã đăng xuất!");
+            System.exit(0); // Thoát chương trình
+        });
+
+        // Thêm nút Logout vào Left_panel
+        Left_panel.add(logoutButton);
+
+        
         
      
 
