@@ -36,6 +36,7 @@ public class User_GUI {
 
         Test_title = new JLabel();
         Test_title.setText("Kiểm tra");
+        Test_title.setForeground(Color.BLACK); // Đặt màu chữ
         Test_title.setFont(new Font("Arial", Font.BOLD, 20));
         Test_title.setBounds(21, 31, 131, 45);
         Left_panel.add(Test_title);
@@ -47,20 +48,38 @@ public class User_GUI {
 
         Code_Exam1 = new JLabel("Mã Bài");
         Code_Exam1.setFont(new Font("Arial", Font.BOLD, 32));
+        Code_Exam1.setForeground(Color.BLACK); // Đặt màu chữ
         Code_Exam1.setBounds(55,119,104,39);
         Left_panel.add(Code_Exam1);  
         
-        // Tạo JLabel cho Code_Exam2
-        Code_Exam2 = new JLabel("ABC", SwingConstants.CENTER); // Nội dung và căn giữa
-        Code_Exam2.setFont(new Font("Arial", Font.BOLD, 20)); // Đặt font chữ
-        Code_Exam2.setForeground(Color.black); // Đặt màu chữ
-        Code_Exam2.setBackground(Ulti.MainColor); // Đặt màu nền
-        Code_Exam2.setOpaque(true); // Bật chế độ hiển thị màu nền
-        Code_Exam2.setBounds(17, 162, 70, 38); // Đặt vị trí và kích thước
+        // Tạo JLabel cho Code_Exam2 với góc bo tròn
+        Code_Exam2 = new JLabel("ABC", SwingConstants.CENTER) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Ulti.MainColor); // Màu nền
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); // Góc bo tròn (20px)
+                super.paintComponent(g);
+            }
+
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.BLACK); // Màu viền
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20); // Góc bo tròn (20px)
+            }
+        };
+        Code_Exam2.setFont(new Font("Arial", Font.BOLD, 32)); // Đặt font chữ
+        Code_Exam2.setForeground(Color.BLACK); // Đặt màu chữ
+        Code_Exam2.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa nội dung
+        Code_Exam2.setBounds(17, 162, 180, 64); // Đặt vị trí và kích thước
+        Code_Exam2.setOpaque(false); // Tắt chế độ nền mặc định
 
         // Thêm Code_Exam2 vào Left_panel
         Left_panel.add(Code_Exam2);
-        
+                
 
         
      
