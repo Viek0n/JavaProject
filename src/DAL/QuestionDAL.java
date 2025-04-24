@@ -15,16 +15,18 @@ import java.util.ArrayList;
 public class QuestionDAL {
      public static ArrayList<QuestionDTO> getAll(){
         ArrayList<QuestionDTO> array = new ArrayList<>();
-        String sql = "SELECT * FROM nhomquyen";
-        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+        String sql = "SELECT * FROM cauhoi";
+        try(Connection conn = Connect.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
-                array.add(new QuestionDTO(rs.getString("MaCH"),
-                        rs.getString("MaChuong"),
-                        rs.getString("MaND"),
-                        Enums.DifficultValue.valueOf(rs.getString("DoKho")),
-                        rs.getString("NoiDung")));
+                QuestionDTO ques = new QuestionDTO(rs.getString("MaCH"),
+                                                ChapterDAL.get(rs.getString("MaChuong")),
+                                                rs.getString("MaND"),
+                                                Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                                                rs.getString("NoiDung"));
+                                                ques.setAns(AnswerDAL.getAllByQId(ques.getID()));
+                array.add(ques);
             }
         }catch (SQLException e) {
             System.out.println("Kết nối cauhoi thất bại!");
@@ -42,13 +44,12 @@ public class QuestionDAL {
                 ResultSet rs = stmt.executeQuery();
                 if(rs.next()){
                     QuestionDTO newQues = new QuestionDTO(rs.getString("MaCH"),
-                                                        rs.getString("MaChuong"),
+                                                        ChapterDAL.get(rs.getString("MaChuong")),
                                                         rs.getString("MaND"),
                                                         Enums.DifficultValue.valueOf(rs.getString("DoKho")),
                                                         rs.getString("NoiDung"));
                     newQues.setAns(AnswerDAL.getAllByQId(newQues.getID()));
-                    newQues.setChapter(MiscDAL.getChapter(newQues.getChapterID()));
-                    newQues.setCourse(MiscDAL.getCourseByChapID(newQues.getChapterID()));
+                    newQues.setSubject(SubjectDAL.getByChapID(ID));
                     return newQues;
                 }
             } catch(SQLException e){
@@ -99,7 +100,7 @@ public class QuestionDAL {
     public static Boolean add(QuestionDTO a){
         String sql = "INSERT INTO cauhoi (MaCH, NoiDung, DoKho, MaChuong, MaND) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             a.setID(getNextId());
             stmt.setString(1, a.getID());
             stmt.setString(2, a.getText());
