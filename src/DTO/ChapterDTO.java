@@ -4,11 +4,6 @@ public class ChapterDTO {
     String ID;
     String Name;
 
-    @Override
-    public String toString(){
-        return ID + " - " + Name;
-    }
-    
     public ChapterDTO(String ID, String Name) {
         this.ID = ID;
         this.Name = Name;

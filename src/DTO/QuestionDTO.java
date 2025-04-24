@@ -12,7 +12,7 @@ public class QuestionDTO {
 
     @Override
     public String toString(){
-        String tmp = "======================\nID: "+ID+"\nDo kho: "+difficult.toString()+"\n"+chap+ "\n"+ subject + "\n"+text;
+        String tmp = "======================\nID: "+ID+"\nDo kho: "+difficult.toString()+"\nChuong: "+chap+ "\nMon: "+ subject + "\n"+text;
         tmp+= "\nA." + ans.get(0);
         tmp+= "\nB." + ans.get(1);
         tmp+= "\nC." + ans.get(2);

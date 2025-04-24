@@ -1,5 +1,6 @@
 package GUI;
 import BLL.UserBLL;
+import MICS.Connect;
 import MICS.Enums;
 import java.awt.Color;
 import java.awt.Font;
@@ -107,7 +108,7 @@ public class LoginPanel{
                     MainFrame.setVisible(false);
                     new HomePanel();
                 }else
-                    System.out.print("DMM");
+                        System.out.print("DMM");
             }
         });
         
@@ -120,7 +121,7 @@ public class LoginPanel{
         buttonTitle2.setBounds(375,355,250,75);
         buttonTitle2.setVisible(false);
         
-        JLabel arrow = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\arrow.png", 20, 20, 70, 70);
+        JLabel arrow = AddImage.createImageLabel(Connect.img+"arrow.png", 20, 20, 70, 70);
         loginPanel.add(arrow);
 
         backbutton = new JButton();
@@ -135,7 +136,7 @@ public class LoginPanel{
         });
        
         
-        JLabel graduation = AddImage.createImageLabel("D:\\Project\\JavaProject\\res\\graduation.png",860, 0, 105, 105);
+        JLabel graduation = AddImage.createImageLabel(Connect.img+"graduation.png",860, 0, 105, 105);
         loginPanel.add(graduation);
         
 
