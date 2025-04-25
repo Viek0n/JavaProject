@@ -1,4 +1,4 @@
-package GUI;
+package GUI.MakeColor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;

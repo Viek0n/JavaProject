@@ -1,4 +1,4 @@
-package GUI;
+package GUI.MakeColor;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;

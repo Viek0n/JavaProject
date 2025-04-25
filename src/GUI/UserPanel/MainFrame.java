@@ -1,4 +1,4 @@
-package GUI;
+package GUI.UserPanel;
 
 import java.awt.CardLayout;
 import javax.swing.JFrame;
@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private JPanel menuPanel;
 
     public MainFrame() {
         setTitle("Stress Portal");
@@ -15,18 +16,22 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
+
+
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+        
 
         // Thêm các panel vào CardLayout
         mainPanel.add(new LoginPanel(this), "LoginPanel");
         mainPanel.add(new HomePanel(this), "HomePanel");
-
+        mainPanel.add(new ScorePanel(this), "ScorePanel");
         add(mainPanel);
 
         // Hiển thị LoginPanel ban đầu
         cardLayout.show(mainPanel, "LoginPanel");
-
+        
+        
         setVisible(true);
     }
 
