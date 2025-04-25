@@ -149,29 +149,13 @@ public class User_GUI {
         Left_panel.add(gridPanel);
 
 
-        //Thêm button log out
-        // Tạo JButton cho Logout
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.setFont(new Font("Arial", Font.BOLD, 16)); // Đặt font chữ
-        logoutButton.setForeground(Color.BLACK); // Đặt màu chữ
-        logoutButton.setBackground(Color.WHITE); // Đặt màu nền
-        logoutButton.setFocusPainted(false); // Tắt viền focus
-        logoutButton.setBounds(60, 400, 100, 40); // Đặt vị trí và kích thước
+        // Tạo JLabel cho biểu tượng Logout bằng AddImage
+        JLabel logoutIconLabel = AddImage.createImageLabel(Connect.img + "logout.png", 65, 700, 100, 100); // Đặt vị trí và kích thước
 
-        // Thêm biểu tượng cho nút Logout
-        ImageIcon logoutIcon = new ImageIcon(Connect.img + "logout.png"); // Đường dẫn đến biểu tượng
-        logoutButton.setIcon(logoutIcon);
-        logoutButton.setHorizontalTextPosition(SwingConstants.RIGHT); // Đặt chữ bên phải biểu tượng
-        logoutButton.setVerticalTextPosition(SwingConstants.CENTER); // Căn giữa chữ theo chiều dọc
 
-        // Thêm sự kiện cho nút Logout
-        logoutButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Bạn đã đăng xuất!");
-            System.exit(0); // Thoát chương trình
-        });
 
-        // Thêm nút Logout vào Left_panel
-        Left_panel.add(logoutButton);
+        // Thêm biểu tượng và nút Logout vào Left_panel
+        Left_panel.add(logoutIconLabel);
 
         
         
