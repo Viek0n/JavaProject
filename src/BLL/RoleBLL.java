@@ -4,25 +4,29 @@ import DAL.RoleDAL;
 import DTO.RoleDTO;
 
 public class RoleBLL {
+    private RoleDAL roleDAL;
+    public RoleBLL(){
+        roleDAL = new RoleDAL();
+    }
     //Insert
-    public static Boolean add(RoleDTO a){
-        if(!RoleDAL.searchByID(a.getID())){
-            RoleDAL.addGroup(a);
-            RoleDAL.uploadRolePermit(a);
+    public Boolean add(RoleDTO a){
+        if(!roleDAL.searchByID(a.getID())){
+            roleDAL.addGroup(a);
+            roleDAL.uploadRolePermit(a);
             return true;
         }
         return false;
     }
 
     //Update
-    public static Boolean update(RoleDTO a){
-        if(RoleDAL.searchByID(a.getID()))
-            return RoleDAL.update(a);
+    public Boolean update(RoleDTO a){
+        if(roleDAL.searchByID(a.getID()))
+            return roleDAL.update(a);
         return false;
     }
 
     //Delete
-    public static Boolean delete(int ID){
-        return RoleDAL.deleteRoleByID(ID);
+    public Boolean delete(int ID){
+        return roleDAL.deleteRoleByID(ID);
     }
 }

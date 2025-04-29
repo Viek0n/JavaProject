@@ -1,5 +1,7 @@
 package DAL;
 
+import DTO.ChapterDTO;
+import MICS.Connect;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,11 +9,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import DTO.ChapterDTO;
-import MICS.Connect;
-
 public class ChapterDAL {
-    public static ChapterDTO get(String ID) {
+    public  ChapterDTO get(String ID) {
         String sql = "SELECT * FROM chuong WHERE MaChuong = ?";
         try (Connection conn = Connect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -28,7 +27,7 @@ public class ChapterDAL {
         }
         return null;
     }
-    public static List<ChapterDTO> getAll() {
+    public  List<ChapterDTO> getAll() {
         List<ChapterDTO> chapters = new ArrayList<>();
         String sql = "SELECT * FROM chuong";
         try (Connection conn = Connect.getConnection();
@@ -44,7 +43,7 @@ public class ChapterDAL {
         }
         return chapters;
     }
-    public static boolean add(ChapterDTO chapter) {
+    public  boolean add(ChapterDTO chapter) {
         String sql = "INSERT INTO chuong (MaChuong, TenChuong) VALUES (?, ?)";
         try (Connection conn = Connect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -58,7 +57,7 @@ public class ChapterDAL {
         }
         return false;
     }
-    public static boolean update(ChapterDTO chapter) {
+    public  boolean update(ChapterDTO chapter) {
         String sql = "UPDATE chuong SET TenChuong = ? WHERE MaChuong = ?";
         try (Connection conn = Connect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -72,7 +71,7 @@ public class ChapterDAL {
         }
         return false;
     }
-    public static boolean delete(String ID) {
+    public  boolean delete(String ID) {
         String sql = "DELETE FROM chuong WHERE MaChuong = ?";
         try (Connection conn = Connect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

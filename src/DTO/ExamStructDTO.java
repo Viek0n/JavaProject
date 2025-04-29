@@ -11,13 +11,16 @@ public class ExamStructDTO {
     Time ExamTime;
     SubjectDTO subject;
     
+    @Override
+    public String toString(){
+        return ID + ": " + Name + "\n" + Desc + "\nTime: "+Start+" - "+End+"\nIn: "+ExamTime+"\n"+subject;
+    }
+
     //Cons
-
-
     public ExamStructDTO() {
     }
 
-    public ExamStructDTO(String Desc, Date End, Time ExamTime, String Name, Date Start, SubjectDTO subject) {
+    public ExamStructDTO(String Name, String Desc, Date Start,  Date End, Time ExamTime, SubjectDTO subject) {
         this.Desc = Desc;
         this.End = End;
         this.ExamTime = ExamTime;
