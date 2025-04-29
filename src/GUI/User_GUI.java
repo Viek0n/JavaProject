@@ -215,7 +215,8 @@ public class User_GUI {
 
             answerButton.setBounds(x, y, buttonWidth, buttonHeight);
 
-            // Thêm nút vào Right_panel
+            // Thêm nút vào Right_panel\
+            //?
             Right_panel.add(answerButton);
         }
       
