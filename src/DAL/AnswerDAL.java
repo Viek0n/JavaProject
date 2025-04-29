@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class AnswerDAL {
-    public static ArrayList<AnswerDTO> getAllByQId(String ID){
+    public  ArrayList<AnswerDTO> getAllByQId(String ID){
         ArrayList<AnswerDTO> array = null;
         String sql = "SELECT * FROM dapan WHERE MaCH = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -30,7 +30,7 @@ public class AnswerDAL {
         return array;
     }
     //Search
-    public static Boolean searchByQID(String id){
+    public  Boolean searchByQID(String id){
         String sql = "SELECT * FROM dapan WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -46,7 +46,7 @@ public class AnswerDAL {
     }
     //Update 
     //Add
-    public static Boolean add(AnswerDTO a, String ID){
+    public  Boolean add(AnswerDTO a, String ID){
         String sql = "INSERT INTO dapan (MaCH, NoiDung, Dung) VALUES (?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -62,7 +62,7 @@ public class AnswerDAL {
         return false;
     }
     //Delete
-    public static Boolean deleteByQID(String Id){
+    public  Boolean deleteByQID(String Id){
         String sql = "DELETE FROM dapan WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {

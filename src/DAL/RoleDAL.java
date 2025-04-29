@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class RoleDAL {
-    public static ArrayList<RoleDTO> getAll(){
+    public  ArrayList<RoleDTO> getAll(){
         ArrayList<RoleDTO> array = new ArrayList<>();
         String sql = "SELECT * FROM nhomquyen";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -25,7 +25,7 @@ public class RoleDAL {
         return array;
     }
     //Locate
-    public static RoleDTO getByID(int ID){
+    public  RoleDTO getByID(int ID){
         String sql = "SELECT * FROM nhomquyen WHERE MaNQ = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url,Connect.user,Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -43,7 +43,7 @@ public class RoleDAL {
         return null;
     }
 
-    public static Boolean searchByID(int ID){
+    public  Boolean searchByID(int ID){
         String sql = "SELECT * FROM nhomquyen WHERE MaNQ = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url,Connect.user,Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -58,7 +58,7 @@ public class RoleDAL {
     }
 
     //Load role
-    public static void load(RoleDTO Role){
+    public  void load(RoleDTO Role){
         String sql = "SELECT * FROM bangchiaquyen WHERE MaNQ = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url,Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -131,7 +131,7 @@ public class RoleDAL {
     }
 
     //Add role
-    public static Boolean addGroup(RoleDTO a){
+    public  Boolean addGroup(RoleDTO a){
         String sql = "INSERT INTO nhomquyen (MaNQ, TenNhom) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -147,7 +147,7 @@ public class RoleDAL {
         return false;
     }
     //Update role
-    public static Boolean update(RoleDTO a){
+    public  Boolean update(RoleDTO a){
         String sql = "UPDATE nhomquyen SET TenNhom = ? WHERE MaNQ = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -164,7 +164,7 @@ public class RoleDAL {
         return false;
     }
     //Clear role permit
-    public static Boolean clearRolePermit(int ID){
+    public  Boolean clearRolePermit(int ID){
         String sql = "DELETE FROM bangchiaquyen WHERE MaNQ = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -178,7 +178,7 @@ public class RoleDAL {
         return false;
     }
     //Upload Role permit
-    public static Boolean uploadRolePermit(RoleDTO a){
+    public  Boolean uploadRolePermit(RoleDTO a){
         String sql = "INSERT INTO bangchiaquyen (MaNQ, MaQuyen) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -316,7 +316,7 @@ public class RoleDAL {
         return false;
     }
     //Delete role
-    public static Boolean deleteRoleByID(int ID){
+    public  Boolean deleteRoleByID(int ID){
         String sql = "DELETE FROM nhomquyen WHERE MaNQ = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -10,7 +10,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserDAL {
-    public static ArrayList<UserDTO> getAll(){
+    private RoleDAL roleDal;
+
+    public UserDAL() {
+        roleDal = new RoleDAL();
+    }
+    
+    public  ArrayList<UserDTO> getAll(){
         ArrayList<UserDTO> array = new ArrayList<>();
         String sql = "SELECT * FROM nguoidung GROUP BY MaND";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -20,7 +26,7 @@ public class UserDAL {
                 array.add(new UserDTO(rs.getString("MaND"), 
                         rs.getString("Ten"), rs.getString("MatKhau"), 
                         Enums.StatusValue.valueOf(rs.getString("TrangThai")), 
-                        RoleDAL.getByID(rs.getInt("MaNQ"))));
+                        roleDal.getByID(rs.getInt("MaNQ"))));
             }
         }catch (SQLException e) {
             System.out.println("Kết nối nguoidung thất bại!");
@@ -29,7 +35,7 @@ public class UserDAL {
         return array;
     }
     //Locate User
-    public static UserDTO getByLoginName(String LoginName){
+    public  UserDTO getByLoginName(String LoginName){
         String sql = "SELECT * FROM nguoidung WHERE MaND = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -40,7 +46,7 @@ public class UserDAL {
                                 rs.getString("Ten"),
                                 rs.getString("MatKhau"),
                                 Enums.StatusValue.valueOf(rs.getString("TrangThai")),
-                                RoleDAL.getByID(rs.getInt("MaNQ")));
+                                roleDal.getByID(rs.getInt("MaNQ")));
             }
         }catch (SQLException e) {
             System.out.println("Kết nối nguoidung thất bại!");
@@ -49,7 +55,7 @@ public class UserDAL {
         return null;
     }
 
-    public static Boolean searchByLoginName(String LoginName){
+    public  Boolean searchByLoginName(String LoginName){
         String sql = "SELECT * FROM nguoidung WHERE MaND = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -65,7 +71,7 @@ public class UserDAL {
     }
 
     //Add user
-    public static Boolean add(UserDTO a){
+    public  Boolean add(UserDTO a){
         String sql = "INSERT INTO nguoidung (MaND, Ten, MatKhau, TrangThai, NhomQuyen) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -85,7 +91,7 @@ public class UserDAL {
     }
     
     //Delete user
-    public static Boolean deleteByLoginName(String LoginName){
+    public  Boolean deleteByLoginName(String LoginName){
         String sql = "DELETE FROM nguoidung WHERE MaND = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -100,7 +106,7 @@ public class UserDAL {
     }
 
     //update user
-    public static Boolean update(UserDTO a){
+    public  Boolean update(UserDTO a){
         String sql = "UPDATE nguoidung SET Ten = ?, MatKhau = ?, TrangThai = ?, MaNQ = ? WHERE MaND = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -1,16 +1,25 @@
 package BLL;
 
+import DAL.ExamStructDAL;
+import DTO.ExamStructDTO;
+
 public class ExamStructBLL {
+    final private ExamStructDAL examStructDAL;
+
+    public ExamStructBLL() {
+        examStructDAL = new ExamStructDAL();
+    }
+    
     //Insert
-    public static Boolean addExamStruct(){
-        return false;
+    public Boolean add(ExamStructDTO exam){
+        return examStructDAL.add(exam);
     }
     //Update
-    public static Boolean updateExamStruct(){
-        return false;
+    public Boolean update(ExamStructDTO exam){
+        return examStructDAL.update(exam);
     }
     //Delete
-    public static Boolean deleteExamStruct(){
-        return false;
+    public Boolean deleteExamStruct(String ID){
+        return examStructDAL.deleteExamStruct(ID);
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 22, 2025 at 11:44 AM
+-- Generation Time: Apr 29, 2025 at 08:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -157,7 +157,9 @@ CREATE TABLE `cautrucde` (
 --
 
 INSERT INTO `cautrucde` (`MaCT`, `TenCT`, `MoTa`, `ThoiGianBD`, `ThoiGianKT`, `ThoiGianLamBai`, `MonHoc`) VALUES
-('CT1', 'Testing', 'test', '2025-04-22 12:36:31', '2025-04-24 12:36:31', '01:00:00', '841048');
+('CT1', 'Testing', 'test', '2025-04-22 12:36:31', '2025-04-24 12:36:31', '01:00:00', '841048'),
+('CT2', 'Test2', 'DAL testing', '3925-05-29 00:00:00', '3925-05-30 00:00:00', '01:00:00', '841107'),
+('CT3', 'Test3', 'DAL testing 2', '2025-04-29 00:00:00', '2025-04-30 00:00:00', '01:00:00', '841107');
 
 -- --------------------------------------------------------
 

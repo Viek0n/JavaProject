@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubjectDAL {
-    public static List<SubjectDTO> getAllSubjects() {
+    public  List<SubjectDTO> getAll() {
         List<SubjectDTO> subjects = new ArrayList<>();
         String sql = "SELECT MaMH, TenMH FROM monhoc";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -29,7 +29,7 @@ public class SubjectDAL {
         }
         return subjects;
     }
-    public static boolean addSubject(SubjectDTO subject) {
+    public  boolean add(SubjectDTO subject) {
         String sql = "INSERT INTO monhoc (MaMH, TenMH) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -43,7 +43,7 @@ public class SubjectDAL {
         }
         return false;
     }
-    public static boolean updateSubject(SubjectDTO subject) {
+    public  boolean update(SubjectDTO subject) {
         String sql = "UPDATE monhoc SET TenMH = ? WHERE MaMH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -57,7 +57,7 @@ public class SubjectDAL {
         }
         return false;
     }
-    public static boolean deleteSubject(String id) {
+    public  boolean delete(String id) {
         String sql = "DELETE FROM monhoc WHERE MaMH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -70,8 +70,24 @@ public class SubjectDAL {
         }
         return false;
     }
-     public static SubjectDTO getByChapID(String ID){
+    public  SubjectDTO getByChapID(String ID){
         String sql = "SELECT chuong.MaChuong, chuong.TenChuong, monhoc.TenMH, monhoc.MaMH FROM chuong LEFT JOIN monhoc ON chuong.MonHoc = monhoc.MaMH WHERE MaChuong = ?";
+        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+        PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setString(1,ID);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next())
+                return new SubjectDTO(rs.getString("MaMH"), rs.getString("TenMH"));
+        }catch(SQLException e){
+            System.out.println("Kết nối monhoc thất bại!");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public  SubjectDTO get(String ID){
+        String sql = "SELECT * FROM monhoc WHERE MaMH = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
         PreparedStatement stmt = conn.prepareStatement(sql)){
 

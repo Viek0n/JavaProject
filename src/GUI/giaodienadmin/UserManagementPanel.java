@@ -14,6 +14,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     private DefaultTableModel tableModel;
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton;
+    private UserDAL userDAL;
 
     private ArrayList<UserDTO> users;
     public UserManagementPanel() {
@@ -21,7 +22,8 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     }
 
     private void initComponent() {
-        users = UserDAL.getAll();
+        userDAL = new UserDAL();
+        users = userDAL.getAll();
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(Color.decode("#ecf0f1"));
 
