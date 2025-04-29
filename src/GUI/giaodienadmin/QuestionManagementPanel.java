@@ -1,5 +1,6 @@
 package GUI.giaodienadmin;
-
+import DTO.AnswerDTO;
+import DTO.QuestionDTO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -116,6 +117,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     public void loadQuestions(Object[][] data) {
         tableModel.setRowCount(0);
         for (Object[] row : data) {
+            
             tableModel.addRow(row);
         }
     }

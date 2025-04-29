@@ -69,7 +69,7 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            addExam();
+            openAddExamDialog();
         } else if (e.getSource() == editButton) {
             editExam();
         } else if (e.getSource() == deleteButton) {
@@ -79,9 +79,9 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void addExam() {
-        // Logic to add a new exam
-        JOptionPane.showMessageDialog(this, "Add Exam functionality not implemented yet!");
+    private void openAddExamDialog() {
+        // Open a dialog for adding a new exam
+        new AddExamDialog(this).setVisible(true);
     }
 
     private void editExam() {
@@ -90,7 +90,6 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select an exam to edit!");
             return;
         }
-        // Logic to edit the selected exam
         JOptionPane.showMessageDialog(this, "Edit Exam functionality not implemented yet!");
     }
 
@@ -100,7 +99,6 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select an exam to delete!");
             return;
         }
-
         tableModel.removeRow(selectedRow);
         JOptionPane.showMessageDialog(this, "Exam deleted successfully!");
     }
@@ -111,15 +109,10 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
             return;
         }
-        // Logic to search for exams based on the keyword
         JOptionPane.showMessageDialog(this, "Search functionality not implemented yet!");
     }
 
-    // Method to populate the table with data (for demonstration purposes)
-    public void loadExams(Object[][] data) {
-        tableModel.setRowCount(0); // Clear existing rows
-        for (Object[] row : data) {
-            tableModel.addRow(row);
-        }
+    public void addExamToTable(Object[] examData) {
+        tableModel.addRow(examData);
     }
 }
