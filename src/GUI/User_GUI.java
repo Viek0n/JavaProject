@@ -161,11 +161,65 @@ public class User_GUI {
         
      
 
-        // Tạo Right_panel chứa các thành phần về câu hỏi và đáp án
+        // Create Right_panel for questions and answers
         Right_panel = new JPanel();
-        Right_panel.setBackground(Ulti.MainColor);
+        Right_panel.setLayout(null);
+        Right_panel.setBackground(new Color(173, 216, 230)); // Light blue
         Right_panel.setBounds(214, 0, 1386, 900);
         Main_panel.add(Right_panel);
+
+
+
+        // Question number label
+        JLabel questionNumberLabel = new JLabel("Câu 4:");
+        questionNumberLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        questionNumberLabel.setBounds(115, 90, 153, 47);
+        Right_panel.add(questionNumberLabel);
+
+        // Create RoundedPanel for the question
+        RoundedPanel questionPanel = new RoundedPanel(50);
+        questionPanel.setBackground(Color.WHITE);
+        questionPanel.setBounds(115, 150, 1175, 374);
+        questionPanel.setLayout(null);
+
+        // Updated question text from the image
+        JLabel questionLabel = new JLabel("<html>Đây là câu hỏi</html>");
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        questionLabel.setForeground(Color.BLACK);
+        questionLabel.setBounds(20, 20, 1135, 334);
+        questionLabel.setVerticalAlignment(SwingConstants.TOP);
+        questionLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        questionPanel.add(questionLabel);
+        Right_panel.add(questionPanel);
+
+        // Mảng chứa các câu trả lời
+        String[] answers = {"A: TIN", "B: VIETKON", "C: VIETKON", "D: HOANG VU"};
+
+        // Tọa độ ban đầu cho các nút
+        int startX = 115; // Vị trí X của nút đầu tiên
+        int startY = 550; // Vị trí Y của hàng đầu tiên
+        int buttonWidth = 550; // Chiều rộng của nút
+        int buttonHeight = 80; // Chiều cao của nút
+        int gapY = 100; // Khoảng cách giữa các hàng
+
+        // Tạo các nút trả lời bằng vòng lặp
+        for (int i = 0; i < answers.length; i++) {
+            RoundedButton answerButton = new RoundedButton(answers[i], 30); // Góc bo tròn 30px
+            answerButton.setFont(new Font("Arial", Font.BOLD, 24));
+            answerButton.setBackground(Color.WHITE);
+            answerButton.setForeground(Color.BLACK);
+
+            // Tính toán vị trí của nút
+            int x = (i % 2 == 0) ? startX : startX + buttonWidth + 50; // Cột trái hoặc phải
+            int y = startY + (i / 2) * gapY; // Hàng trên hoặc dưới
+
+            answerButton.setBounds(x, y, buttonWidth, buttonHeight);
+
+            // Thêm nút vào Right_panel
+            Right_panel.add(answerButton);
+        }
+      
+     
 
         User_frame.add(Main_panel);
         User_frame.setVisible(true);
