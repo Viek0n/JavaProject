@@ -4,7 +4,7 @@ import DTO.UserDTO;
 import MICS.Enums;
 public class UserBLL {
     private UserDTO cur;
-    private UserDAL userDAL;
+    final private UserDAL userDAL;
     //Cons
     public UserBLL(){
         cur = null;

@@ -5,7 +5,7 @@ import DTO.AnswerDTO;
 import DTO.QuestionDTO;
 import java.util.ArrayList;
 public class QuestionBLL {
-    private QuestionDAL questionDAL;
+    final private QuestionDAL questionDAL;
 
     public QuestionBLL() {
         questionDAL = new QuestionDAL();
@@ -23,11 +23,13 @@ public class QuestionBLL {
     public QuestionDTO get(String ID){
         return questionDAL.getByID(ID);
     }
+
+    public ArrayList<QuestionDTO> getAll(){
+        return questionDAL.getAll();
+    }
     //Insert
     public Boolean add(QuestionDTO quest){
-        if(checkAns(quest.getAns()))
-            return questionDAL.add(quest);
-        return false;
+        return questionDAL.add(quest);
     }
     //Update
     public Boolean update(QuestionDTO quest){

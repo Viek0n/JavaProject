@@ -4,7 +4,7 @@ import DAL.SubjectDAL;
 import DTO.SubjectDTO;
 
 public class SubjectBLL {
-    private SubjectDAL subjectDAL;
+    final private SubjectDAL subjectDAL;
     public SubjectBLL(){
         subjectDAL = new SubjectDAL();
     }

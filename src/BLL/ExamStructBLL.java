@@ -4,7 +4,7 @@ import DAL.ExamStructDAL;
 import DTO.ExamStructDTO;
 
 public class ExamStructBLL {
-    private ExamStructDAL examStructDAL;
+    final private ExamStructDAL examStructDAL;
 
     public ExamStructBLL() {
         examStructDAL = new ExamStructDAL();

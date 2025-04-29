@@ -4,7 +4,7 @@ import DAL.RoleDAL;
 import DTO.RoleDTO;
 
 public class RoleBLL {
-    private RoleDAL roleDAL;
+    final private RoleDAL roleDAL;
     public RoleBLL(){
         roleDAL = new RoleDAL();
     }

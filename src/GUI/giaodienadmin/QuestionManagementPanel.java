@@ -14,13 +14,14 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton;
     private ArrayList<QuestionDTO> bank;
-
+    private QuestionDAL questionDAL;
     public QuestionManagementPanel() {
         initComponent();
     }
 
     private void initComponent() {
-        bank = QuestionDAL.getAll();
+        questionDAL = new QuestionDAL();
+        bank = questionDAL.getAll();
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(Color.decode("#ecf0f1"));
 

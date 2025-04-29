@@ -4,7 +4,7 @@ import DAL.ChapterDAL;
 import DTO.ChapterDTO;
 
 public class ChapterBLL {
-    private ChapterDAL chapterDAL;
+    final private ChapterDAL chapterDAL;
     public ChapterBLL(){
         chapterDAL = new ChapterDAL();
     }
