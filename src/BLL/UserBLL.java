@@ -4,9 +4,11 @@ import DTO.UserDTO;
 import MICS.Enums;
 public class UserBLL {
     private UserDTO cur;
+    final private UserDAL userDAL;
     //Cons
     public UserBLL(){
         cur = null;
+        userDAL = new UserDAL();
     }
 
     //Get
@@ -15,7 +17,7 @@ public class UserBLL {
     }
     //SelfManage
     public Enums.UserError login(String LoginName, String Pass){
-        UserDTO tmp = UserDAL.getByLoginName(LoginName);
+        UserDTO tmp = userDAL.getByLoginName(LoginName);
         if(tmp != null){
             if(!Pass.equals(tmp.getPass()))
                 return Enums.UserError.WRONGPASS;
@@ -33,18 +35,18 @@ public class UserBLL {
 
     //Insert
     public Boolean add(UserDTO user){
-        if(!UserDAL.searchByLoginName(user.getLoginName()))
-            return UserDAL.add(user);
+        if(!userDAL.searchByLoginName(user.getLoginName()))
+            return userDAL.add(user);
         return false;
     }
 
     //Update
     public Boolean update(UserDTO user){
-        return UserDAL.update(user);
+        return userDAL.update(user);
     }
 
     //Delete
     public Boolean delete(String LoginName){
-        return UserDAL.deleteByLoginName(LoginName);
+        return userDAL.deleteByLoginName(LoginName);
     }
 }

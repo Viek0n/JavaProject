@@ -5,8 +5,14 @@ import DTO.AnswerDTO;
 import DTO.QuestionDTO;
 import java.util.ArrayList;
 public class QuestionBLL {
+    final private QuestionDAL questionDAL;
+
+    public QuestionBLL() {
+        questionDAL = new QuestionDAL();
+    }
+    
     //Valid check
-    private static Boolean checkAns(ArrayList<AnswerDTO> ans){
+    private Boolean checkAns(ArrayList<AnswerDTO> ans){
         Boolean valid = false;
         for(AnswerDTO a: ans)
             if(a.getRight())
@@ -14,23 +20,25 @@ public class QuestionBLL {
         return valid;
     }
     //Get
-    public static QuestionDTO get(String ID){
-        return QuestionDAL.getByID(ID);
+    public QuestionDTO get(String ID){
+        return questionDAL.getByID(ID);
+    }
+
+    public ArrayList<QuestionDTO> getAll(){
+        return questionDAL.getAll();
     }
     //Insert
-    public static Boolean add(QuestionDTO quest){
-        if(checkAns(quest.getAns()))
-            return QuestionDAL.add(quest);
-        return false;
+    public Boolean add(QuestionDTO quest){
+        return questionDAL.add(quest);
     }
     //Update
-    public static Boolean update(QuestionDTO quest){
+    public Boolean update(QuestionDTO quest){
         if(checkAns(quest.getAns()))
-            return QuestionDAL.update(quest);
+            return questionDAL.update(quest);
         return false;
     }
     //Delete
-    public static Boolean delete(String ID){
-        return QuestionDAL.deleteByID(ID);
+    public Boolean delete(String ID){
+        return questionDAL.deleteByID(ID);
     }
 }

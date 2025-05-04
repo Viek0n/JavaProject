@@ -1,11 +1,26 @@
-<<<<<<< Updated upstream
 
-import GUI.MainFrame;
-=======
-import GUI.UserPanel.MainFrame;
->>>>>>> Stashed changes
+
+
+
 
 public class main {
     public static void main(String[] args) {
-        // Tạo và hiển thị JFrame
-        MainFrame mf = new MainFrame();
+        /*ExamStructDTO examStruct = new ExamStructDTO();
+        ExamStructDAL examStructDAL = new ExamStructDAL();
+        examStruct = examStructDAL.get("CT1");
+        System.out.print(examStruct);*/
+        
+        /*QuestionDAL questionDAL = new QuestionDAL();
+        QuestionDTO quest = questionDAL.getByID("CH1");
+        System.out.print(quest);*/
+
+        /*QuestionBLL questionBLL = new QuestionBLL();
+        QuestionDTO quest = questionBLL.get("CH2");
+        quest.getAns().get(0).setID(Enums.AnswerID.A);
+        quest.getAns().get(1).setID(Enums.AnswerID.B);
+        quest.getAns().get(2).setID(Enums.AnswerID.C);
+        quest.getAns().get(3).setID(Enums.AnswerID.D);
+        System.out.print(quest);
+        questionBLL.update(quest);*/
+    }
+}

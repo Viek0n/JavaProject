@@ -5,6 +5,13 @@ public class Enums {
         KHOA
     }
 
+    public enum AnswerID{
+        A,
+        B,
+        C,
+        D
+    }
+
     public enum DifficultValue{
         DE,
         TRUNGBINH,
