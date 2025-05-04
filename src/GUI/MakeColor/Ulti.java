@@ -1,5 +1,6 @@
-package GUI;
+package GUI.MakeColor;
 import java.awt.Color;
+
 
 public class Ulti {
     public static Color MainColor = new Color(134,157,218);
