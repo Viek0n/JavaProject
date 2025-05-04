@@ -1,17 +1,21 @@
 package DAL;
 
 import DTO.ExamStructDTO;
+import DTO.QuestionDTO;
 import DTO.SubjectDTO;
 import MICS.Connect;
+import MICS.Enums;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class ExamStructDAL {
     private SubjectDAL subjectDAL;
+    private QuestionDAL questionDAL;
     
     
     public ExamStructDAL() {
         subjectDAL = new SubjectDAL();
+        questionDAL = new QuestionDAL();
     }
 
     private  Connection getConnection() throws SQLException {
@@ -105,7 +109,7 @@ public class ExamStructDAL {
         return false;
     }
 
-    public  boolean deleteExamStruct(String id) {
+    public  boolean delete(String id) {
         String query = "DELETE FROM cautrucde WHERE MaCT = ?";
         try (Connection con = getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
@@ -118,7 +122,7 @@ public class ExamStructDAL {
         return false;
     }
 
-    public  ExamStructDTO getExamStructById(String id) {
+    public  ExamStructDTO get(String id) {
         String query = "SELECT * FROM cautrucde WHERE MaCT = ?";
         try (Connection con = getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
@@ -135,6 +139,8 @@ public class ExamStructDAL {
                     examStruct.setExamTime(rs.getTime("ThoiGianLamBai"));
                     SubjectDTO subject = subjectDAL.get(rs.getString("MonHoc"));
                     examStruct.setSubject(subject);
+                    examStruct.setRandomQues(loadRandom(id));
+                    examStruct.setSelectedQues(loadSelected(id));
                     return examStruct;
                 }
             }
@@ -142,5 +148,42 @@ public class ExamStructDAL {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public ArrayList<QuestionDTO> loadSelected(String ID){
+        String sql = "SELECT * FROM cauhoituychon WHERE MaCT = ?";
+        ArrayList<QuestionDTO> array = new ArrayList<>();
+        try(Connection conn = Connect.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, ID);
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                QuestionDTO ques = questionDAL.getByID(rs.getString("MaCH"));
+                array.add(ques);
+            }
+        }catch (SQLException e) {
+            System.out.println("Kết nối cauhoituychon thất bại!");
+            e.printStackTrace();
+        }
+        return array;
+    }
+
+    public ArrayList<QuestionDTO> loadRandom(String ID){
+        String sql = "SELECT * FROM chitietde WHERE MaCT = ?";
+        ArrayList<QuestionDTO> array = null;
+        try(Connection conn = Connect.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, ID);
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                array = questionDAL.getRandom(rs.getInt("SoLuong"), rs.getString("MaChuong"), Enums.DifficultValue.valueOf(rs.getString("DoKho")));
+            }
+        }catch (SQLException e) {
+            System.out.println("Kết nối chitietde thất bại!");
+            e.printStackTrace();
+        }
+        return array;
     }
 }

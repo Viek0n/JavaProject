@@ -1,5 +1,9 @@
 package GUI;
 
+import GUI.MakeColor.AddImage;
+import GUI.MakeColor.RoundedButton;
+import GUI.MakeColor.RoundedPanel;
+import GUI.MakeColor.Ulti;
 import MICS.Connect;
 import java.awt.*;
 import javax.swing.*;

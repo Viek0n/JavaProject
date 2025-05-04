@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuestionDAL {
     final private ChapterDAL chapterDAL;
@@ -22,7 +24,7 @@ public class QuestionDAL {
         subjectDAL = new SubjectDAL();
     }
     
-     public  ArrayList<QuestionDTO> getAll(){
+    public ArrayList<QuestionDTO> getAll(){
         ArrayList<QuestionDTO> array = new ArrayList<>();
         String sql = "SELECT * FROM cauhoi";
         try(Connection conn = Connect.getConnection();
@@ -59,7 +61,7 @@ public class QuestionDAL {
                                                         Enums.DifficultValue.valueOf(rs.getString("DoKho")),
                                                         rs.getString("NoiDung"));
                     newQues.setAns(answerDAL.getAllByQId(newQues.getID()));
-                    newQues.setSubject(subjectDAL.getByChapID(ID));
+                    newQues.setSubject(subjectDAL.getByChapID(newQues.getChapter().getID()));
                     return newQues;
                 }
             } catch(SQLException e){
@@ -141,5 +143,45 @@ public class QuestionDAL {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<QuestionDTO> getByChapter(String ID){
+        return  getAll().stream().filter(question -> ID.equals(question.getChapter().getID())).collect(Collectors.toList());
+    }
+
+    public List<QuestionDTO> getByDiff(Enums.DifficultValue diff){
+        return getAll().stream().filter(question -> diff == question.getDifficult()).collect(Collectors.toList());
+    }
+
+    public List<QuestionDTO> getByDiffChap(String ID,Enums.DifficultValue diff){
+        return getByChapter(ID).stream().filter(question -> diff == question.getDifficult()).collect(Collectors.toList());
+    }
+
+    public ArrayList<QuestionDTO> getRandom(int limit,String ChapID,Enums.DifficultValue diff){
+        ArrayList<QuestionDTO> array = null;
+        String sql = "SELECT * FROM cauhoi WHERE MaChuong = ? AND DoKho = ? ORDER BY RAND() LIMIT ?";
+        try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, ChapID);
+            stmt.setString(2, diff.toString());
+            stmt.setInt(3, limit);
+            
+            array = new ArrayList<QuestionDTO>();
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                QuestionDTO ques = new QuestionDTO(rs.getString("MaCH"),
+                                                chapterDAL.get(rs.getString("MaChuong")),
+                                                rs.getString("MaND"),
+                                                Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                                                rs.getString("NoiDung"));
+                                                ques.setAns(answerDAL.getAllByQId(ques.getID()));
+                ques.setSubject(subjectDAL.getByChapID(ques.getChapter().getID()));
+                array.add(ques);
+            }
+        } catch (SQLException e) {
+            System.out.println("Kết nối cauhoi thất bại!");
+            e.printStackTrace();
+        }
+        return  array;
     }
 }

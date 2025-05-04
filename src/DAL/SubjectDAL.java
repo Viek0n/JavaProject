@@ -77,8 +77,11 @@ public class SubjectDAL {
 
             stmt.setString(1,ID);
             ResultSet rs = stmt.executeQuery();
-            if(rs.next())
+            if(rs.next()){
+                
                 return new SubjectDTO(rs.getString("MaMH"), rs.getString("TenMH"));
+            }
+                
         }catch(SQLException e){
             System.out.println("Kết nối monhoc thất bại!");
             e.printStackTrace();

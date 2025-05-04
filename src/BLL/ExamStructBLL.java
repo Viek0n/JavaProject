@@ -20,6 +20,6 @@ public class ExamStructBLL {
     }
     //Delete
     public Boolean deleteExamStruct(String ID){
-        return examStructDAL.deleteExamStruct(ID);
+        return examStructDAL.delete(ID);
     }
 }
