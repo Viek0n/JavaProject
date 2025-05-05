@@ -1,4 +1,7 @@
 
+import GUI.UserPanel.MainFrame;
+
+
 
 
 
@@ -22,5 +25,7 @@ public class main {
         quest.getAns().get(3).setID(Enums.AnswerID.D);
         System.out.print(quest);
         questionBLL.update(quest);*/
+
+        MainFrame mainFrame = new MainFrame();
     }
 }

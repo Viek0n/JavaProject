@@ -1,5 +1,6 @@
 package GUI.UserPanel;
 
+import BLL.UserBLL;
 import java.awt.CardLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,6 +9,7 @@ public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private JPanel menuPanel;
+    public UserBLL userBLL;
 
     public MainFrame() {
         setTitle("Stress Portal");
@@ -15,7 +17,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-
+        userBLL = new UserBLL();
 
 
         cardLayout = new CardLayout();
@@ -30,7 +32,6 @@ public class MainFrame extends JFrame {
 
         // Hiển thị LoginPanel ban đầu
         cardLayout.show(mainPanel, "LoginPanel");
-        
         
         setVisible(true);
     }

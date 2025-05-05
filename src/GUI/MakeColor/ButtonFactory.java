@@ -2,6 +2,7 @@ package GUI.MakeColor;
 
 import GUI.UserPanel.*;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
@@ -35,6 +36,17 @@ public class ButtonFactory {
         clearButton.setContentAreaFilled(false);
         clearButton.setBorderPainted(false);
         clearButton.addActionListener(onConfirm);
+        clearButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                clearButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                clearButton.setCursor(Cursor.getDefaultCursor());
+            }
+        });
         return clearButton;
     }
 
@@ -43,6 +55,17 @@ public class ButtonFactory {
         confirmButton.setBounds(x, y, width, height);
         confirmButton.setBackground(color);
         confirmButton.addActionListener(onConfirm);
+        confirmButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                confirmButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                confirmButton.setCursor(Cursor.getDefaultCursor());
+            }
+        });
         return confirmButton;
     }
 }
