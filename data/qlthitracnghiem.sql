@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2025 at 08:32 AM
+-- Generation Time: May 05, 2025 at 04:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -217,6 +217,7 @@ INSERT INTO `chuong` (`MaChuong`, `TenChuong`, `MonHoc`) VALUES
 CREATE TABLE `dapan` (
   `MaCH` varchar(50) NOT NULL,
   `NoiDung` text NOT NULL,
+  `ThuTu` enum('A','B','C','D') NOT NULL,
   `Dung` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
@@ -224,15 +225,15 @@ CREATE TABLE `dapan` (
 -- Dumping data for table `dapan`
 --
 
-INSERT INTO `dapan` (`MaCH`, `NoiDung`, `Dung`) VALUES
-('CH1', 'Một phương thức bất kỳ có trong class đầu tiên', 0),
-('CH1', 'Phương thức có tên là start()', 0),
-('CH1', 'Phương thức main() với cú pháp chuẩn public static void main(String[] args)', 1),
-('CH1', 'Bất kỳ phương thức nào có từ khóa static', 0),
-('CH2', 'test A', 1),
-('CH2', 'test B', 0),
-('CH2', 'test C', 0),
-('CH2', 'test D', 0);
+INSERT INTO `dapan` (`MaCH`, `NoiDung`, `ThuTu`, `Dung`) VALUES
+('CH1', 'Một phương thức bất kỳ có trong class đầu tiên', 'A', 0),
+('CH1', 'Phương thức có tên là start()', 'B', 0),
+('CH1', 'Phương thức main() với cú pháp chuẩn public static void main(String[] args)', 'C', 1),
+('CH1', 'Bất kỳ phương thức nào có từ khóa static', 'D', 0),
+('CH2', 'test A', 'A', 1),
+('CH2', 'test B', 'B', 0),
+('CH2', 'test C', 'C', 0),
+('CH2', 'test D', 'D', 0);
 
 -- --------------------------------------------------------
 
