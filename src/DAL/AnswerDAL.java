@@ -2,6 +2,7 @@ package DAL;
 
 import DTO.AnswerDTO;
 import MICS.Connect;
+import MICS.Enums;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,7 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class AnswerDAL {
-    public static ArrayList<AnswerDTO> getAllByQId(String ID){
+    public  ArrayList<AnswerDTO> getAllByQId(String ID){
         ArrayList<AnswerDTO> array = null;
         String sql = "SELECT * FROM dapan WHERE MaCH = ?";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -21,7 +22,7 @@ public class AnswerDAL {
             ResultSet rs = stmt.executeQuery();
             array = new ArrayList<>();
             while(rs.next()){
-                array.add(new AnswerDTO(rs.getString("NoiDung"), rs.getBoolean("Dung")));
+                array.add(new AnswerDTO(rs.getString("NoiDung"), rs.getBoolean("Dung"),Enums.AnswerID.valueOf(rs.getString("ThuTu"))));
             }
         }catch (SQLException e) {
             System.out.println("Kết nối dapan thất bại!");
@@ -30,7 +31,7 @@ public class AnswerDAL {
         return array;
     }
     //Search
-    public static Boolean searchByQID(String id){
+    public  Boolean searchByQID(String id){
         String sql = "SELECT * FROM dapan WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -46,13 +47,14 @@ public class AnswerDAL {
     }
     //Update 
     //Add
-    public static Boolean add(AnswerDTO a, String ID){
-        String sql = "INSERT INTO dapan (MaCH, NoiDung, Dung) VALUES (?, ?, ?)";
+    public  Boolean add(AnswerDTO a, String ID){
+        String sql = "INSERT INTO dapan (MaCH, NoiDung, ThuTu, Dung) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, ID);
             stmt.setString(2, a.getText());
-            stmt.setInt(3, a.getRight() ? 1 : 0);
+            stmt.setString(3, a.getID().toString());
+            stmt.setInt(4, a.getRight() ? 1 : 0);
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -62,7 +64,7 @@ public class AnswerDAL {
         return false;
     }
     //Delete
-    public static Boolean deleteByQID(String Id){
+    public  Boolean deleteByQID(String Id){
         String sql = "DELETE FROM dapan WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
