@@ -37,7 +37,7 @@ public class ButtonFactory {
         clearButton.addActionListener(onConfirm);
         return clearButton;
     }
-
+    //tạo nút bo góc
     public static JButton createConfirmButton(MainFrame mainFrame,int r,int x, int y,int width,int height,Color color,ActionListener onConfirm) {
         JButton confirmButton = new RoundedButton("", r);
         confirmButton.setBounds(x, y, width, height);

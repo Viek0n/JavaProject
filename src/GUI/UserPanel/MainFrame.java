@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
         mainPanel.add(new LoginPanel(this), "LoginPanel");
         mainPanel.add(new HomePanel(this), "HomePanel");
         mainPanel.add(new ScorePanel(this), "ScorePanel");
+        mainPanel.add(new QuestionList(this), "QuestionList");
         add(mainPanel);
 
         // Hiển thị LoginPanel ban đầu
