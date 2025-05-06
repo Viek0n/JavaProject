@@ -1,12 +1,16 @@
 package GUI.giaodienadmin;
 
-import DAL.AnswerDAL;
-import DAL.QuestionDAL;
 import DTO.AnswerDTO;
 import DTO.QuestionDTO;
+import MICS.Enums;
+import DAL.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,9 +23,9 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JButton addButton, editButton, deleteButton, searchButton;
     private ArrayList<QuestionDTO> bank;
     private QuestionDAL questionDAL;
-    private JPanel mainPanel; // Panel chứa CardLayout
-    private CardLayout cardLayout; // CardLayout để chuyển đổi giữa các giao diện
-    private PanelExemDetail panelExemDetail; // Giao diện chỉnh sửa câu hỏi
+    private JPanel mainPanel; 
+    private CardLayout cardLayout; 
+    private PanelExemDetail panelExemDetail; 
 
     public QuestionManagementPanel(JPanel mainPanel, CardLayout cardLayout, PanelExemDetail panelExemDetail) {
         this.mainPanel = mainPanel;
@@ -93,10 +97,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void addQuestion() {
-        JOptionPane.showMessageDialog(this, "Add Question functionality not implemented yet!");
-    }
-
+ 
     private void editQuestion() {
         int selectedRow = questionTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -136,10 +137,10 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             for (QuestionDTO row : bank) {
                 tableModel.addRow(new Object[] {
                     row.getID(),                // Question ID
-                    row.getDifficult(),
-                    row.getSubject() != null ? row.getSubject().getName() : "N/A", // Subject
-                    row.getChapter() != null ? row.getChapter().getName() : "N/A", // Chapter
-                    "Edit"                      // Nút "Edit" trong cột "Detail"
+                    row.getSubject() != null ? row.getSubject().getName() : "N/A", 
+                    row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
+                    row.getChapter() != null ? row.getChapter().getName() : "N/A", 
+                    "Edit"                      
                 });
             }
         } else {
@@ -203,4 +204,115 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             return super.stopCellEditing();
         }
     }
+    private void addQuestion() {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Add New Question", true);
+        dialog.setSize(500, 500);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new GridLayout(10, 2, 10, 10));
+        ChapterDAL chapterDAL = new ChapterDAL();
+        
+        JTextArea contentField = new JTextArea(3, 20);
+        JComboBox<Enums.DifficultValue> diffBox = new JComboBox<>(Enums.DifficultValue.values());
+        JComboBox<String> chapterBox = new JComboBox<>();
+        JTextField createdByField = new JTextField();
+    
+        // Các đáp án
+        JTextField answerA = new JTextField();
+        JTextField answerB = new JTextField();
+        JTextField answerC = new JTextField();
+        JTextField answerD = new JTextField();
+    
+        // Chọn đáp án đúng
+        String[] options = {"A", "B", "C", "D"};
+        JComboBox<String> correctAnswerBox = new JComboBox<>(options);
+    
+        // Load danh sách chương
+        chapterDAL.getAll().forEach(chap -> chapterBox.addItem(chap.getID()));
+    
+        // UI layout
+        dialog.add(new JLabel("Content:"));
+        dialog.add(new JScrollPane(contentField));
+    
+        dialog.add(new JLabel("Difficulty:"));
+        dialog.add(diffBox);
+    
+        dialog.add(new JLabel("Chapter ID:"));
+        dialog.add(chapterBox);
+    
+        dialog.add(new JLabel("Created By (UserID):"));
+        dialog.add(createdByField);
+    
+        dialog.add(new JLabel("Answer A:"));
+        dialog.add(answerA);
+        dialog.add(new JLabel("Answer B:"));
+        dialog.add(answerB);
+        dialog.add(new JLabel("Answer C:"));
+        dialog.add(answerC);
+        dialog.add(new JLabel("Answer D:"));
+        dialog.add(answerD);
+    
+        dialog.add(new JLabel("Correct Answer:"));
+        dialog.add(correctAnswerBox);
+    
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+        dialog.add(saveButton);
+        dialog.add(cancelButton);
+    
+        saveButton.addActionListener(e -> {
+            // Validate input
+            if (contentField.getText().trim().isEmpty()
+                || answerA.getText().trim().isEmpty()
+                || answerB.getText().trim().isEmpty()
+                || answerC.getText().trim().isEmpty()
+                || answerD.getText().trim().isEmpty()
+                || createdByField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Please fill in all fields.");
+                return;
+            }
+    
+            // Tạo câu hỏi mới
+            QuestionDTO newQues = new QuestionDTO();
+            newQues.setText(contentField.getText().trim());
+            newQues.setDifficult((Enums.DifficultValue) diffBox.getSelectedItem());
+            newQues.setChapter(chapterDAL.get((String) chapterBox.getSelectedItem()));
+            newQues.setCreatedBy(createdByField.getText().trim());
+    
+            // Tạo danh sách đáp án
+            ArrayList<AnswerDTO> answers = new ArrayList<>();
+            String[] answerTexts = {
+                answerA.getText().trim(),
+                answerB.getText().trim(),
+                answerC.getText().trim(),
+                answerD.getText().trim()
+            };
+
+            String correct = (String) correctAnswerBox.getSelectedItem();
+            for (int i = 0; i < 4; i++) {
+                AnswerDTO ans = new AnswerDTO();
+                ans.setText(answerTexts[i]); 
+                ans.setRight(correct.equals(options[i]));  
+                //ans.setLabel(options[i]);  
+                answers.add(ans);
+            }
+    
+            newQues.setAns(answers);
+    
+            // Thêm vào DB
+            if (questionDAL.add(newQues)) {
+                JOptionPane.showMessageDialog(this, "Question added successfully!");
+                bank = questionDAL.getAll();
+                loadQuestions();
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to add question.");
+            }
+        });
+    
+        cancelButton.addActionListener(e -> dialog.dispose());
+    
+        dialog.setVisible(true);
+    }
+    
 }
+
