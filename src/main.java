@@ -1,8 +1,5 @@
 
-import BLL.ExamBLL;
-import DAL.ExamStructDAL;
-import DTO.ExamStructDTO;
-import GUI.UserPanel.TakeExam;
+import GUI.UserPanel.MainFrame;
 
 
 
