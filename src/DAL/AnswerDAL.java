@@ -2,7 +2,6 @@ package DAL;
 
 import DTO.AnswerDTO;
 import MICS.Connect;
-import MICS.Enums;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,7 +21,7 @@ public class AnswerDAL {
             ResultSet rs = stmt.executeQuery();
             array = new ArrayList<>();
             while(rs.next()){
-                array.add(new AnswerDTO(rs.getString("NoiDung"), rs.getBoolean("Dung"),Enums.AnswerID.valueOf(rs.getString("ThuTu"))));
+                array.add(new AnswerDTO(rs.getString("NoiDung"), rs.getBoolean("Dung")));
             }
         }catch (SQLException e) {
             System.out.println("Kết nối dapan thất bại!");
@@ -48,13 +47,12 @@ public class AnswerDAL {
     //Update 
     //Add
     public  Boolean add(AnswerDTO a, String ID){
-        String sql = "INSERT INTO dapan (MaCH, NoiDung, ThuTu, Dung) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO dapan (MaCH, NoiDung, Dung) VALUES (?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, ID);
             stmt.setString(2, a.getText());
-            stmt.setString(3, a.getID().toString());
-            stmt.setInt(4, a.getRight() ? 1 : 0);
+            stmt.setInt(3, a.getRight() ? 1 : 0);
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
