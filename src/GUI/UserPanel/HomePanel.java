@@ -36,6 +36,7 @@ public class HomePanel extends JPanel {
 
         JLabel profile = AddImage.createImageLabel(Connect.img + "profile-user.png", 50, 50, 100, 100);
         menuPanel.add(profile);
+
         JLabel test = AddImage.createImageLabel(Connect.img + "test.png", 80, 280, 80, 80);
         menuPanel.add(test);
         JLabel analysis = AddImage.createImageLabel(Connect.img + "analysis.png", 80, 450, 80, 80);
