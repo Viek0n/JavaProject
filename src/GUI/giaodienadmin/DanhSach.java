@@ -24,7 +24,7 @@ public class DanhSach extends JPanel {
         this.setBackground(Color.decode("#34495e"));
 
         ArrayList<String> danhSachQuanLy = new ArrayList<>();
-        danhSachQuanLy.add("Quản Lý Câu Hỏi");
+        danhSachQuanLy.add("Câu Hỏi");
         danhSachQuanLy.add("Quản Lý Bài Kiểm Tra");
         danhSachQuanLy.add("Quản Lý Người Dùng");
 

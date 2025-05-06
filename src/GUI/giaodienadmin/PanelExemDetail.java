@@ -22,13 +22,10 @@ public class PanelExemDetail extends JPanel {
 
     public PanelExemDetail(JPanel mainPanel, CardLayout cardLayout) {
         this.setLayout(new BorderLayout(10, 10));
-
-        // Top: Question ID
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         questionIDLabel = new JLabel("Question ID: ");
         topPanel.add(questionIDLabel);
 
-        // Center: Content + Answer Table
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
 
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -36,11 +33,10 @@ public class PanelExemDetail extends JPanel {
         contentField = new JTextField();
         contentPanel.add(contentField, BorderLayout.CENTER);
 
-        // Table: Answer content and correct flag
         tableModel = new DefaultTableModel(new Object[]{"Answer", "Correct"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Table is read-only
+                return column == 1; 
             }
         };
         answerTable = new JTable(tableModel);
@@ -48,22 +44,18 @@ public class PanelExemDetail extends JPanel {
 
         centerPanel.add(contentPanel, BorderLayout.NORTH);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
-
-        // Bottom: Buttons
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         saveButton = new JButton("Save");
         backButton = new JButton("Back");
         bottomPanel.add(saveButton);
         bottomPanel.add(backButton);
 
-        // Add all
         this.add(topPanel, BorderLayout.NORTH);
         this.add(centerPanel, BorderLayout.CENTER);
         this.add(bottomPanel, BorderLayout.SOUTH);
 
-        // Action listeners
-        backButton.addActionListener(e -> cardLayout.show(mainPanel, "QuanLyCauHoi"));
 
+        backButton.addActionListener(e -> cardLayout.show(mainPanel, "QuanLyCauHoi"));
         saveButton.addActionListener(e -> saveQuestionContent());
     }
 
@@ -77,12 +69,10 @@ public class PanelExemDetail extends JPanel {
         if (question != null) {
             questionIDLabel.setText("Question ID: " + questionID);
             contentField.setText(question.getText());
-
-            // Load answers
             AnswerDAL answerDAL = new AnswerDAL();
             ArrayList<AnswerDTO> answers = answerDAL.getAllByQId(questionID);
 
-            tableModel.setRowCount(0); // Clear old data
+            tableModel.setRowCount(0);
             for (AnswerDTO answer : answers) {
                 tableModel.addRow(new Object[]{
                     answer.getText(),
@@ -90,7 +80,7 @@ public class PanelExemDetail extends JPanel {
                 });
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Question not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No question found with this ID: " + questionID, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -106,12 +96,38 @@ public class PanelExemDetail extends JPanel {
         QuestionDTO updated = new QuestionDTO();
         updated.setID(currentQuestionID);
         updated.setText(newText);
-
         boolean success = questionDAL.update(updated);
         if (success) {
             JOptionPane.showMessageDialog(this, "Question updated successfully.");
         } else {
             JOptionPane.showMessageDialog(this, "Failed to update question.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        // Save answer changes
+        saveAnswerChanges();
+    }
+
+    // Save changes to the answers
+    private void saveAnswerChanges() {
+        AnswerDAL answerDAL = new AnswerDAL();
+
+        for (int row = 0; row < tableModel.getRowCount(); row++) {
+            String answerText = (String) tableModel.getValueAt(row, 0);
+            String isCorrectStr = (String) tableModel.getValueAt(row, 1);
+            boolean isCorrect = "Yes".equals(isCorrectStr);
+
+            AnswerDTO answer = new AnswerDTO();
+            answer.setText(answerText);
+            answer.setRight(isCorrect);
+           
+
+            //boolean success = answerDAL.update(answer); // Update answer in the database
+            /*if (!success) {
+                JOptionPane.showMessageDialog(this, "Failed to update some answers.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }*/
+        }
+
+        JOptionPane.showMessageDialog(this, "Answers updated successfully.");
     }
 }

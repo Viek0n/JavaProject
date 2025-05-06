@@ -1,6 +1,7 @@
 package GUI.giaodienadmin;
 
 import DTO.AnswerDTO;
+import DTO.ChapterDTO;
 import DTO.QuestionDTO;
 import MICS.Enums;
 import DAL.*;
@@ -127,7 +128,22 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
             return;
         }
-        JOptionPane.showMessageDialog(this, "Search functionality not implemented yet!");
+        
+        // Search by question ID
+        QuestionDTO question = questionDAL.getByID(keyword);
+        if (question != null) {
+            // Clear the table and display the found question
+            tableModel.setRowCount(0);
+            tableModel.addRow(new Object[] {
+                question.getID(), 
+                question.getSubject() != null ? question.getSubject().getName() : "N/A", 
+                question.getDifficult() != null ? question.getDifficult().toString() : "N/A",
+                question.getChapter() != null ? question.getChapter().getName() : "N/A", 
+                "Edit"
+            });
+        } else {
+            JOptionPane.showMessageDialog(this, "No question found with this ID: " + keyword, "Search Result", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
     
     public void loadQuestions() {
@@ -205,114 +221,147 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         }
     }
     private void addQuestion() {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Add New Question", true);
-        dialog.setSize(500, 500);
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new GridLayout(10, 2, 10, 10));
-        ChapterDAL chapterDAL = new ChapterDAL();
-        
-        JTextArea contentField = new JTextArea(3, 20);
-        JComboBox<Enums.DifficultValue> diffBox = new JComboBox<>(Enums.DifficultValue.values());
-        JComboBox<String> chapterBox = new JComboBox<>();
-        JTextField createdByField = new JTextField();
+    JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Add New Question", true);
+    dialog.setSize(600, 600);
+    dialog.setLocationRelativeTo(this);
     
-        // Các đáp án
-        JTextField answerA = new JTextField();
-        JTextField answerB = new JTextField();
-        JTextField answerC = new JTextField();
-        JTextField answerD = new JTextField();
+    JPanel formPanel = new JPanel(new GridBagLayout());
+    formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(5, 5, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1.0;
     
-        // Chọn đáp án đúng
-        String[] options = {"A", "B", "C", "D"};
-        JComboBox<String> correctAnswerBox = new JComboBox<>(options);
+    ChapterDAL chapterDAL = new ChapterDAL();
     
-        // Load danh sách chương
-        chapterDAL.getAll().forEach(chap -> chapterBox.addItem(chap.getID()));
+    // Components
+    JTextArea contentField = new JTextArea(3, 20);
+    JComboBox<Enums.DifficultValue> diffBox = new JComboBox<>(Enums.DifficultValue.values());
+    JComboBox<ChapterDTO> chapterBox = new JComboBox<>();
+    JTextField createdByField = new JTextField();
     
-        // UI layout
-        dialog.add(new JLabel("Content:"));
-        dialog.add(new JScrollPane(contentField));
+    JTextField answerA = new JTextField();
+    JTextField answerB = new JTextField();
+    JTextField answerC = new JTextField();
+    JTextField answerD = new JTextField();
+    JComboBox<String> correctAnswerBox = new JComboBox<>(new String[]{"A", "B", "C", "D"});
     
-        dialog.add(new JLabel("Difficulty:"));
-        dialog.add(diffBox);
+    chapterDAL.getAll().forEach(chapterBox::addItem); // Ensure ChapterDTO has meaningful toString()
     
-        dialog.add(new JLabel("Chapter ID:"));
-        dialog.add(chapterBox);
+    // Helper to add components
+    int row = 0;
+    gbc.gridx = 0; gbc.gridy = row;
+    formPanel.add(new JLabel("Content:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(new JScrollPane(contentField), gbc);
     
-        dialog.add(new JLabel("Created By (UserID):"));
-        dialog.add(createdByField);
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Difficulty:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(diffBox, gbc);
     
-        dialog.add(new JLabel("Answer A:"));
-        dialog.add(answerA);
-        dialog.add(new JLabel("Answer B:"));
-        dialog.add(answerB);
-        dialog.add(new JLabel("Answer C:"));
-        dialog.add(answerC);
-        dialog.add(new JLabel("Answer D:"));
-        dialog.add(answerD);
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Chapter:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(chapterBox, gbc);
     
-        dialog.add(new JLabel("Correct Answer:"));
-        dialog.add(correctAnswerBox);
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Created By (UserID):"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(createdByField, gbc);
+
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Answer A:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(answerA, gbc);
     
-        JButton saveButton = new JButton("Save");
-        JButton cancelButton = new JButton("Cancel");
-        dialog.add(saveButton);
-        dialog.add(cancelButton);
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Answer B:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(answerB, gbc);
     
-        saveButton.addActionListener(e -> {
-            // Validate input
-            if (contentField.getText().trim().isEmpty()
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Answer C:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(answerC, gbc);
+    
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Answer D:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(answerD, gbc);
+    
+    gbc.gridx = 0; gbc.gridy = ++row;
+    formPanel.add(new JLabel("Correct Answer:"), gbc);
+    gbc.gridx = 1;
+    formPanel.add(correctAnswerBox, gbc);
+    
+    // Buttons
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JButton saveButton = new JButton("Save");
+    JButton cancelButton = new JButton("Cancel");
+    buttonPanel.add(saveButton);
+    buttonPanel.add(cancelButton);
+    
+    gbc.gridx = 0; gbc.gridy = ++row; gbc.gridwidth = 2;
+    formPanel.add(buttonPanel, gbc);
+
+    JScrollPane scrollPane = new JScrollPane(formPanel);
+    dialog.setContentPane(scrollPane);
+
+    // Save logic
+    saveButton.addActionListener(e -> {
+        if (contentField.getText().trim().isEmpty()
                 || answerA.getText().trim().isEmpty()
                 || answerB.getText().trim().isEmpty()
                 || answerC.getText().trim().isEmpty()
                 || answerD.getText().trim().isEmpty()
                 || createdByField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Please fill in all fields.");
-                return;
-            }
-    
-            // Tạo câu hỏi mới
-            QuestionDTO newQues = new QuestionDTO();
-            newQues.setText(contentField.getText().trim());
-            newQues.setDifficult((Enums.DifficultValue) diffBox.getSelectedItem());
-            newQues.setChapter(chapterDAL.get((String) chapterBox.getSelectedItem()));
-            newQues.setCreatedBy(createdByField.getText().trim());
-    
-            // Tạo danh sách đáp án
-            ArrayList<AnswerDTO> answers = new ArrayList<>();
-            String[] answerTexts = {
-                answerA.getText().trim(),
-                answerB.getText().trim(),
-                answerC.getText().trim(),
-                answerD.getText().trim()
-            };
+            JOptionPane.showMessageDialog(dialog, "Please fill in all fields.");
+            return;
+        }
 
-            String correct = (String) correctAnswerBox.getSelectedItem();
-            for (int i = 0; i < 4; i++) {
-                AnswerDTO ans = new AnswerDTO();
-                ans.setText(answerTexts[i]); 
-                ans.setRight(correct.equals(options[i]));  
-                //ans.setLabel(options[i]);  
-                answers.add(ans);
-            }
-    
-            newQues.setAns(answers);
-    
-            // Thêm vào DB
-            if (questionDAL.add(newQues)) {
-                JOptionPane.showMessageDialog(this, "Question added successfully!");
-                bank = questionDAL.getAll();
-                loadQuestions();
-                dialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to add question.");
-            }
-        });
-    
-        cancelButton.addActionListener(e -> dialog.dispose());
-    
-        dialog.setVisible(true);
-    }
+        QuestionDTO newQues = new QuestionDTO();
+        newQues.setText(contentField.getText().trim());
+        newQues.setDifficult((Enums.DifficultValue) diffBox.getSelectedItem());
+        newQues.setChapter((ChapterDTO) chapterBox.getSelectedItem());
+        newQues.setCreatedBy(createdByField.getText().trim());
+
+        ArrayList<AnswerDTO> answers = new ArrayList<>();
+        String[] answerTexts = {
+            answerA.getText().trim(),
+            answerB.getText().trim(),
+            answerC.getText().trim(),
+            answerD.getText().trim()
+        };
+
+        String correct = (String) correctAnswerBox.getSelectedItem();
+        String[] labels = {"A", "B", "C", "D"};
+        for (int i = 0; i < 4; i++) {
+            AnswerDTO ans = new AnswerDTO();
+            ans.setText(answerTexts[i]);
+            ans.setRight(correct.equals(labels[i]));
+            //ans.setLabel(labels[i]);
+            answers.add(ans);
+        }
+
+        newQues.setAns(answers);
+
+        if (questionDAL.add(newQues)) {
+            JOptionPane.showMessageDialog(this, "Question added successfully!");
+            bank = questionDAL.getAll();
+            loadQuestions();
+            dialog.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to add question.");
+        }
+    });
+
+    cancelButton.addActionListener(e -> dialog.dispose());
+   dialog.setUndecorated(true);
+    dialog.setVisible(true);
+}
+
     
 }
 

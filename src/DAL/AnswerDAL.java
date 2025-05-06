@@ -44,7 +44,7 @@ public class AnswerDAL {
             }
         return false;
     }
-    //Update 
+    
     //Add
     public  Boolean add(AnswerDTO a, String ID){
         String sql = "INSERT INTO dapan (MaCH, NoiDung, Dung) VALUES (?, ?, ?)";
