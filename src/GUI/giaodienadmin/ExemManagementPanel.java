@@ -81,7 +81,7 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
 
     private void addExam() {
         // Logic to add a new exam
-        JOptionPane.showMessageDialog(this, "Add Exam functionality not implemented yet!");
+        new AddExamDialog(this).setVisible(true);
     }
 
     private void editExam() {

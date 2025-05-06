@@ -23,9 +23,10 @@ public class ThanhBar extends JPanel implements ActionListener, MouseListener {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         buttonPanel.setOpaque(false);
 
-        btnminimize = createButton("/Icon/minimize.png");
-        btnmaxnimize = createButton("/Icon/maximize.png");
-        btnclose = createButton("/Icon/close.png");
+       
+        btnminimize = createButton("/GUI/giaodienadmin/Icon/minimize.png");
+        btnmaxnimize = createButton("/GUI/giaodienadmin/Icon/maximize.png");
+        btnclose = createButton("/GUI/giaodienadmin/Icon/close.png");
 
         buttonPanel.add(btnminimize);
         buttonPanel.add(btnmaxnimize);
