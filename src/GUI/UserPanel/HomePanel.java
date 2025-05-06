@@ -18,7 +18,6 @@ public class HomePanel extends JPanel {
     private JLabel homeTitle;
     private RoundedTextField maBaiKT;
     private JLabel textintheBox;
-    private JLabel buttonTitle;
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
 
     public HomePanel(MainFrame mainFrame) {
@@ -66,19 +65,20 @@ public class HomePanel extends JPanel {
         maBaiKT.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         maBaiKT.setOpaque(false); // Để vẽ nền tùy chỉnh
 
-        buttonTitle = new JLabel("Xác Nhận", SwingConstants.CENTER);
-        buttonTitle.setFont(new Font("Arial", Font.BOLD, 38));
-        buttonTitle.setBounds(717, 648, 400, 100);
-
         JButton confirmButton = ButtonFactory.createConfirmButton(mainFrame,42,717,648,400,100,Ulti.BananaLeaf, e  -> {
             String testCode = maBaiKT.getText().trim();
             if (testCode.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bài kiểm tra!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } else {
-                TakeExam takeExam = new TakeExam(new ExamBLL().gen(mainFrame.userBLL.getCurrent().getLoginName(), new ExamStructBLL().get(testCode)));
+                mainFrame.addPanel(new TakeExam(new ExamBLL().gen(mainFrame.userBLL.getCurrent().getLoginName(), new ExamStructBLL().get(testCode)),mainFrame), "takeExam");
+                mainFrame.showPanel("takeExam");
             }
             
         });
+        confirmButton.setText("Xác Nhận");
+        confirmButton.setFont(new Font("Arial", Font.BOLD, 38));
+        confirmButton.setForeground(Color.BLACK);
+
         JLabel logout = AddImage.createImageLabel(Connect.img+"logout.png", 57, 750, 100, 100);
         add(logout);
         // Nút quay lại LoginPanel
@@ -90,7 +90,6 @@ public class HomePanel extends JPanel {
         add(homeTitle);
         add(textintheBox);
         add(maBaiKT);
-        add(buttonTitle);
         add(menuPanel);
     }
 }

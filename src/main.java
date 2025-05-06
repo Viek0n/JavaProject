@@ -2,10 +2,6 @@
 import GUI.UserPanel.MainFrame;
 
 
-
-
-
-
 public class main {
     public static void main(String[] args) {
         /*ExamStructDTO examStruct = new ExamStructDTO();
@@ -29,5 +25,8 @@ public class main {
        
         MainFrame mainFrame = new MainFrame();
        //TrangChu tr = new TrangChu();
+
+        //ExamStructDTO x = new ExamStructDAL().get("CT1");
+        //TakeExam user = new TakeExam(new ExamBLL().gen("Sys", x));
     }
 }

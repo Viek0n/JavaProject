@@ -13,7 +13,7 @@ import MICS.Enums;
 import java.awt.*;
 import javax.swing.*;
 
-public class TakeExam {
+public class TakeExam extends JPanel {
 
     private int FrameWidth = 1600;
     private int FrameHeight = 900;
@@ -21,38 +21,35 @@ public class TakeExam {
     private int columns;
     private int currentQuestionIndex = 0;
 
-    JFrame User_frame;
-    JPanel Main_panel, Left_panel, Right_panel, Test_panel,dynamicNumberPanel,gridPanel;
-    JLabel Test_title, Code_Exam1, Code_Exam2, Test_img;
+    MainFrame mainFrame;
+    JPanel Left_panel, Right_panel, Test_panel,dynamicNumberPanel,gridPanel;
+    JLabel Test_img;
     JTextField leftField,rightField; 
     RoundedButton[] answerButton;
     JButton[] cell;
     CountdownTimer countDown;
 
-    public TakeExam(ExamDTO exam) {
+    public TakeExam(ExamDTO exam, MainFrame mainFrame) {
         columns = 4;
         JLabel questionNumberLabel = new JLabel();
         JLabel questionLabel = new JLabel();
         this.exam = exam;
+        this.mainFrame = mainFrame;
         cell = new JButton[exam.getQuestion().size()];
         answerButton = new RoundedButton[4];
         // Tạo frame cho User
-        User_frame = new JFrame();
-        User_frame.setSize(FrameWidth, FrameHeight);
-        User_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        User_frame.setResizable(false);
+        this.setLayout(null);
 
         // Tạo panel chứa tất cả thành phần
-        Main_panel = new JPanel();
-        Main_panel.setBackground(Ulti.MainColor);
-        Main_panel.setLayout(null);
+        this.setBackground(Ulti.MainColor);
+        this.setLayout(null);
 
         // Tạo Left_panel chứa các thành phần về đề thi
         Left_panel = new JPanel();
         Left_panel.setBackground(Color.white);
         Left_panel.setBounds(0, 0, 214, 900);
         Left_panel.setLayout(null);
-        Main_panel.add(Left_panel);
+        this.add(Left_panel);
 
         Test_img = AddImage.createImageLabel(Connect.img+"test.png", 76, 30, 80, 80);
         Left_panel.add(Test_img);
@@ -88,7 +85,7 @@ public class TakeExam {
         dynamicNumberPanel.add(slashLabel);
         dynamicNumberPanel.add(rightField);
 
-        countDown = new CountdownTimer(exam.getRemainingTime(),exam,User_frame);
+        countDown = new CountdownTimer(exam.getRemainingTime(),exam,mainFrame);
         countDown.setBounds(50, 100, 100, 100);
         Left_panel.add(countDown);
         // Thêm dynamicNumberPanel vào Left_panel
@@ -109,7 +106,7 @@ public class TakeExam {
             final int questionIndex = i;
             cell[i] = ButtonFactory.createConfirmButton(Integer.toString(i+1), e -> {
                 leftField.setText(Integer.toString(questionIndex+1));
-                questionNumberLabel.setText("Câu " +Integer.toString(questionIndex+1) + ": ");
+                questionNumberLabel.setText("<html><u><b>Câu " +Integer.toString(questionIndex+1) + ":</b></u></html>");
                 questionLabel.setText("<html>"+exam.getQuestion().get(questionIndex).getText()+"</html>");
                 currentQuestionIndex = questionIndex;
                 for(int tmp = 0; tmp < 4; tmp++)
@@ -152,8 +149,8 @@ public class TakeExam {
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(null, "Điểm kiểm tra: "+Float.toString(new ExamBLL().calculate(exam)), "Result", JOptionPane.INFORMATION_MESSAGE);
-                User_frame.setVisible(false);
+                mainFrame.addPanel(new ScorePanel(mainFrame, mainFrame.userBLL.getCurrent(), new ExamBLL().calculate(exam), countDown.formatTime()), "ResultPanel");
+                mainFrame.showPanel("ResultPanel");
             }
         });
         // Thêm biểu tượng và nút Logout vào Left_panel
@@ -165,12 +162,12 @@ public class TakeExam {
         Right_panel.setLayout(null);
         Right_panel.setBackground(Ulti.MainColor); // Light blue
         Right_panel.setBounds(214, 0, 1386, 900);
-        Main_panel.add(Right_panel);
+        this.add(Right_panel);
 
 
 
         // Question number label
-        questionNumberLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        questionNumberLabel.setFont(new Font("Arial", Font.BOLD, 40));
         questionNumberLabel.setBounds(115, 100, 153, 47);
         Right_panel.add(questionNumberLabel);
 
@@ -208,7 +205,7 @@ public class TakeExam {
             int x = (i % 2 == 0) ? startX : startX + buttonWidth + 50; // Cột trái hoặc phải
             int y = startY + (i / 2) * gapY; // Hàng trên hoặc dưới
 
-            answerButton[i].setBounds(x, y, buttonWidth, buttonHeight);
+            answerButton[i].setBounds(x + 10, y, buttonWidth, buttonHeight);
 
             // Thêm nút vào Right_panel\
             //?
@@ -230,8 +227,7 @@ public class TakeExam {
         }
       
      
-        User_frame.add(Main_panel);
-        User_frame.setVisible(true);
+        mainFrame.add(this);
         cell[0].doClick();
     }
 }

@@ -1,5 +1,6 @@
 package GUI.UserPanel;
 
+import DTO.UserDTO;
 import GUI.MakeColor.*;
 import MICS.*;
 import java.awt.Color;
@@ -7,13 +8,20 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 public class ScorePanel extends JPanel {
     private JPanel menuPanel;
 
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
+    private UserDTO user;
+    private float score;
+    private String time;
 
-    public ScorePanel(MainFrame mainFrame) {
+    public ScorePanel(MainFrame mainFrame, UserDTO user, float score, String time) {
         this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
+        this.user = user;
+        this.score = score;
+        this.time = time;
         init();
     }
 
@@ -52,35 +60,43 @@ public class ScorePanel extends JPanel {
         mainFrame.showPanel("LoginPanel");
         });
 
-        RoundedPanel score = new RoundedPanel(109);
-        score.setBounds(500, 25, 850, 850);
+        RoundedPanel scorePanel = new RoundedPanel(109);
+        scorePanel.setBounds(500, 25, 850, 850);
         
         
-        JLabel scoreTitle = new JLabel("Score");
+        JLabel scoreTitle = new JLabel("Điểm");
         scoreTitle.setFont(new Font("Arial", Font.BOLD, 100));
-        scoreTitle.setBounds(755, 94, 467, 120);
+        scoreTitle.setBounds(810, 94, 467, 120);
         add(scoreTitle);
 
-        JLabel underline = new JLabel();
-        underline.setBounds(577, 264, 700, 5);
-        underline.setBackground(Color.BLACK);
+        JLabel scoreLabel = new JLabel(Float.toString(score));
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 100));
+        scoreLabel.setBounds(850, 275, 467, 120);
+        add(scoreLabel);
 
+        JLabel underline = new JLabel();
+        underline.setBounds(577, 360, 700, 5);
+        underline.setBackground(Color.BLACK);
         add(underline); 
 
-        JLabel Timer = new JLabel("Thời Gian:");
-        Timer.setFont(new Font("Arial", Font.BOLD, 28));
-        Timer.setBounds(841, 555, 174, 88);
+        JLabel Timer = new JLabel("Thời Gian: " + time);
+        Timer.setFont(new Font("Arial", Font.BOLD, 32));
+        Timer.setBounds(800, 595, 500, 88);
+        Timer.setForeground(Color.BLACK);
         add(Timer);
 
         JButton CheckButton = ButtonFactory.createConfirmButton(mainFrame, 20, 800, 679, 250, 75,Ulti.BananaLeaf,e -> {
-            mainFrame.showPanel("LoginPanel");
+            mainFrame.showPanel("HomePanel");
         });
+        CheckButton.setText("Thoát");
+        CheckButton.setFont(new Font("Arial", Font.BOLD, 28));
+        CheckButton.setForeground(Color.BLACK);
         add(CheckButton);
 
         add(logoutButton);
         add(logout);
         add(menuPanel);
-        add(score);
+        add(scorePanel);
 
     }
 }

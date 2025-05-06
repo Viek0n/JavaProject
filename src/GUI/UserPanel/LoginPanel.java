@@ -71,7 +71,7 @@ public class LoginPanel extends JPanel {
                     mainFrame.addPanel(newUserList, "UserListPanel");
 
                     // Chuyển sang LoginPanel mới
-                    mainFrame.showPanel("UserListPanel");
+                    mainFrame.showPanel("HomePanel");
                     break;
 
                     case Enums.UserError.LOCKED:
