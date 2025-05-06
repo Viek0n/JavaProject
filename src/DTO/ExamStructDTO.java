@@ -11,17 +11,17 @@ public class ExamStructDTO {
     Date Start, End;
     Time ExamTime;
     SubjectDTO subject;
-    ArrayList<QuestionDTO> selectedQues;
-    ArrayList<QuestionDTO> randomQues;
+    ArrayList<ExamStructDetailDTO> randomDetail;
+    ArrayList<ExamStructSelectedDTO> selectDetail;
     
     @Override
     public String toString(){
         String x = ID + ": " + Name + "\n" + Desc + "\nTime: "+Start+" - "+End+"\nIn: "+ExamTime+"\n"+subject;
         x+="\nrandomQues\n";
-        for(QuestionDTO q: selectedQues)
+        for(ExamStructDetailDTO q: randomDetail)
             x+=q;
         x+="\nselectedQues\n";
-        for(QuestionDTO q: selectedQues)
+        for(ExamStructSelectedDTO q: selectDetail)
             x+=q;
         return x;
     }
@@ -87,20 +87,20 @@ public class ExamStructDTO {
         this.subject = subject;
     }
 
-    public ArrayList<QuestionDTO> getSelectedQues() {
-        return selectedQues;
+    public ArrayList<ExamStructDetailDTO> getRandomDetail() {
+        return randomDetail;
     }
 
-    public void setSelectedQues(ArrayList<QuestionDTO> selectedQues) {
-        this.selectedQues = selectedQues;
+    public void setRandomDetail(ArrayList<ExamStructDetailDTO> randomDetail) {
+        this.randomDetail = randomDetail;
     }
 
-    public ArrayList<QuestionDTO> getRandomQues() {
-        return randomQues;
+    public ArrayList<ExamStructSelectedDTO> getSelectDetail() {
+        return selectDetail;
     }
 
-    public void setRandomQues(ArrayList<QuestionDTO> randomQues) {
-        this.randomQues = randomQues;
+    public void setSelectDetail(ArrayList<ExamStructSelectedDTO> selectDetail) {
+        this.selectDetail = selectDetail;
     }
 
 }

@@ -1,6 +1,8 @@
 package DAL;
 
 import DTO.ExamStructDTO;
+import DTO.ExamStructDetailDTO;
+import DTO.ExamStructSelectedDTO;
 import DTO.QuestionDTO;
 import DTO.SubjectDTO;
 import MICS.Connect;
@@ -11,11 +13,15 @@ import java.util.ArrayList;
 public class ExamStructDAL {
     private SubjectDAL subjectDAL;
     private QuestionDAL questionDAL;
+    private ExamStructDetailDAL examStructDetailDAL;
+    private ExamStructSelectedDAL examStructSelectedDAL;
     
     
     public ExamStructDAL() {
         subjectDAL = new SubjectDAL();
         questionDAL = new QuestionDAL();
+        examStructDetailDAL = new ExamStructDetailDAL();
+        examStructSelectedDAL = new ExamStructSelectedDAL();
     }
 
     private  Connection getConnection() throws SQLException {
@@ -82,6 +88,10 @@ public class ExamStructDAL {
             pstmt.setTime(6, examStruct.getExamTime());
             pstmt.setString(7, examStruct.getSubject().getID());
 
+            for(ExamStructDetailDTO x : examStruct.getRandomDetail())
+                examStructDetailDAL.add(new ExamStructDetailDTO(x.getChapID(), x.getDiff(), x.getExamStructID(), x.getQuantity()));
+            for(ExamStructSelectedDTO x: examStruct.getSelectDetail())
+                examStructSelectedDAL.add(new ExamStructSelectedDTO(x.getExamStructID(), x.getQuestID()));
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -90,7 +100,7 @@ public class ExamStructDAL {
     }
 
     public  boolean update(ExamStructDTO examStruct) {
-        String query = "UPDATE ExamStruct SET Name = ?, Desc = ?, Start = ?, End = ?, ExamTime = ?, SubjectID = ? WHERE ID = ?";
+        String query = "UPDATE cautrucde SET TenCT = ?, MoTa = ?, ThoiGianBD = ?, ThoiGianKT = ?, ThoiGianLamBai = ?, MonHoc = ? WHERE MaCT = ?";
         try (Connection con = getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
 
@@ -101,7 +111,13 @@ public class ExamStructDAL {
             pstmt.setTime(5, examStruct.getExamTime());
             pstmt.setString(6, examStruct.getSubject().getID());
             pstmt.setString(7, examStruct.getID());
-
+            
+            examStructDetailDAL.deleteAll(examStruct.getID());
+            examStructSelectedDAL.deleteAll(examStruct.getID());
+            for(ExamStructDetailDTO x : examStruct.getRandomDetail())
+                examStructDetailDAL.add(new ExamStructDetailDTO(x.getChapID(), x.getDiff(), x.getExamStructID(), x.getQuantity()));
+            for(ExamStructSelectedDTO x: examStruct.getSelectDetail())
+                examStructSelectedDAL.add(new ExamStructSelectedDTO(x.getExamStructID(), x.getQuestID()));
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -139,8 +155,8 @@ public class ExamStructDAL {
                     examStruct.setExamTime(rs.getTime("ThoiGianLamBai"));
                     SubjectDTO subject = subjectDAL.get(rs.getString("MonHoc"));
                     examStruct.setSubject(subject);
-                    examStruct.setRandomQues(loadRandom(id));
-                    examStruct.setSelectedQues(loadSelected(id));
+                    examStruct.setRandomDetail(examStructDetailDAL.getAll(examStruct.getID()));
+                    examStruct.setSelectDetail(examStructSelectedDAL.getAll(examStruct.getID()));
                     return examStruct;
                 }
             }
@@ -171,6 +187,24 @@ public class ExamStructDAL {
 
     public ArrayList<QuestionDTO> loadRandom(String ID){
         String sql = "SELECT * FROM chitietde WHERE MaCT = ?";
+        ArrayList<QuestionDTO> array =  new ArrayList<QuestionDTO>();
+        try(Connection conn = Connect.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, ID);
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                array.addAll(questionDAL.getRandom(rs.getInt("SoLuong"), rs.getString("MaChuong"), Enums.DifficultValue.valueOf(rs.getString("DoKho"))));
+            }
+        }catch (SQLException e) {
+            System.out.println("Kết nối chitietde thất bại!");
+            e.printStackTrace();
+        }
+        return array;
+    }
+
+    public ArrayList<QuestionDTO> loadAllRandom(String ID){
+        String sql = "SELECT * FROM chitietde WHERE MaCT = ?";
         ArrayList<QuestionDTO> array = null;
         try(Connection conn = Connect.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -178,7 +212,7 @@ public class ExamStructDAL {
 
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
-                array = questionDAL.getRandom(rs.getInt("SoLuong"), rs.getString("MaChuong"), Enums.DifficultValue.valueOf(rs.getString("DoKho")));
+                array = new ArrayList<>(questionDAL.getByDiffChap(rs.getString("MaChuong"), Enums.DifficultValue.valueOf(rs.getString("DoKho"))));
             }
         }catch (SQLException e) {
             System.out.println("Kết nối chitietde thất bại!");
