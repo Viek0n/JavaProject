@@ -64,7 +64,14 @@ public class LoginPanel extends JPanel {
             } else {
                 switch(mainFrame.userBLL.login(mssv, password)){
                     case Enums.UserError.NORMAL:
-                        mainFrame.showPanel("HomePanel");
+                                    // Tạo một LoginPanel mới
+                    UserList newUserList = new UserList(mainFrame);
+
+                    // Thêm LoginPanel mới vào CardLayout
+                    mainFrame.addPanel(newUserList, "UserListPanel");
+
+                    // Chuyển sang LoginPanel mới
+                    mainFrame.showPanel("UserListPanel");
                     break;
 
                     case Enums.UserError.LOCKED:

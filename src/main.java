@@ -26,6 +26,8 @@ public class main {
         System.out.print(quest);
         questionBLL.update(quest);*/
 
+       
         MainFrame mainFrame = new MainFrame();
+       //TrangChu tr = new TrangChu();
     }
 }

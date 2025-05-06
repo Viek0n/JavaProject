@@ -50,11 +50,12 @@ public class ButtonFactory {
         return clearButton;
     }
 
-    public static JButton createConfirmButton(MainFrame mainFrame,int r,int x, int y,int width,int height,Color color,ActionListener onConfirm) {
+    public static JButton createConfirmButton(MainFrame mainFrame,int r,int x,int y,int width,int height,Color color,ActionListener onConfirm) {
         JButton confirmButton = new RoundedButton("", r);
         confirmButton.setBounds(x, y, width, height);
         confirmButton.setBackground(color);
         confirmButton.addActionListener(onConfirm);
+        confirmButton.setOpaque(false);
         confirmButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
