@@ -1,5 +1,4 @@
 package GUI.UserPanel;
-
 import GUI.MakeColor.*;
 import MICS.*;
 import java.awt.Color;
@@ -55,38 +54,7 @@ public class LoginPanel extends JPanel {
         passField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         passField.setOpaque(false);
 
-        JButton confirmButton =  ButtonFactory.createConfirmButton(mainFrame,20,375,355,250,75,Ulti.BananaLeaf,a -> {
-            String mssv = mssvField.getText();
-            String password = passField.getText();
-
-            if (mssv.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            } else {
-                switch(mainFrame.userBLL.login(mssv, password)){
-                    case Enums.UserError.NORMAL:
-                                    // Tạo một LoginPanel mới
-                    UserList newUserList = new UserList(mainFrame);
-
-                    // Thêm LoginPanel mới vào CardLayout
-                    mainFrame.addPanel(newUserList, "UserListPanel");
-
-                    // Chuyển sang LoginPanel mới
-                    mainFrame.showPanel("UserListPanel");
-                    break;
-
-                    case Enums.UserError.LOCKED:
-                        JOptionPane.showMessageDialog(this, "Người dùng đã bị khóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    break;
-
-                    case Enums.UserError.NOUSER:
-                        JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    break;
-
-                    case Enums.UserError.WRONGPASS:
-                        JOptionPane.showMessageDialog(this, "Sai mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    break;
-                }
-            }});
+        JButton confirmButton =  ButtonFactory.createConfirmButton(mainFrame,20,375,355,250,75,Ulti.BananaLeaf,a -> extracted());
             
         confirmButton.setText("Đăng Nhập");
         confirmButton.setFont(new Font("Arial", Font.BOLD, 38));
@@ -98,5 +66,39 @@ public class LoginPanel extends JPanel {
         loginPanel.add(confirmButton);
 
         add(loginPanel);
+    }
+
+    private void extracted() {
+        String mssv = mssvField.getText();
+        String password = passField.getText();
+
+        if (mssv.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            switch(mainFrame.userBLL.login(mssv, password)){
+                case Enums.UserError.NORMAL:
+                                // Tạo một LoginPanel mới
+                UserList newUserList = new UserList(mainFrame);
+
+                // Thêm LoginPanel mới vào CardLayout
+                mainFrame.addPanel(newUserList, "UserListPanel");
+
+                // Chuyển sang LoginPanel mới
+                mainFrame.showPanel("UserListPanel");
+                break;
+
+                case Enums.UserError.LOCKED:
+                    JOptionPane.showMessageDialog(this, "Người dùng đã bị khóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                break;
+
+                case Enums.UserError.NOUSER:
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                break;
+
+                case Enums.UserError.WRONGPASS:
+                    JOptionPane.showMessageDialog(this, "Sai mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                break;
+            }
+        }
     }
 }

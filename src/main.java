@@ -1,5 +1,6 @@
 
 import GUI.UserPanel.MainFrame;
+import GUI.giaodienadmin.TrangChu;
 
 
 
@@ -27,7 +28,7 @@ public class main {
         questionBLL.update(quest);*/
 
        
-        MainFrame mainFrame = new MainFrame();
-       //TrangChu tr = new TrangChu();
+        //MainFrame mainFrame = new MainFrame();
+        TrangChu tr = new TrangChu();
     }
 }

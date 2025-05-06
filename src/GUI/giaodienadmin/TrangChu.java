@@ -47,7 +47,9 @@ public class TrangChu extends JFrame implements ActionListener {
         cardPanel = new JPanel(cardLayout);
 
         // Add panels to CardLayout
-        cardPanel.add(new QuestionManagementPanel(), "QuanLyCauHoi");
+        PanelExemDetail panelExemDetail = new PanelExemDetail(cardPanel, cardLayout);
+        cardPanel.add(new QuestionManagementPanel(cardPanel, cardLayout, panelExemDetail), "QuanLyCauHoi");
+        cardPanel.add(panelExemDetail, "EditPanel");
         cardPanel.add(new ExemManagementPanel(), "QuanLyBaiKiemTra");
         cardPanel.add(new UserManagementPanel(), "QuanLyNguoiDung");
         this.add(cardPanel, BorderLayout.CENTER);
