@@ -1,4 +1,4 @@
-package GUI;
+package GUI.UserPanel;
 
 import BLL.ExamBLL;
 import DTO.ExamDTO;
@@ -88,7 +88,7 @@ public class TakeExam {
         dynamicNumberPanel.add(slashLabel);
         dynamicNumberPanel.add(rightField);
 
-        countDown = new CountdownTimer(exam.getRemainingTime(),exam);
+        countDown = new CountdownTimer(exam.getRemainingTime(),exam,User_frame);
         countDown.setBounds(50, 100, 100, 100);
         Left_panel.add(countDown);
         // Thêm dynamicNumberPanel vào Left_panel
@@ -153,6 +153,7 @@ public class TakeExam {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 JOptionPane.showMessageDialog(null, "Điểm kiểm tra: "+Float.toString(new ExamBLL().calculate(exam)), "Result", JOptionPane.INFORMATION_MESSAGE);
+                User_frame.setVisible(false);
             }
         });
         // Thêm biểu tượng và nút Logout vào Left_panel

@@ -1,5 +1,7 @@
 package GUI.UserPanel;
 
+import BLL.ExamBLL;
+import BLL.ExamStructBLL;
 import GUI.MakeColor.*;
 import MICS.*;
 import java.awt.Color;
@@ -73,7 +75,7 @@ public class HomePanel extends JPanel {
             if (testCode.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bài kiểm tra!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Mã bài kiểm tra: " + testCode, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                TakeExam takeExam = new TakeExam(new ExamBLL().gen(mainFrame.userBLL.getCurrent().getLoginName(), new ExamStructBLL().get(testCode)));
             }
             
         });

@@ -1,8 +1,5 @@
 
-import BLL.ExamBLL;
-import DAL.ExamStructDAL;
-import DTO.ExamStructDTO;
-import GUI.TakeExam;
+import GUI.UserPanel.MainFrame;
 
 
 
@@ -29,9 +26,9 @@ public class main {
         System.out.print(quest);
         questionBLL.update(quest);*/
 
-        //MainFrame mainFrame = new MainFrame();
+        MainFrame mainFrame = new MainFrame();
 
-        ExamStructDTO x = new ExamStructDAL().get("CT1");
-        TakeExam user = new TakeExam(new ExamBLL().gen("Sys", x));
+        //ExamStructDTO x = new ExamStructDAL().get("CT1");
+        //TakeExam user = new TakeExam(new ExamBLL().gen("Sys", x));
     }
 }

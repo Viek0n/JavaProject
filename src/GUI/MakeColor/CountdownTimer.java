@@ -1,20 +1,21 @@
 package GUI.MakeColor;
 
+import BLL.ExamBLL;
 import DTO.ExamDTO;
 import java.awt.event.*;
 import java.sql.Time;
 import javax.swing.*;
 
-import BLL.ExamBLL;
-
 public class CountdownTimer extends JLabel {
     private long timeRemainingMillis;
     private Timer timer;
     private ExamDTO exam;
+    private JFrame frame;
 
-    public CountdownTimer(Time sqlTime, ExamDTO exam) {
+    public CountdownTimer(Time sqlTime, ExamDTO exam, JFrame frame) {
         // Convert java.sql.Time to milliseconds duration
         this.exam = exam;
+        this.frame = frame;
         int hour = sqlTime.getHours();
         int minutes = sqlTime.getMinutes() + hour*60;
         int seconds = sqlTime.getSeconds();
@@ -33,6 +34,7 @@ public class CountdownTimer extends JLabel {
                     setText("00:00");
                     JOptionPane.showMessageDialog(null, "Hết giờ!");
                     JOptionPane.showMessageDialog(null, "Điểm kiểm tra: "+Float.toString(new ExamBLL().calculate(exam)), "Result", JOptionPane.INFORMATION_MESSAGE);
+                    frame.setVisible(false);
                 } else {
                     setText(formatTime(timeRemainingMillis));
                 }
