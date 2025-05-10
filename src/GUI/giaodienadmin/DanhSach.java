@@ -19,8 +19,8 @@ public class DanhSach extends JPanel {
     }
 
     public void initComponent() {
-        this.setLayout(new GridLayout(5, 1, 5, 5));
-        this.setPreferredSize(new Dimension(180, 800));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        this.setPreferredSize(new Dimension(160, 800));
         this.setBackground(Color.decode("#34495e"));
 
         ArrayList<String> danhSachQuanLy = new ArrayList<>();
@@ -32,10 +32,12 @@ public class DanhSach extends JPanel {
         for (int i = 0; i < danhSachQuanLy.size(); i++) {
             buttons[i] = new JButton(danhSachQuanLy.get(i));
             buttons[i].setBackground(Color.decode("#2ecc71"));
+            buttons[i].setPreferredSize(new Dimension(180, 50));
+            
             buttons[i].setForeground(Color.WHITE);
             buttons[i].setFocusPainted(false);
             buttons[i].setBorderPainted(false);
-            buttons[i].setFont(new Font("Arial", Font.BOLD, 10));
+            //buttons[i].setFont(new Font("Arial", Font.BOLD, 10));
             buttons[i].addActionListener(trangchu);
             this.add(buttons[i]);
         }

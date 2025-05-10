@@ -104,26 +104,26 @@ public class ThanhBar extends JPanel implements ActionListener, MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource() == btnclose || e.getSource() == btnminimize || e.getSource() == btnmaxnimize) {
-            ((JButton) e.getSource()).setBackground(Color.decode("#2c3e50"));
+            ((JButton) e.getSource()).setBackground(Color.red);
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         if (e.getSource() == btnclose) {
-            btnclose.setBackground(Color.decode("#c0392b"));
+            btnclose.setBackground(Color.red);
         }
         if (e.getSource() == btnminimize || e.getSource() == btnmaxnimize) {
-            ((JButton) e.getSource()).setBackground(Color.decode("#3498db"));
+            ((JButton) e.getSource()).setBackground(Color.red);
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         if (e.getSource() == btnclose) {
-            btnclose.setBackground(Color.decode("#e74c3c"));
+            btnclose.setBackground(Color.red);
         } else if (e.getSource() == btnminimize || e.getSource() == btnmaxnimize) {
-            ((JButton) e.getSource()).setBackground(Color.decode("#2c3e50"));
+            ((JButton) e.getSource()).setBackground(Color.red);
         }
     }
 }
