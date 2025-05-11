@@ -1,13 +1,20 @@
 package GUI.giaodienadmin;
 
+import DAL.ExamStructDAL;
+import DTO.ExamStructDTO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Objects;
 
 public class ExemManagementPanel extends JPanel implements ActionListener {
     private JTable examTable;
@@ -15,12 +22,14 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private ExamStructDAL examStructDAL;
 
     public ExemManagementPanel() {
         initComponent();
     }
 
     private void initComponent() {
+        examStructDAL = new ExamStructDAL();
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(Color.decode("#ecf0f1"));
 
@@ -62,6 +71,9 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
+
+        // Load initial data
+        loadExams();
     }
 
     private JButton createButton(String text) {
@@ -76,8 +88,7 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            //addExamToTable(); // Removed the call to the empty addExamToTable()
-            showAddExamDialog(); //show the dialog.
+            showAddExamDialog();
         } else if (e.getSource() == editButton) {
             editExam();
         } else if (e.getSource() == deleteButton) {
@@ -87,30 +98,24 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
         }
     }
 
-    // Method to add a new exam to the table
     public void addExamToTable(Object[] rowData) {
-        // Perform data validation before adding to the table
         if (rowData == null || rowData.length != 5) {
             JOptionPane.showMessageDialog(this, "Invalid data format. Expected 5 values.");
-            return; // Important: Exit if data is invalid
+            return;
         }
 
         String examId = (String) rowData[0];
         String examName = (String) rowData[1];
         String startDateStr = (String) rowData[2];
         String endDateStr = (String) rowData[3];
-        Integer duration;
+      
+       
 
-        //check if the duration is an Integer.
-        try {
-            duration = Integer.parseInt((String) rowData[4]);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid duration format.  Must be a number");
-            return;
-        }
-        // Further data validation (e.g., date format, ID uniqueness) can be added here
-        if (examId == null || examId.trim().isEmpty() || examName == null || examName.trim().isEmpty() || startDateStr == null || startDateStr.trim().isEmpty() || endDateStr == null || endDateStr.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Exam ID, Name, Start Date and End Date cannot be empty.");
+
+        
+        if (examId == null || examId.trim().isEmpty() || examName == null || examName.trim().isEmpty() ||
+            startDateStr == null || startDateStr.trim().isEmpty() || endDateStr == null || endDateStr.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Exam ID, Name, Start Date, and End Date cannot be empty.");
             return;
         }
 
@@ -118,11 +123,10 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             LocalDate.parse(startDateStr, DATE_FORMATTER);
             LocalDate.parse(endDateStr, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Invalid date format.  Please use YYYY-MM-DD");
+            JOptionPane.showMessageDialog(this, "Invalid date format. Please use YYYY-MM-DD.");
             return;
         }
 
-        // Add the row to the table model
         tableModel.addRow(rowData);
         JOptionPane.showMessageDialog(this, "Exam added successfully!");
     }
@@ -133,7 +137,7 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select an exam to edit!");
             return;
         }
-     
+
         JOptionPane.showMessageDialog(this, "Edit Exam functionality not implemented yet!");
     }
 
@@ -149,48 +153,54 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
     }
 
     private void searchExam() {
-    String keyword = searchField.getText().trim().toLowerCase();
-    if (keyword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
-        return;
-    }
-
-    DefaultTableModel filteredModel = new DefaultTableModel(new String[] {
-        "Exam ID", "Exam Name", "Start Date", "End Date", "Duration"
-    }, 0);
-
-    for (int i = 0; i < tableModel.getRowCount(); i++) {
-        boolean match = false;
-        for (int j = 0; j < tableModel.getColumnCount(); j++) {
-            Object value = tableModel.getValueAt(i, j);
-            if (value != null && value.toString().toLowerCase().contains(keyword)) {
-                match = true;
-                break;
-            }
+        String keyword = searchField.getText().trim().toLowerCase();
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
+            return;
         }
-        if (match) {
-            Object[] row = new Object[tableModel.getColumnCount()];
+
+        DefaultTableModel filteredModel = new DefaultTableModel(new String[]{
+            "Exam ID", "Exam Name", "Start Date", "End Date", "Duration"
+        }, 0);
+
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            boolean match = false;
             for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                row[j] = tableModel.getValueAt(i, j);
+                Object value = tableModel.getValueAt(i, j);
+                if (value != null && value.toString().toLowerCase().contains(keyword)) {
+                    match = true;
+                    break;
+                }
             }
-            filteredModel.addRow(row);
+            if (match) {
+                Object[] row = new Object[tableModel.getColumnCount()];
+                for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                    row[j] = tableModel.getValueAt(i, j);
+                }
+                filteredModel.addRow(row);
+            }
         }
+
+        examTable.setModel(filteredModel);
     }
 
-    examTable.setModel(filteredModel);
-}
-
-
-    public void loadExams(Object[][] data) {
+    public void loadExams() {
         tableModel.setRowCount(0);
-        for (Object[] row : data) {
-            tableModel.addRow(row);
+
+        List<ExamStructDTO> exams = examStructDAL.getAll();
+        for (ExamStructDTO exam : exams) {
+            tableModel.addRow(new Object[]{
+               exam.getID(),
+                exam.getName(),
+                exam.getStart(),
+                exam.getEnd(),
+                exam.getExamTime()
+            });
         }
     }
 
     private void showAddExamDialog() {
-        AddExamDialog dialog = new AddExamDialog(this); // Pass the parent panel
+        AddExamDialog dialog = new AddExamDialog(this);
         dialog.setVisible(true);
     }
 }
-

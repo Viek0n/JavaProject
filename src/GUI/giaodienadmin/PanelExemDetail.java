@@ -4,10 +4,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableCellRenderer;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+
 import java.util.ArrayList;
 import DAL.AnswerDAL;
 import DAL.QuestionDAL;
@@ -21,12 +21,10 @@ public class PanelExemDetail extends JPanel {
     private DefaultTableModel tableModel;
     private JButton saveButton, backButton;
     private String currentQuestionID;
-    private JPanel mainPanel;
-    private CardLayout cardLayout;
+
 
     public PanelExemDetail(JPanel mainPanel, CardLayout cardLayout) {
-        this.mainPanel = mainPanel;
-        this.cardLayout = cardLayout;
+
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(Color.decode("#f0f4f8")); // Màu nền nhạt
 

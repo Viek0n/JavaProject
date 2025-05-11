@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
+import MICS.Enums;
 public class LoginPanel extends JPanel {
     private JTextField mssvField;
     private JTextField passField;
@@ -62,7 +62,7 @@ public class LoginPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } else {
                 switch(mainFrame.userBLL.login(mssv, password)){
-                    case Enums.UserError.NORMAL:
+                    case NORMAL:
                                     // Tạo một LoginPanel mới
                     UserList newUserList = new UserList(mainFrame);
 
@@ -74,15 +74,15 @@ public class LoginPanel extends JPanel {
                     mainFrame.showPanel("HomePanel");
                     break;
 
-                    case Enums.UserError.LOCKED:
+                    case LOCKED:
                         JOptionPane.showMessageDialog(this, "Người dùng đã bị khóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     break;
 
-                    case Enums.UserError.NOUSER:
+                    case NOUSER:
                         JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     break;
 
-                    case Enums.UserError.WRONGPASS:
+                    case WRONGPASS:
                         JOptionPane.showMessageDialog(this, "Sai mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
@@ -100,7 +100,7 @@ public class LoginPanel extends JPanel {
         add(loginPanel);
     }
 
-    private void extracted() {
+    /*private void extracted() {
         String mssv = mssvField.getText();
         String password = passField.getText();
 
@@ -132,5 +132,5 @@ public class LoginPanel extends JPanel {
                 break;
             }
         }
-    }
+    }*/
 }

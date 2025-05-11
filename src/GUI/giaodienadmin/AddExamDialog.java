@@ -4,7 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.sql.Time;
 public class AddExamDialog extends JDialog implements ActionListener {
     private JTextField examIdField, examNameField, startDateField, endDateField, durationField;
     private JButton saveButton, cancelButton;
@@ -60,9 +64,11 @@ public class AddExamDialog extends JDialog implements ActionListener {
             String examName = examNameField.getText().trim();
             String startDate = startDateField.getText().trim();
             String endDate = endDateField.getText().trim();
-            String duration = durationField.getText().trim();
-
-            if (examId.isEmpty() || examName.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || duration.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime duration = LocalTime.parse(durationField.getText().trim(), formatter);
+            
+          
+            if (examId.isEmpty() || examName.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || duration == null) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields!");
                 return;
             }

@@ -34,7 +34,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     private boolean isSearchMode = false;
     private List<QuestionDTO> originalBank;
     private JPanel filterPanel;
-    private JDialog addQuestionDialog; // Declare dialog at class level
+    private JDialog addQuestionDialog; 
     private JPopupMenu popupMenu;
     private int selectedRow;
 

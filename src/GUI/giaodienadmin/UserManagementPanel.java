@@ -2,6 +2,7 @@ package GUI.giaodienadmin;
 
 import DAL.UserDAL;
 import DTO.UserDTO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -10,15 +11,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.border.AbstractBorder;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
+
 
 public class UserManagementPanel extends JPanel implements ActionListener {
     private JTable userTable;
     private DefaultTableModel tableModel;
     private JTextField searchField;
-    private JButton addButton, editButton, deleteButton, searchButton;
+    private JButton addButton, deleteButton, searchButton, clearButton;
     private UserDAL userDAL;
     private ArrayList<UserDTO> users;
     private PanelAddUser panelAddUser;
@@ -30,39 +32,30 @@ public class UserManagementPanel extends JPanel implements ActionListener {
 
     private void initComponent() {
         userDAL = new UserDAL();
-        users= userDAL.getAll();
-        this.setLayout(new BorderLayout(10, 10));
-        this.setBackground(Color.decode("#f0f4f8"));
+        users = new ArrayList<>();
+        setLayout(new BorderLayout(10, 10));
+        setBackground(Color.decode("#f0f4f8"));
 
         // Top panel
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 15));
         topPanel.setBackground(Color.decode("#e0e0e0"));
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        addButton = createButton("+ Add User");
-        addButton.setBackground(Color.decode("#4caf50"));
-        addButton.setForeground(Color.WHITE);
-        editButton = createButton("Edit");
-        editButton.setBackground(Color.decode("#008cba"));
-        editButton.setForeground(Color.WHITE);
-        deleteButton = createButton("Delete");
-        deleteButton.setBackground(Color.decode("#f44336"));
-        deleteButton.setForeground(Color.WHITE);
-
+        addButton = createButton("+ Add User", "#4caf50", Color.WHITE);
+        deleteButton = createButton("Delete", "#f44336", Color.WHITE);
         searchField = createSearchField();
-        searchButton = createButton("Search");
-        searchButton.setBackground(Color.decode("#ffc107"));
-        searchButton.setForeground(Color.BLACK);
+        searchButton = createButton("Search", "#ffc107", Color.BLACK);
+        clearButton = createButton("Clear", "#808080", Color.WHITE);
 
         topPanel.add(addButton);
-        topPanel.add(editButton);
         topPanel.add(deleteButton);
         topPanel.add(searchField);
         topPanel.add(searchButton);
+        topPanel.add(clearButton);
 
-        this.add(topPanel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
-        // Table for displaying users
+        // Table
         String[] columnNames = {"User ID", "Username", "Status", "Role", "Actions"};
         tableModel = new DefaultTableModel(columnNames, 0);
         userTable = new JTable(tableModel);
@@ -78,7 +71,12 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         userTable.setSelectionBackground(Color.decode("#b0e0e6"));
         userTable.setSelectionForeground(Color.BLACK);
 
-        // Apply custom renderers and editors
+        userTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        userTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        userTable.getColumnModel().getColumn(2).setPreferredWidth(100);
+        userTable.getColumnModel().getColumn(3).setPreferredWidth(100);
+        userTable.getColumnModel().getColumn(4).setPreferredWidth(80);
+
         userTable.getColumnModel().getColumn(0).setCellRenderer(new CustomLabelRenderer());
         userTable.getColumnModel().getColumn(1).setCellRenderer(new CustomLabelRenderer());
         userTable.getColumnModel().getColumn(2).setCellRenderer(new CustomLabelRenderer());
@@ -88,31 +86,33 @@ public class UserManagementPanel extends JPanel implements ActionListener {
 
         JScrollPane scrollPane = new JScrollPane(userTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        this.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         addButton.addActionListener(this);
-        editButton.addActionListener(this);
         deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
-        loadUsers();
+        clearButton.addActionListener(this);
 
-        // Initialize panelAddUser
-        /*panelAddUser = new PanelAddUser();
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "", true);
+        // Initialize dialog
+       /* panelAddUser = new PanelAddUser(userDAL);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "User Management", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.getContentPane().add(panelAddUser);
         dialog.pack();
-        dialog.setLocationRelativeTo(this);*/
+        dialog.setLocationRelativeTo(this);
+        dialog.setResizable(false);  */           
+
+        loadUsers();
     }
 
-    private JButton createButton(String text) {
+    private JButton createButton(String text, String bgColor, Color fgColor) {
         JButton button = new JButton(text);
-        button.setBackground(Color.decode("#3498db"));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFocusPainted(false);
         button.setBorder(new RoundedBorder(8));
         button.setPreferredSize(new Dimension(100, 35));
+        button.setBackground(Color.decode(bgColor));
+        button.setForeground(fgColor);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return button;
     }
@@ -120,10 +120,10 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     private JTextField createSearchField() {
         JTextField textField = new JTextField(20);
         textField.setFont(new Font("Arial", Font.PLAIN, 14));
-       /*  textField.setBorder(new CompoundBorder(
+        textField.setBorder(new CompoundBorder(
                 new RoundedBorder(8),
                 new EmptyBorder(5, 10, 5, 10)
-        ));*/
+        ));
         textField.setBackground(Color.WHITE);
         textField.setForeground(Color.decode("#2c3e50"));
         textField.setPreferredSize(new Dimension(200, 35));
@@ -131,7 +131,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     }
 
     private static class RoundedBorder extends AbstractBorder {
-        private int radius;
+        private final int radius;
 
         public RoundedBorder(int radius) {
             this.radius = radius;
@@ -146,14 +146,8 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         }
 
         @Override
-        public Insets getBorderInsets(Component c, Insets insets) {
-            insets.top = insets.left = insets.bottom = insets.right = this.radius;
-            return insets;
-        }
-
-        @Override
         public Insets getBorderInsets(Component c) {
-            return new Insets(this.radius, this.radius, this.radius, this.radius);
+            return new Insets(radius, radius, radius, radius);
         }
     }
 
@@ -164,107 +158,17 @@ public class UserManagementPanel extends JPanel implements ActionListener {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                      boolean isSelected, boolean hasFocus, int row, int column) {
             setText(value != null ? value.toString() : "");
             setFont(new Font("Arial", Font.PLAIN, 14));
             setForeground(Color.BLACK);
             setBackground(row % 2 == 0 ? Color.decode("#eaf2f8") : Color.WHITE);
-
             if (isSelected) {
                 setBackground(Color.decode("#AED6F1"));
                 setForeground(Color.BLACK);
             }
             setHorizontalAlignment(SwingConstants.LEFT);
             return this;
-        }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == addButton) {
-            showAddUserPanel();
-        } else if (e.getSource() == editButton) {
-            editUser();
-        } else if (e.getSource() == deleteButton) {
-            deleteUser();
-        } else if (e.getSource() == searchButton) {
-            searchUser();
-        }
-    }
-
-    private void showAddUserPanel() {
-       // panelAddUser.resetFields();
-        dialog.setTitle("Add User");
-        dialog.setVisible(true);
-        loadUsers();
-    }
-
-    private void showEditUserPanel(String userID) {
-        panelAddUser.loadUserData(userID);
-        dialog.setTitle("Edit User");
-        dialog.setVisible(true);
-        loadUsers();
-    }
-
-    private void editUser() {
-        int selectedRow = userTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a user to edit!", "Edit User", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        String userID = (String) tableModel.getValueAt(selectedRow, 0);
-        showEditUserPanel(userID);
-    }
-
-    private void deleteUser() {
-        int selectedRow = userTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a user to delete!", "Delete User", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        String userID = (String) tableModel.getValueAt(selectedRow, 0);
-        int confirmation = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-        if (confirmation == JOptionPane.YES_OPTION) {
-            if (userDAL.deleteByLoginName(userID)) {
-                tableModel.removeRow(selectedRow);
-                JOptionPane.showMessageDialog(this, "User deleted successfully!", "Delete User", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Error deleting user.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        loadUsers();
-    }
-
-    private void searchUser() {
-        String keyword = searchField.getText().trim();
-        if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter a keyword to search!", "Search User", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        ArrayList<UserDTO> searchResults = userDAL.searchUser(keyword);
-        tableModel.setRowCount(0);
-        for (UserDTO user : searchResults) {
-            tableModel.addRow(new Object[]{
-                    user.getLoginName(),
-                    user.getName(),
-                    user.getStatus().name(),
-                    user.getRole().getName(),
-                    "Edit"
-            });
-        }
-    }
-
-    public void loadUsers() {
-       
-        tableModel.setRowCount(0);
-        for (UserDTO user : users) {
-            tableModel.addRow(new Object[]{
-                    user.getLoginName(),
-                    user.getName(),
-                    user.getStatus().name(),
-                    user.getRole().getName(),
-                    "Edit"
-            });
         }
     }
 
@@ -279,18 +183,16 @@ public class UserManagementPanel extends JPanel implements ActionListener {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText((value == null) ? "Edit" : value.toString());
+            setText("Edit");
             return this;
         }
     }
 
     class ButtonEditor extends DefaultCellEditor {
-        private JButton button;
+        private final JButton button;
         private String label;
         private boolean clicked;
-        private JTable table;
         private int row;
-        private ActionListener actionListener;
 
         public ButtonEditor(JCheckBox checkBox) {
             super(checkBox);
@@ -303,22 +205,13 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             button.addActionListener(e -> {
                 clicked = true;
                 fireEditingStopped();
-                if (actionListener != null) {
-                    actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, String.valueOf(row)));
-                }
             });
-        }
-
-        public ButtonEditor(JCheckBox checkBox, ActionListener listener) {
-            this(checkBox);
-            this.actionListener = listener;
         }
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            this.table = table;
             this.row = row;
-            label = (value == null) ? "Edit" : value.toString();
+            label = "Edit";
             button.setText(label);
             return button;
         }
@@ -326,7 +219,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         @Override
         public Object getCellEditorValue() {
             if (clicked) {
-                String userID = (String) table.getValueAt(row, 0);
+                String userID = (String) tableModel.getValueAt(row, 0);
                 showEditUserPanel(userID);
             }
             clicked = false;
@@ -338,5 +231,146 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             clicked = false;
             return super.stopCellEditing();
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == addButton) {
+            showAddUserPanel();
+        } else if (e.getSource() == deleteButton) {
+            deleteUser();
+        } else if (e.getSource() == searchButton) {
+            searchUser();
+        } else if (e.getSource() == clearButton) {
+            searchField.setText("");
+            loadUsers();
+        }
+    }
+
+    private void showAddUserPanel() {
+        if (dialog == null || panelAddUser == null) {
+            panelAddUser = new PanelAddUser(userDAL);
+            dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Add User", Dialog.ModalityType.APPLICATION_MODAL);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.getContentPane().add(panelAddUser);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+        }
+        panelAddUser.resetFields();
+        dialog.setTitle("Add User");
+        dialog.setVisible(true);
+        loadUsers();
+    }
+
+    private void showEditUserPanel(String userID) {
+        if (panelAddUser.loadUserData(userID)) {
+            dialog.setTitle("Edit User");
+            dialog.setVisible(true);
+            loadUsers();
+        } else {
+            JOptionPane.showMessageDialog(this, "User not found!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteUser() {
+        int selectedRow = userTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a user to delete!", "Delete User", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String userID = (String) tableModel.getValueAt(selectedRow, 0);
+        int confirmation = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirmation == JOptionPane.YES_OPTION) {
+            try {
+                if (userDAL.deleteByLoginName(userID)) {
+                    tableModel.removeRow(selectedRow);
+                    JOptionPane.showMessageDialog(this, "User deleted successfully!", "Delete User", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error deleting user.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void searchUser() {
+        String keyword = searchField.getText().trim();
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a keyword to search!", "Search User", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            ArrayList<UserDTO> searchResults = userDAL.searchUser(keyword);
+            tableModel.setRowCount(0);
+            if (searchResults.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No users found!", "Search User", JOptionPane.INFORMATION_MESSAGE);
+            }
+            for (UserDTO user : searchResults) {
+                tableModel.addRow(new Object[]{
+                        user.getLoginName(),
+                        user.getName(),
+                        user.getStatus().name(),
+                        user.getRole().getName(),
+                        "Edit"
+                });
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadUsers() {
+        SwingWorker<ArrayList<UserDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<UserDTO> doInBackground() throws Exception {
+                return userDAL.getAll();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    users = get();
+                    tableModel.setRowCount(0);
+                    if (!users.isEmpty()) {
+                        for (UserDTO user : users) {
+                            tableModel.addRow(new Object[]{
+                                    user.getLoginName(),
+                                    user.getName(),
+                                    user.getStatus().name(),
+                                    user.getRole().getName(),
+                                    "Edit"
+                            });
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(UserManagementPanel.this, "No users found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(UserManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
+    }
+}
+
+// Placeholder for PanelAddUser (to be implemented)
+class PanelAddUser extends JPanel {
+    private UserDAL userDAL;
+
+    public PanelAddUser(UserDAL userDAL) {
+        this.userDAL = userDAL;
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBackground(Color.decode("#f0f4f8"));
+        // Implement fields (loginName, name, password, status, role), buttons, and save logic
+    }
+
+    public void resetFields() {
+        // Clear fields
+    }
+
+    public boolean loadUserData(String userID) {
+        // Load user data from userDAL
+        return true; // Placeholder
     }
 }
