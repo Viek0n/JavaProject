@@ -133,7 +133,7 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select an exam to edit!");
             return;
         }
-        // Logic to edit the selected exam
+     
         JOptionPane.showMessageDialog(this, "Edit Exam functionality not implemented yet!");
     }
 
@@ -149,14 +149,37 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
     }
 
     private void searchExam() {
-        String keyword = searchField.getText().trim();
-        if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
-            return;
-        }
-
-        JOptionPane.showMessageDialog(this, "Search functionality not implemented yet!");
+    String keyword = searchField.getText().trim().toLowerCase();
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
+        return;
     }
+
+    DefaultTableModel filteredModel = new DefaultTableModel(new String[] {
+        "Exam ID", "Exam Name", "Start Date", "End Date", "Duration"
+    }, 0);
+
+    for (int i = 0; i < tableModel.getRowCount(); i++) {
+        boolean match = false;
+        for (int j = 0; j < tableModel.getColumnCount(); j++) {
+            Object value = tableModel.getValueAt(i, j);
+            if (value != null && value.toString().toLowerCase().contains(keyword)) {
+                match = true;
+                break;
+            }
+        }
+        if (match) {
+            Object[] row = new Object[tableModel.getColumnCount()];
+            for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                row[j] = tableModel.getValueAt(i, j);
+            }
+            filteredModel.addRow(row);
+        }
+    }
+
+    examTable.setModel(filteredModel);
+}
+
 
     public void loadExams(Object[][] data) {
         tableModel.setRowCount(0);

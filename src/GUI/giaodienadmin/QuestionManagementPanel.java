@@ -70,26 +70,25 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         searchField = new JTextField(20);
         searchField.setFont(new Font("Arial", Font.PLAIN, 14));
         searchField.setBorder(new RoundedBorder(8));
-        searchField.setLayout(new BorderLayout()); // Use BorderLayout for the searchField
 
-        // Create a panel for the search button with a fixed size
+        // Create a panel for the search button
         JPanel searchButtonPanel = new JPanel();
-        searchButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Center alignment, no gap
+        searchButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
         // Create the search button
-        searchButton = createButton("Tìm kiếm"); // Assuming createButton() returns a JButton
-
-        // Style the button
-        searchButton.setBackground(Color.decode("#ffc107")); // Amber color
-        searchButton.setForeground(Color.BLACK);                                  // Text color
-        searchButton.setPreferredSize(new Dimension(100, 30)); // Fixed size
-        searchButton.setBorder(new RoundedBorder(8));                                  // Custom border with rounded corners
+        searchButton = createButton("Tìm kiếm");
+        searchButton.setBackground(Color.decode("#ffc107"));
+        searchButton.setForeground(Color.BLACK);
+        searchButton.setPreferredSize(new Dimension(100, 30));
+        searchButton.setBorder(new RoundedBorder(8));
 
         // Add the button to the panel
-        
+        searchButtonPanel.add(searchButton);
 
-
+        // Add the panel to the search field
+        searchField.setLayout(new BorderLayout());
         searchField.add(searchButtonPanel, BorderLayout.EAST);
+            
 
         backButton = createButton("Trở lại");
         backButton.setBackground(Color.decode("#808080"));
@@ -255,7 +254,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             if (filterPanel.isVisible()) {
                 isSearchMode = true;
                 backButton.setVisible(true);
-                // Reposition the filterPanel below the search field.
+             
                 Point location = searchField.getLocationOnScreen();
                 // Calculate y-coordinate to position it below searchField
                 int y = location.y + searchField.getHeight();
@@ -354,6 +353,24 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         }
         questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
         questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+    }
+    public void searchID(String ID){
+        bank=questionDAL.getByID(ID);
+        tableModel.setRowCount(0);
+        if (bank != null && !bank.isEmpty()) {
+            for (QuestionDTO row : bank) {
+                tableModel.addRow(new Object[]{
+                        row.getID(),
+                        row.getSubject() != null ? row.getSubject().getName() : "N/A",
+                        row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
+                        row.getChapter() != null ? row.getChapter().getName() : "N/A",
+                        "Xem"
+                });
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Không có câu hỏi nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
