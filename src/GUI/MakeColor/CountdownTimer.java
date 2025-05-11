@@ -44,9 +44,15 @@ public class CountdownTimer extends JLabel {
         timer.start();
     }
 
-    private String formatTime(long millis) {
+    public String formatTime(long millis) {
         int minutes = (int) (millis / 60000);
         int seconds = (int) ((millis % 60000) / 1000);
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public String formatTime() {
+        int minutes = (int) (timeRemainingMillis / 60000);
+        int seconds = (int) ((timeRemainingMillis % 60000) / 1000);
         return String.format("%02d:%02d", minutes, seconds);
     }
 
@@ -59,5 +65,9 @@ public class CountdownTimer extends JLabel {
         timeRemainingMillis = (newSqlTime.getMinutes() * 60L + newSqlTime.getSeconds()) * 1000;
         setText(formatTime(timeRemainingMillis));
         timer.start();
+    }
+
+    public long getTimeRemainingMillis() {
+        return timeRemainingMillis;
     }
 }
