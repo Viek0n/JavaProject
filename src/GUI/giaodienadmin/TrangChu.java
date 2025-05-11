@@ -66,7 +66,7 @@ public class TrangChu extends JFrame implements ActionListener {
             if (e.getSource() == buttons[i]) {
                 switch (i) {
                     case 0:
-                        cardLayout.show(cardPanel, "QuanLyCauHoi");
+                        cardLayout.show(cardPanel, "QuanLyCauHoi");  
                         break;
                     case 1:
                         cardLayout.show(cardPanel, "QuanLyBaiKiemTra");
