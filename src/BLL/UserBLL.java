@@ -13,7 +13,7 @@ public class UserBLL {
 
     //Get
     public UserDTO getCurrent(){
-        return cur;
+        return this.cur;
     }
     //SelfManage
     public Enums.UserError login(String LoginName, String Pass){
@@ -23,7 +23,7 @@ public class UserBLL {
                 return Enums.UserError.WRONGPASS;
             if(tmp.getStatus() == Enums.StatusValue.KHOA)
                 return Enums.UserError.LOCKED;
-            cur = tmp;
+            this.cur = tmp;
             return Enums.UserError.NORMAL;
         }
         return Enums.UserError.NOUSER;

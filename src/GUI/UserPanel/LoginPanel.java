@@ -69,6 +69,7 @@ public class LoginPanel extends JPanel {
                     // Thêm LoginPanel mới vào CardLayout
                     mainFrame.addPanel(newUserList, "UserListPanel");
 
+                    mainFrame.addPanel(new HomePanel(mainFrame), "HomePanel");
                     // Chuyển sang LoginPanel mới
                     mainFrame.showPanel("HomePanel");
                     break;

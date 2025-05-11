@@ -26,7 +26,6 @@ public class MainFrame extends JFrame {
 
         // Thêm các panel vào CardLayout
         mainPanel.add(new LoginPanel(this), "LoginPanel");
-        mainPanel.add(new HomePanel(this), "HomePanel");
         mainPanel.add(new QuestionList(this), "QuestionListPanel");
         mainPanel.add(new TestList(this), "TestListPanel");
         mainPanel.add(new UserList(this), "UserListPanel");
