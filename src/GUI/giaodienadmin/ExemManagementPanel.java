@@ -5,12 +5,16 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class ExemManagementPanel extends JPanel implements ActionListener {
     private JTable examTable;
     private DefaultTableModel tableModel;
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ExemManagementPanel() {
         initComponent();
@@ -24,7 +28,10 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setBackground(Color.decode("#bdc3c7"));
 
-        addButton = createButton("Add");
+        addButton = createButton("+ THÊM MỚI");
+        addButton.setBackground(Color.decode("#003f5c"));
+        addButton.setForeground(Color.WHITE);
+        addButton.setOpaque(true);
         editButton = createButton("Edit");
         deleteButton = createButton("Delete");
         searchField = new JTextField(20);
@@ -69,7 +76,8 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            addExam();
+            //addExamToTable(); // Removed the call to the empty addExamToTable()
+            showAddExamDialog(); //show the dialog.
         } else if (e.getSource() == editButton) {
             editExam();
         } else if (e.getSource() == deleteButton) {
@@ -79,9 +87,44 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void addExam() {
-        // Logic to add a new exam
-        new AddExamDialog(this).setVisible(true);
+    // Method to add a new exam to the table
+    public void addExamToTable(Object[] rowData) {
+        // Perform data validation before adding to the table
+        if (rowData == null || rowData.length != 5) {
+            JOptionPane.showMessageDialog(this, "Invalid data format. Expected 5 values.");
+            return; // Important: Exit if data is invalid
+        }
+
+        String examId = (String) rowData[0];
+        String examName = (String) rowData[1];
+        String startDateStr = (String) rowData[2];
+        String endDateStr = (String) rowData[3];
+        Integer duration;
+
+        //check if the duration is an Integer.
+        try {
+            duration = Integer.parseInt((String) rowData[4]);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid duration format.  Must be a number");
+            return;
+        }
+        // Further data validation (e.g., date format, ID uniqueness) can be added here
+        if (examId == null || examId.trim().isEmpty() || examName == null || examName.trim().isEmpty() || startDateStr == null || startDateStr.trim().isEmpty() || endDateStr == null || endDateStr.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Exam ID, Name, Start Date and End Date cannot be empty.");
+            return;
+        }
+
+        try {
+            LocalDate.parse(startDateStr, DATE_FORMATTER);
+            LocalDate.parse(endDateStr, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Invalid date format.  Please use YYYY-MM-DD");
+            return;
+        }
+
+        // Add the row to the table model
+        tableModel.addRow(rowData);
+        JOptionPane.showMessageDialog(this, "Exam added successfully!");
     }
 
     private void editExam() {
@@ -111,15 +154,20 @@ public class ExemManagementPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please enter a keyword to search!");
             return;
         }
-        // Logic to search for exams based on the keyword
+
         JOptionPane.showMessageDialog(this, "Search functionality not implemented yet!");
     }
 
-    // Method to populate the table with data (for demonstration purposes)
     public void loadExams(Object[][] data) {
-        tableModel.setRowCount(0); // Clear existing rows
+        tableModel.setRowCount(0);
         for (Object[] row : data) {
             tableModel.addRow(row);
         }
     }
+
+    private void showAddExamDialog() {
+        AddExamDialog dialog = new AddExamDialog(this); // Pass the parent panel
+        dialog.setVisible(true);
+    }
 }
+
