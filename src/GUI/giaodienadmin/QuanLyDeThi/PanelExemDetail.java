@@ -1,4 +1,4 @@
-package GUI.giaodienadmin;
+package GUI.giaodienadmin.QuanLyDeThi;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -121,32 +121,49 @@ public class PanelExemDetail extends JPanel {
     }
 
     QuestionDAL questionDAL = new QuestionDAL();
-    QuestionDTO updated = questionDAL.getByID(currentQuestionID); // Lấy lại đầy đủ dữ liệu
+    QuestionDTO updated = questionDAL.getByID(currentQuestionID);
     if (updated == null) {
-        JOptionPane.showMessageDialog(this, "Không tìm thấy câu hỏi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Question not found!", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
     updated.setText(newText);
 
-    // Lấy danh sách câu trả lời mới từ bảng
+    // Validate and update answers
     ArrayList<AnswerDTO> newAnswers = new ArrayList<>();
+    boolean hasCorrectAnswer = false;
     for (int row = 0; row < tableModel.getRowCount(); row++) {
         String answerText = (String) tableModel.getValueAt(row, 0);
         String isCorrectStr = (String) tableModel.getValueAt(row, 1);
         boolean isCorrect = "Yes".equals(isCorrectStr);
+
+        if (answerText == null || answerText.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Answer text cannot be empty!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (isCorrect) {
+            hasCorrectAnswer = true;
+        }
+
         AnswerDTO answer = new AnswerDTO();
         answer.setText(answerText);
         answer.setRight(isCorrect);
         newAnswers.add(answer);
     }
-    updated.setAns(newAnswers); // Cập nhật danh sách câu trả lời
+
+    if (!hasCorrectAnswer) {
+        JOptionPane.showMessageDialog(this, "At least one answer must be marked as correct!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    updated.setAns(newAnswers);
 
     boolean success = questionDAL.update(updated);
     if (success) {
-        JOptionPane.showMessageDialog(this, "Cập nhật câu hỏi và đáp án thành công.");
+        JOptionPane.showMessageDialog(this, "Question and answers updated successfully.");
     } else {
-        JOptionPane.showMessageDialog(this, "Cập nhật thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Failed to update question!", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
 

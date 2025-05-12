@@ -3,7 +3,7 @@ package GUI.giaodienadmin.QuanLyCauHoi;
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
 import DTO.QuestionDTO;
-import GUI.giaodienadmin.PanelExemDetail;
+import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
 import MICS.Enums;
 import DAL.*;
 

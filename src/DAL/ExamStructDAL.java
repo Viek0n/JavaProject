@@ -138,7 +138,7 @@ public class ExamStructDAL {
         return false;
     }
 
-    public  ExamStructDTO get(String id) {
+    public ExamStructDTO get(String id) {
         String query = "SELECT * FROM cautrucde WHERE MaCT = ?";
         try (Connection con = getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
@@ -238,6 +238,22 @@ public class ExamStructDAL {
         return pstmt.executeUpdate() > 0;
     } catch (SQLException e) {
         System.out.println("Error inserting exam structure!");
+        e.printStackTrace();
+    }
+    return false;
+}
+ public boolean exists(String id) {
+    String query = "SELECT COUNT(*) FROM cautrucde WHERE MaCT = ?";
+    try (Connection con = getConnection();
+         PreparedStatement pstmt = con.prepareStatement(query)) {
+
+        pstmt.setString(1, id);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+    } catch (SQLException e) {
         e.printStackTrace();
     }
     return false;

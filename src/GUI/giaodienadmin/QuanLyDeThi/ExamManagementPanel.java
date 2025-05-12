@@ -1,7 +1,8 @@
-package GUI.giaodienadmin;
+package GUI.giaodienadmin.QuanLyDeThi;
 
 import DAL.ExamStructDAL;
 import DTO.ExamStructDTO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -222,7 +223,7 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
                     DATE_FORMATTER.format(exam.getStart()),
                     DATE_FORMATTER.format(exam.getEnd()),
                     TIME_FORMATTER.format(exam.getExamTime().toLocalTime()),
-                    exam.getSubject() != null ? exam.getSubject() : "N/A",
+                    exam.getSubject() != null ? exam.getSubject().getName() : "N/A",
                     exam.getDesc() != null ? exam.getDesc() : "No description"
             });
         }

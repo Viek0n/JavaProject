@@ -6,6 +6,9 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
+import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
+import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
+import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 
 public class TrangChu extends JFrame implements ActionListener {
     private JPanel pCenter;

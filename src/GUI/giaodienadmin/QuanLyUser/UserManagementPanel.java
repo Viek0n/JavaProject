@@ -1,4 +1,4 @@
-package GUI.giaodienadmin;
+package GUI.giaodienadmin.QuanLyUser;
 
 import DAL.UserDAL;
 import DTO.UserDTO;

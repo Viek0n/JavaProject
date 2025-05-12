@@ -1,4 +1,4 @@
-package GUI.giaodienadmin;
+package GUI.giaodienadmin.QuanLyUser;
 
 import DTO.UserDTO;
 import MICS.*;
