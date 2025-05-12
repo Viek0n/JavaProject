@@ -1,8 +1,9 @@
-package GUI.giaodienadmin;
+package GUI.giaodienadmin.QuanLyCauHoi;
 
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
 import DTO.QuestionDTO;
+import GUI.giaodienadmin.PanelExemDetail;
 import MICS.Enums;
 import DAL.*;
 
@@ -355,7 +356,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
     }
     public void searchID(String ID){
-        bank=questionDAL.getByID(ID);
+        //bank=questionDAL.getByID(ID);
         tableModel.setRowCount(0);
         if (bank != null && !bank.isEmpty()) {
             for (QuestionDTO row : bank) {

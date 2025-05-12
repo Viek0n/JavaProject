@@ -220,4 +220,26 @@ public class ExamStructDAL {
         }
         return array;
     }
+    public boolean insert(ExamStructDTO examStruct) {
+    String query = "INSERT INTO cautrucde (MaCT, TenCT, MoTa, ThoiGianBD, ThoiGianKT, ThoiGianLamBai, MonHoc) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    try (Connection con = getConnection();
+         PreparedStatement pstmt = con.prepareStatement(query)) {
+
+        // Thiết lập các tham số cho câu lệnh SQL
+        pstmt.setString(1, examStruct.getID());
+        pstmt.setString(2, examStruct.getName());
+        pstmt.setString(3, examStruct.getDesc());
+        pstmt.setDate(4, new java.sql.Date(examStruct.getStart().getTime()));
+        pstmt.setDate(5, new java.sql.Date(examStruct.getEnd().getTime()));
+        pstmt.setTime(6, examStruct.getExamTime());
+        pstmt.setString(7, examStruct.getSubject().getID());
+
+        // Thực thi câu lệnh SQL
+        return pstmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.out.println("Error inserting exam structure!");
+        e.printStackTrace();
+    }
+    return false;
+}
 }

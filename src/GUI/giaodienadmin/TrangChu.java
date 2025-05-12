@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
+import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
+
 public class TrangChu extends JFrame implements ActionListener {
     private JPanel pCenter;
     private JPanel JPHeader;
@@ -50,7 +52,7 @@ public class TrangChu extends JFrame implements ActionListener {
         PanelExemDetail panelExemDetail = new PanelExemDetail(cardPanel, cardLayout);
         cardPanel.add(new QuestionManagementPanel(cardPanel, cardLayout, panelExemDetail), "QuanLyCauHoi");
         cardPanel.add(panelExemDetail, "EditPanel");
-        cardPanel.add(new ExemManagementPanel(), "QuanLyBaiKiemTra");
+        cardPanel.add(new ExamManagementPanel(), "QuanLyBaiKiemTra");
         cardPanel.add(new UserManagementPanel(), "QuanLyNguoiDung");
         this.add(cardPanel, BorderLayout.CENTER);
         setSize(DEFAUT_WIDTH_JFrame, DEFAUT_HEIGHT_JFrame);

@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class RoleDAL {
     public  ArrayList<RoleDTO> getAll(){
@@ -329,4 +330,14 @@ public class RoleDAL {
         }
         return false;
     }
+    public RoleDTO getByName(String roleName) {
+        List<RoleDTO> roles = getAll(); // Assuming getAll() fetches all roles
+        for (RoleDTO role : roles) {
+            if (role.getName().equalsIgnoreCase(roleName)) {
+                return role;
+            }
+        }
+        return null; // Return null if no matching role is found
+    }
+
 }

@@ -191,5 +191,6 @@ public class RoleDTO {
     public Boolean[] getPermit() {
         return Permit;
     }
+    
 
 }

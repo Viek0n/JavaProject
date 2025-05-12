@@ -1,7 +1,7 @@
 package GUI.giaodienadmin;
 
 import DTO.UserDTO;
-
+import MICS.*;
 import DTO.RoleDTO;
 import DAL.UserDAL;
 import DAL.RoleDAL;
@@ -89,7 +89,7 @@ public class PanelAddUser extends JPanel {
         UserDTO user = new UserDTO();
         user.setLoginName(loginName);
         user.setName(name);
-        user.setStatus(UserDTO.Status.valueOf(statusStr));
+        user.setStatus(Enums.StatusValue.valueOf(statusStr)); 
         RoleDTO role = roleDAL.getByName(roleName);
 
         boolean success;

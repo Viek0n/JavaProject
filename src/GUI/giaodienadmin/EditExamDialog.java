@@ -14,26 +14,31 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
-public class AddExamDialog extends JDialog implements ActionListener {
+public class EditExamDialog extends JDialog implements ActionListener {
     private JTextField examIdField, examNameField, descriptionField, durationField;
     private JButton saveButton, cancelButton;
     private ExamManagementPanel parentPanel;
     private ExamStructDAL examDAL;
+    private ArrayList<ExamStructDTO> list;
     private JDatePickerImpl startDatePicker;
     private JDatePickerImpl endDatePicker;
+    private ExamStructDTO examToEdit;
 
-    public AddExamDialog(ExamManagementPanel parentPanel, ExamStructDAL examDAL) {
+    public EditExamDialog(ExamManagementPanel parentPanel, ExamStructDTO examToEdit) {
+        this.examDAL = new ExamStructDAL();
         this.parentPanel = parentPanel;
-        this.examDAL = examDAL;
+        this.examToEdit = examToEdit;
+        this.list = examDAL.getAll();
         initComponent();
     }
 
     private void initComponent() {
-        this.setTitle("Add New Exam");
+        this.setTitle("Edit Exam");
         this.setSize(400, 400);
         this.setLayout(new BorderLayout());
         this.setLocationRelativeTo(null);
@@ -44,23 +49,25 @@ public class AddExamDialog extends JDialog implements ActionListener {
 
         // Form fields
         inputPanel.add(new JLabel("Exam ID:"));
-        examIdField = new JTextField();
-        examIdField.setToolTipText("Enter unique exam ID");
+        examIdField = new JTextField(examToEdit.getID());
+        examIdField.setEditable(false); // ID is non-editable
         inputPanel.add(examIdField);
 
         inputPanel.add(new JLabel("Exam Name:"));
-        examNameField = new JTextField();
+        examNameField = new JTextField(examToEdit.getName());
         examNameField.setToolTipText("Enter exam name (up to 100 characters)");
         inputPanel.add(examNameField);
 
         inputPanel.add(new JLabel("Description:"));
-        descriptionField = new JTextField();
+        descriptionField = new JTextField(examToEdit.getDesc());
         descriptionField.setToolTipText("Enter exam description (optional)");
         inputPanel.add(descriptionField);
 
         // Start Date Picker
         inputPanel.add(new JLabel("Start Date:"));
         UtilDateModel startDateModel = new UtilDateModel();
+        startDateModel.setValue(examToEdit.getStart());
+        startDateModel.setSelected(true);
         Properties startDateProperties = new Properties();
         startDateProperties.put("text.today", "Today");
         startDateProperties.put("text.month", "Month");
@@ -72,6 +79,8 @@ public class AddExamDialog extends JDialog implements ActionListener {
         // End Date Picker
         inputPanel.add(new JLabel("End Date:"));
         UtilDateModel endDateModel = new UtilDateModel();
+        endDateModel.setValue(examToEdit.getEnd());
+        endDateModel.setSelected(true);
         Properties endDateProperties = new Properties();
         endDateProperties.put("text.today", "Today");
         endDateProperties.put("text.month", "Month");
@@ -81,8 +90,8 @@ public class AddExamDialog extends JDialog implements ActionListener {
         inputPanel.add(endDatePicker);
 
         inputPanel.add(new JLabel("Duration (HH:mm:ss):"));
-        durationField = new JTextField();
-        durationField.setToolTipText("Enter duration (e.g., 01:00:00, 1:00)");
+        durationField = new JTextField(examToEdit.getExamTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        durationField.setToolTipText("Enter duration (e.g., 01:00:00 or 1:00)");
         inputPanel.add(durationField);
 
         // Buttons
@@ -130,14 +139,8 @@ public class AddExamDialog extends JDialog implements ActionListener {
         Date endDate = (Date) endDatePicker.getModel().getValue();
 
         // Validate inputs
-        if (examId.isEmpty() || examName.isEmpty() || startDate == null || endDate == null || durationStr.isEmpty()) {
+        if (examName.isEmpty() || startDate == null || endDate == null || durationStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill in all required fields!");
-            return;
-        }
-
-        // Validate exam ID uniqueness
-        if (examDAL.getAll().stream().anyMatch(e -> e.getID().equals(examId))) {
-            JOptionPane.showMessageDialog(this, "Exam ID already exists!");
             return;
         }
 
@@ -162,56 +165,48 @@ public class AddExamDialog extends JDialog implements ActionListener {
             return;
         }
 
-        // Create DTO
+        // Update DTO
         ExamStructDTO examDTO = new ExamStructDTO();
         examDTO.setID(examId);
         examDTO.setName(examName);
-        examDTO.setDesc(description.isEmpty() ? "" : description);
+        examDTO.setDesc(description.isEmpty() ? "No description provided" : description);
         examDTO.setStart(startDate);
         examDTO.setEnd(endDate);
-        examDTO.setSubject(null); // Set subject as null for now
         examDTO.setExamTime(Time.valueOf(duration));
 
-        // Insert into database
+        // Update database
         try {
-            if (examDAL.add(examDTO)) { 
-                JOptionPane.showMessageDialog(this, "Exam added successfully!");
+            if (examDAL.update(examDTO)) {
+                JOptionPane.showMessageDialog(this, "Exam updated successfully!");
                 parentPanel.loadExamData();
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to add exam.");
+                JOptionPane.showMessageDialog(this, "Failed to update exam.");
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error adding exam: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error updating exam: " + ex.getMessage());
         }
     }
 
     private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
-    private final String datePattern = "yyyy-MM-dd";
-    private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+        private final String datePattern = "yyyy-MM-dd";
+        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
-    @Override
-    public Object stringToValue(String text) throws ParseException {
-        if (text == null || text.trim().isEmpty()) {
-            throw new ParseException("Date input cannot be empty. Please use the format: " + datePattern, 0);
-        }
-        try {
+        @Override
+        public Object stringToValue(String text) throws ParseException {
             return dateFormatter.parse(text);
-        } catch (ParseException ex) {
-            throw new ParseException("Invalid date format. Please use " + datePattern, ex.getErrorOffset());
         }
-    }
 
-    @Override
-    public String valueToString(Object value) {
-        if (value != null) {
-            if (value instanceof Calendar) {
-                return dateFormatter.format(((Calendar) value).getTime());
-            } else if (value instanceof Date) {
-                return dateFormatter.format(value);
+        @Override
+        public String valueToString(Object value) {
+            if (value != null) {
+                if (value instanceof Calendar) {
+                    return dateFormatter.format(((Calendar) value).getTime());
+                } else if (value instanceof Date) {
+                    return dateFormatter.format(value);
+                }
             }
+            return "";
         }
-        return "";
     }
-}
 }

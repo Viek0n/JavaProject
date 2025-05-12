@@ -1,0 +1,401 @@
+@Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == saveButton) {
+            // Collect data and add to the table
+            String examId = examIdField.getText().trim();
+            String examName = examNameField.getText().trim();
+            String startDate = startDateField.getText().trim();
+            String endDate = endDateField.getText().trim();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime duration = LocalTime.parse(durationField.getText().trim(), formatter);
+            
+          
+            if (examId.isEmpty() || examName.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || duration == null) {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields!");
+                return;
+            }
+
+            // Add the new exam to the table in the parent panel
+            parentPanel.addExamToTable(new Object[]{examId, examName, startDate, endDate, duration});
+            JOptionPane.showMessageDialog(this, "Exam added successfully!");
+            this.dispose();
+        } else if (e.getSource() == cancelButton) {
+            this.dispose();
+        }
+    }
+    private void showAddExamDialog() {
+        try {
+            AddExamDialog dialog = new AddExamDialog(this, examStructDAL);
+            dialog.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error opening Add Exam Dialog: " + ex.getClass().getSimpleName() + ": " + ex.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+    private void editExam() {
+        try {
+            int selectedRow = examTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select an exam to edit!");
+                return;
+            }
+
+            String examId = (String) tableModel.getValueAt(selectedRow, 0);
+            ExamStructDTO exam = exams.stream()
+                    .filter(e -> e.getID().equals(examId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (exam == null) {
+                JOptionPane.showMessageDialog(this, "Selected exam not found!");
+                return;
+            }
+
+            EditExamDialog dialog = new EditExamDialog(this, exam);
+            dialog.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error editing exam: " + ex.getClass().getSimpleName() + ": " + ex.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+
+    package DAL;
+
+import DTO.ExamStructDTO;
+import DTO.ExamStructDetailDTO;
+import DTO.ExamStructSelectedDTO;
+import DTO.QuestionDTO;
+import DTO.SubjectDTO;
+import MICS.Connect;
+import MICS.Enums;
+import MICS.Enums.DifficultValue;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+public class ExamStructDAL {
+    private static final Logger LOGGER = Logger.getLogger(ExamStructDAL.class.getName());
+    private final SubjectDAL subjectDAL;
+    private final QuestionDAL questionDAL;
+    private final ExamStructDetailDAL examStructDetailDAL;
+    private final ExamStructSelectedDAL examStructSelectedDAL;
+
+    public ExamStructDAL() {
+        this(new SubjectDAL(), new QuestionDAL(), new ExamStructDetailDAL(), new ExamStructSelectedDAL());
+    }
+
+    public ExamStructDAL(SubjectDAL subjectDAL, QuestionDAL questionDAL, 
+                        ExamStructDetailDAL examStructDetailDAL, ExamStructSelectedDAL examStructSelectedDAL) {
+        this.subjectDAL = subjectDAL;
+        this.questionDAL = questionDAL;
+        this.examStructDetailDAL = examStructDetailDAL;
+        this.examStructSelectedDAL = examStructSelectedDAL;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+    }
+
+    public ArrayList<ExamStructDTO> getAll() {
+    ArrayList<ExamStructDTO> list = new ArrayList<>();
+    String query = "SELECT * FROM cautrucde";
+
+    try (Connection con = getConnection();
+         Statement stmt = con.createStatement();
+         ResultSet rs = stmt.executeQuery(query)) {
+
+        int count = 0;
+        while (rs.next()) {
+            ExamStructDTO examStruct = new ExamStructDTO();
+            examStruct.setID(rs.getString("MaCT"));
+            examStruct.setName(rs.getString("TenCT"));
+            examStruct.setDesc(rs.getString("MoTa"));
+            examStruct.setStart(rs.getDate("ThoiGianBD"));
+            examStruct.setEnd(rs.getDate("ThoiGianKT"));
+            examStruct.setExamTime(rs.getTime("ThoiGianLamBai"));
+            SubjectDTO subject = new SubjectDTO();
+            subject.setID(rs.getString("MonHoc"));
+            examStruct.setSubject(subject);
+            list.add(examStruct);
+            count++;
+        }
+        LOGGER.info("Tải được " + count + " cấu trúc đề thi từ bảng cautrucde");
+    } catch (SQLException e) {
+        LOGGER.severe("Lỗi khi lấy danh sách cấu trúc đề thi: " + e.getMessage());
+        e.printStackTrace();
+        throw new RuntimeException("Không thể lấy danh sách cấu trúc đề thi", e);
+    }
+    return list;
+}
+
+    public String getNextId() {
+        String sql = "SELECT MaCT FROM cautrucde ORDER BY CAST(SUBSTRING(MaCT, 3) AS UNSIGNED) DESC LIMIT 1";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                String lastId = rs.getString("MaCT");
+                int number = Integer.parseInt(lastId.substring(2));
+                return "CT" + (number + 1);
+            }
+            return "CT1"; // Default ID for empty database
+        } catch (SQLException e) {
+            LOGGER.severe("Error generating next ID: " + e.getMessage());
+            throw new RuntimeException("Failed to generate next ID", e);
+        }
+    }
+
+    public boolean add(ExamStructDTO examStruct) {
+        if (examStruct == null || examStruct.getStart() == null || examStruct.getEnd() == null || 
+            examStruct.getExamTime() == null || examStruct.getSubject() == null || 
+            examStruct.getSubject().getID() == null) {
+            throw new IllegalArgumentException("Exam structure or required fields cannot be null");
+        }
+
+        String query = "INSERT INTO cautrucde (MaCT, TenCT, MoTa, ThoiGianBD, ThoiGianKT, ThoiGianLamBai, MonHoc) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = getConnection();
+             PreparedStatement pstmt = con.prepareStatement(query)) {
+
+            examStruct.setID(getNextId());
+            pstmt.setString(1, examStruct.getID());
+            pstmt.setString(2, examStruct.getName());
+            pstmt.setString(3, examStruct.getDesc());
+            pstmt.setDate(4, new java.sql.Date(examStruct.getStart().getTime()));
+            pstmt.setDate(5, new java.sql.Date(examStruct.getEnd().getTime()));
+            pstmt.setTime(6, examStruct.getExamTime());
+            pstmt.setString(7, examStruct.getSubject().getID());
+
+            // Add random and selected details
+            ArrayList<ExamStructDetailDTO> randomDetails = examStruct.getRandomDetail();
+            if (randomDetails != null) {
+                for (ExamStructDetailDTO x : randomDetails) {
+                    if (x != null) {
+                        examStructDetailDAL.add(new ExamStructDetailDTO(x.getChapID(), x.getDiff(), 
+                                                                       examStruct.getID(), x.getQuantity()));
+                    }
+                }
+            }
+
+            ArrayList<ExamStructSelectedDTO> selectDetails = examStruct.getSelectDetail();
+            if (selectDetails != null) {
+                for (ExamStructSelectedDTO x : selectDetails) {
+                    if (x != null) {
+                        examStructSelectedDAL.add(new ExamStructSelectedDTO(examStruct.getID(), x.getQuestID()));
+                    }
+                }
+            }
+
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.severe("Error adding exam structure: " + e.getMessage());
+            throw new RuntimeException("Failed to add exam structure", e);
+        }
+    }
+
+    public boolean update(ExamStructDTO examStruct) {
+        if (examStruct == null || examStruct.getID() == null || examStruct.getStart() == null || 
+            examStruct.getEnd() == null || examStruct.getExamTime() == null || 
+            examStruct.getSubject() == null || examStruct.getSubject().getID() == null) {
+            throw new IllegalArgumentException("Exam structure or required fields cannot be null");
+        }
+
+        String query = "UPDATE cautrucde SET TenCT = ?, MoTa = ?, ThoiGianBD = ?, ThoiGianKT = ?, ThoiGianLamBai = ?, MonHoc = ? WHERE MaCT = ?";
+        try (Connection con = getConnection();
+             PreparedStatement pstmt = con.prepareStatement(query)) {
+
+            pstmt.setString(1, examStruct.getName());
+            pstmt.setString(2, examStruct.getDesc());
+            pstmt.setDate(3, new java.sql.Date(examStruct.getStart().getTime()));
+            pstmt.setDate(4, new java.sql.Date(examStruct.getEnd().getTime()));
+            pstmt.setTime(5, examStruct.getExamTime());
+            pstmt.setString(6, examStruct.getSubject().getID());
+            pstmt.setString(7, examStruct.getID());
+
+            // Update random and selected details
+            examStructDetailDAL.deleteAll(examStruct.getID());
+            examStructSelectedDAL.deleteAll(examStruct.getID());
+
+            ArrayList<ExamStructDetailDTO> randomDetails = examStruct.getRandomDetail();
+            if (randomDetails != null) {
+                for (ExamStructDetailDTO x : randomDetails) {
+                    if (x != null) {
+                        examStructDetailDAL.add(new ExamStructDetailDTO(x.getChapID(), x.getDiff(), 
+                                                                       examStruct.getID(), x.getQuantity()));
+                    }
+                }
+            }
+
+            ArrayList<ExamStructSelectedDTO> selectDetails = examStruct.getSelectDetail();
+            if (selectDetails != null) {
+                for (ExamStructSelectedDTO x : selectDetails) {
+                    if (x != null) {
+                        examStructSelectedDAL.add(new ExamStructSelectedDTO(examStruct.getID(), x.getQuestID()));
+                    }
+                }
+            }
+
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.severe("Error updating exam structure: " + e.getMessage());
+            throw new RuntimeException("Failed to update exam structure", e);
+        }
+    }
+
+    public boolean delete(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Exam structure ID cannot be null");
+        }
+
+        String query = "DELETE FROM cautrucde WHERE MaCT = ?";
+        try (Connection con = getConnection();
+             PreparedStatement pstmt = con.prepareStatement(query)) {
+
+            pstmt.setString(1, id);
+            examStructDetailDAL.deleteAll(id);
+            examStructSelectedDAL.deleteAll(id);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.severe("Error deleting exam structure: " + e.getMessage());
+            throw new RuntimeException("Failed to delete exam structure", e);
+        }
+    }
+
+    public ExamStructDTO get(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Exam structure ID cannot be null");
+        }
+
+        String query = "SELECT * FROM cautrucde WHERE MaCT = ?";
+        try (Connection con = getConnection();
+             PreparedStatement pstmt = con.prepareStatement(query)) {
+
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    ExamStructDTO examStruct = new ExamStructDTO();
+                    examStruct.setID(rs.getString("MaCT"));
+                    examStruct.setName(rs.getString("TenCT"));
+                    examStruct.setDesc(rs.getString("MoTa"));
+                    examStruct.setStart(rs.getDate("ThoiGianBD"));
+                    examStruct.setEnd(rs.getDate("ThoiGianKT"));
+                    examStruct.setExamTime(rs.getTime("ThoiGianLamBai"));
+                    SubjectDTO subject = subjectDAL.get(rs.getString("MonHoc"));
+                    examStruct.setSubject(subject != null ? subject : new SubjectDTO());
+                    examStruct.setRandomDetail(examStructDetailDAL.getAll(examStruct.getID()));
+                    examStruct.setSelectDetail(examStructSelectedDAL.getAll(examStruct.getID()));
+                    return examStruct;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching exam structure: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch exam structure", e);
+        }
+        return null;
+    }
+
+    public ArrayList<QuestionDTO> loadSelected(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Exam structure ID cannot be null");
+        }
+
+        String sql = "SELECT * FROM cauhoituychon WHERE MaCT = ?";
+        ArrayList<QuestionDTO> array = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    QuestionDTO ques = questionDAL.getByID(rs.getString("MaCH"));
+                    if (ques != null) {
+                        array.add(ques);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error loading selected questions: " + e.getMessage());
+            throw new RuntimeException("Failed to load selected questions", e);
+        }
+        return array;
+    }
+
+    public ArrayList<QuestionDTO> loadRandom(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Exam structure ID cannot be null");
+        }
+
+        String sql = "SELECT * FROM chitietde WHERE MaCT = ?";
+        ArrayList<QuestionDTO> array = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ArrayList<QuestionDTO> questions = questionDAL.getRandom(
+                        rs.getInt("SoLuong"), 
+                        rs.getString("MaChuong"), 
+                        Enums.DifficultValue.valueOf(rs.getString("DoKho"))
+                    );
+                    if (questions != null) {
+                        array.addAll(questions);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error loading random questions: " + e.getMessage());
+            throw new RuntimeException("Failed to load random questions", e);
+        }
+        return array;
+    }
+
+    public ArrayList<QuestionDTO> loadAllRandom(String id) {
+    if (id == null || id.trim().isEmpty()) {
+        throw new IllegalArgumentException("Exam structure ID cannot be null or empty");
+    }
+
+    String sql = "SELECT * FROM chitietde WHERE MaCT = ?";
+    ArrayList<QuestionDTO> array = new ArrayList<>();
+    try (Connection conn = getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, id);
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                String chapterId = rs.getString("MaChuong");
+                String difficulty = rs.getString("DoKho");
+
+                // Validate difficulty value
+                DifficultValue diffValue;
+                try {
+                    diffValue = Enums.DifficultValue.valueOf(difficulty);
+                } catch (IllegalArgumentException ex) {
+                    LOGGER.warning("Invalid difficulty value: " + difficulty + " for chapter: " + chapterId);
+                    continue; // Skip invalid entries
+                }
+
+                // Fetch questions by chapter and difficulty
+                ArrayList<QuestionDTO> questions = new ArrayList<>(questionDAL.getByDiffChap(chapterId, diffValue));
+                if (questions != null && !questions.isEmpty()) {
+                    array.addAll(questions);
+                } else {
+                    LOGGER.warning("No questions found for chapter: " + chapterId + " with difficulty: " + difficulty);
+                }
+            }
+        }
+    } catch (SQLException e) {
+        LOGGER.severe("Error loading all random questions: " + e.getMessage());
+        throw new RuntimeException("Failed to load all random questions", e);
+    }
+    return array;
+}
+}

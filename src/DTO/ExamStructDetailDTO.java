@@ -8,26 +8,31 @@ public class ExamStructDetailDTO {
     private Enums.DifficultValue diff;
     private int quantity;
 
-    public String toString(){
-        return examStructID + " - " + chapID + ": " + diff + "(" +quantity+")\n";
-    }
-
     public ExamStructDetailDTO() {
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public ExamStructDetailDTO(String chapID, Enums.DifficultValue diff, String examStructID, int quantity) {
+        if (chapID == null || chapID.trim().isEmpty()) {
+            throw new IllegalArgumentException("Chapter ID cannot be null or empty");
+        }
+        if (diff == null) {
+            throw new IllegalArgumentException("Difficulty cannot be null");
+        }
+        if (examStructID != null && examStructID.trim().isEmpty()) {
+            throw new IllegalArgumentException("Exam structure ID cannot be empty");
+        }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
         this.chapID = chapID;
         this.diff = diff;
         this.examStructID = examStructID;
         this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return examStructID + " - " + chapID + ": " + diff + "(" + quantity + ")";
     }
 
     public String getExamStructID() {
@@ -35,6 +40,9 @@ public class ExamStructDetailDTO {
     }
 
     public void setExamStructID(String examStructID) {
+        if (examStructID != null && examStructID.trim().isEmpty()) {
+            throw new IllegalArgumentException("Exam structure ID cannot be empty");
+        }
         this.examStructID = examStructID;
     }
 
@@ -43,6 +51,9 @@ public class ExamStructDetailDTO {
     }
 
     public void setChapID(String chapID) {
+        if (chapID == null || chapID.trim().isEmpty()) {
+            throw new IllegalArgumentException("Chapter ID cannot be null or empty");
+        }
         this.chapID = chapID;
     }
 
@@ -51,7 +62,20 @@ public class ExamStructDetailDTO {
     }
 
     public void setDiff(Enums.DifficultValue diff) {
+        if (diff == null) {
+            throw new IllegalArgumentException("Difficulty cannot be null");
+        }
         this.diff = diff;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        this.quantity = quantity;
+    }
 }
