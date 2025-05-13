@@ -1,6 +1,7 @@
 package GUI.UserPanel;
 
 import GUI.MakeColor.*;
+import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 import MICS.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
 
 public class MenuPanel extends JPanel {
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
@@ -30,6 +32,7 @@ public class MenuPanel extends JPanel {
         this.setBackground(Color.white);
         this.setBounds(0, 0, 214, 860);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setBorder(new MatteBorder(0, 0, 0, 1, Color.lightGray));
 
         JLabel profile = new JLabel(AddImage.createImageIcon(Connect.img + "profile-user.png", 40, 40));
         profile.setMaximumSize(new Dimension(214, 80));
@@ -37,7 +40,8 @@ public class MenuPanel extends JPanel {
         profile.setHorizontalAlignment(SwingConstants.LEFT);  
         profile.setFont(new Font("Arial", Font.BOLD, 14));
         profile.setOpaque(true);
-        profile.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
+        profile.setBackground(Color.lightGray);
+        profile.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 0));
         this.add(profile);
 
         JButton home = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "homepage.png", 40, 40), e -> {
@@ -49,7 +53,7 @@ public class MenuPanel extends JPanel {
         home.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
         this.add(home);
 
-        JLabel studentLabel = new JLabel("- Sinh viên -");
+        JLabel studentLabel = new JLabel("Sinh viên");
         studentLabel.setFont(new Font("Arial", Font.BOLD, 17));
         studentLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
 
@@ -65,7 +69,7 @@ public class MenuPanel extends JPanel {
         }
             
 
-        JLabel teacherLabel = new JLabel("- Giảng viên -");
+        JLabel teacherLabel = new JLabel("Giảng viên");
         teacherLabel.setFont(new Font("Arial", Font.BOLD, 17));
         teacherLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
         
@@ -78,11 +82,14 @@ public class MenuPanel extends JPanel {
             this.add(analysis);
         }
 
-        JLabel manageLabel = new JLabel("- Quản lý -");
+        JLabel manageLabel = new JLabel("Quản lý");
         manageLabel.setFont(new Font("Arial", Font.BOLD, 17));
         manageLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
 
-        JButton manageUser = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "user-manage.png", 40, 40), e -> {});
+        JButton manageUser = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "user-manage.png", 40, 40), e -> {
+            mainFrame.addPanel(new UserManagementPanel(this), "UserManage");
+            mainFrame.showPanel("UserManage");
+        });
         manageUser.setText("Người dùng");
         manageUser.setFont(new Font("Arial", Font.BOLD, 14));
         if(mainFrame.userBLL.getCurrent().getRole().getSeeUser()){

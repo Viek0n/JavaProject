@@ -1,14 +1,12 @@
 package GUI.giaodienadmin;
 
+import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
+import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
+import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-
-import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
-import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
-import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
-import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 
 public class TrangChu extends JFrame implements ActionListener {
     private JPanel pCenter;
@@ -56,7 +54,6 @@ public class TrangChu extends JFrame implements ActionListener {
         cardPanel.add(new QuestionManagementPanel(cardPanel, cardLayout, panelExemDetail), "QuanLyCauHoi");
         cardPanel.add(panelExemDetail, "EditPanel");
         cardPanel.add(new ExamManagementPanel(), "QuanLyBaiKiemTra");
-        cardPanel.add(new UserManagementPanel(), "QuanLyNguoiDung");
         this.add(cardPanel, BorderLayout.CENTER);
         setSize(DEFAUT_WIDTH_JFrame, DEFAUT_HEIGHT_JFrame);
         this.setLocationRelativeTo(null);

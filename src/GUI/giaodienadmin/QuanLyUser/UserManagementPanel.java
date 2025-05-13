@@ -2,17 +2,17 @@ package GUI.giaodienadmin.QuanLyUser;
 
 import DAL.UserDAL;
 import DTO.UserDTO;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
+import GUI.MakeColor.Ulti;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 
@@ -25,27 +25,33 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     private ArrayList<UserDTO> users;
     private PanelAddUser panelAddUser;
     private JDialog dialog;
+    private JPanel menuPanel;
 
-    public UserManagementPanel() {
+    public UserManagementPanel(JPanel menuPanel) {
+        this.menuPanel = menuPanel;
         initComponent();
     }
 
     private void initComponent() {
         userDAL = new UserDAL();
         users = new ArrayList<>();
-        setLayout(new BorderLayout(10, 10));
-        setBackground(Color.decode("#f0f4f8"));
+        setLayout(new BorderLayout());
+        setBackground(Ulti.MainColor);
 
-        // Top panel
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 15));
-        topPanel.setBackground(Color.decode("#e0e0e0"));
+        // Menu panel
+        add(menuPanel, BorderLayout.WEST);
+
+        // ===== Top Panel =====
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+        topPanel.setBackground(Ulti.MainColor);
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        topPanel.setPreferredSize(new Dimension(0, 60)); // only height matters here
 
-        addButton = createButton("+ Add User", "#4caf50", Color.WHITE);
-        deleteButton = createButton("Delete", "#f44336", Color.WHITE);
+        addButton = createButton("+ Add User", Color.GREEN, Color.BLACK);
+        deleteButton = createButton("Delete", Color.RED, Color.BLACK);
         searchField = createSearchField();
-        searchButton = createButton("Search", "#ffc107", Color.BLACK);
-        clearButton = createButton("Clear", "#808080", Color.WHITE);
+        searchButton = createButton("Search", Color.YELLOW, Color.BLACK);
+        clearButton = createButton("Clear", Color.lightGray, Color.BLACK);
 
         topPanel.add(addButton);
         topPanel.add(deleteButton);
@@ -53,9 +59,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         topPanel.add(searchButton);
         topPanel.add(clearButton);
 
-        add(topPanel, BorderLayout.NORTH);
-
-        // Table
+        // ===== Table =====
         String[] columnNames = {"User ID", "Username", "Status", "Role", "Actions"};
         tableModel = new DefaultTableModel(columnNames, 0);
         userTable = new JTable(tableModel);
@@ -85,33 +89,34 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         userTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
 
         JScrollPane scrollPane = new JScrollPane(userTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        scrollPane.setBackground(Ulti.MainColor);
 
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(topPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        add(centerPanel, BorderLayout.CENTER);
+
+        // Add action listeners
         addButton.addActionListener(this);
         deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
         clearButton.addActionListener(this);
 
-        // Initialize dialog
-       /* panelAddUser = new PanelAddUser(userDAL);
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "User Management", Dialog.ModalityType.APPLICATION_MODAL);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);
-        dialog.setResizable(false);  */           
-
+        // Load users
         loadUsers();
     }
 
-    private JButton createButton(String text, String bgColor, Color fgColor) {
+
+    private JButton createButton(String text, Color color, Color fgColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setFocusPainted(false);
         button.setBorder(new RoundedBorder(8));
         button.setPreferredSize(new Dimension(100, 35));
-        button.setBackground(Color.decode(bgColor));
+        button.setBackground(color);
         button.setForeground(fgColor);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return button;
@@ -122,7 +127,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         textField.setFont(new Font("Arial", Font.PLAIN, 14));
         textField.setBorder(new CompoundBorder(
                 new RoundedBorder(8),
-                new EmptyBorder(5, 10, 5, 10)
+                new EmptyBorder(0, 10, 0, 10)
         ));
         textField.setBackground(Color.WHITE);
         textField.setForeground(Color.decode("#2c3e50"));
@@ -248,23 +253,24 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     }
 
     private void showAddUserPanel() {
-        if (dialog == null || panelAddUser == null) {
-            panelAddUser = new PanelAddUser(userDAL);
-            dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Add User", Dialog.ModalityType.APPLICATION_MODAL);
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.getContentPane().add(panelAddUser);
-            dialog.pack();
-            dialog.setLocationRelativeTo(this);
-        }
-        panelAddUser.resetFields();
-        dialog.setTitle("Add User");
+        panelAddUser = new PanelAddUser();
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Add User", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.getContentPane().add(panelAddUser);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         loadUsers();
     }
 
     private void showEditUserPanel(String userID) {
+        panelAddUser = new PanelAddUser();
         if (panelAddUser.loadUserData(userID)) {
-            dialog.setTitle("Edit User");
+            dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Edit User", Dialog.ModalityType.APPLICATION_MODAL);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.getContentPane().add(panelAddUser);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
             loadUsers();
         } else {
@@ -351,26 +357,5 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             }
         };
         worker.execute();
-    }
-}
-
-// Placeholder for PanelAddUser (to be implemented)
-class PanelAddUser extends JPanel {
-    private UserDAL userDAL;
-
-    public PanelAddUser(UserDAL userDAL) {
-        this.userDAL = userDAL;
-        setBorder(new EmptyBorder(10, 10, 10, 10));
-        setBackground(Color.decode("#f0f4f8"));
-        // Implement fields (loginName, name, password, status, role), buttons, and save logic
-    }
-
-    public void resetFields() {
-        // Clear fields
-    }
-
-    public boolean loadUserData(String userID) {
-        // Load user data from userDAL
-        return true; // Placeholder
     }
 }

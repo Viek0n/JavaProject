@@ -2,17 +2,14 @@ package GUI.giaodienadmin.QuanLyDeThi;
 
 import DAL.ExamStructDAL;
 import DTO.ExamStructDTO;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class ExamManagementPanel extends JPanel implements ActionListener {
     private JTable examTable;

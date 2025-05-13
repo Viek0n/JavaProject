@@ -1,6 +1,5 @@
 
 import GUI.UserPanel.MainFrame;
-import GUI.giaodienadmin.TrangChu;
 
 
 public class main {
@@ -24,8 +23,7 @@ public class main {
         questionBLL.update(quest);*/
 
        
-       // MainFrame mainFrame = new MainFrame();
-       TrangChu mainFrame = new TrangChu();
+       MainFrame mainFrame = new MainFrame();
 
         //ExamStructDTO x = new ExamStructDAL().get("CT1");
         //TakeExam user = new TakeExam(new ExamBLL().gen("Sys", x));

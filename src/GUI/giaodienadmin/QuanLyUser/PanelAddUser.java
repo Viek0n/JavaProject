@@ -1,14 +1,13 @@
 package GUI.giaodienadmin.QuanLyUser;
 
+import DAL.RoleDAL;
+import DAL.UserDAL;
+import DTO.RoleDTO;
 import DTO.UserDTO;
 import MICS.*;
-import DTO.RoleDTO;
-import DAL.UserDAL;
-import DAL.RoleDAL;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.List;
+import javax.swing.*;
 
 public class PanelAddUser extends JPanel {
     private JTextField txtLoginName, txtName;
@@ -24,6 +23,12 @@ public class PanelAddUser extends JPanel {
         initComponent();
     }
 
+    public PanelAddUser(String userId) {
+        roleDAL = new RoleDAL();
+        userDAL = new UserDAL();
+        initComponent(userId);
+    }
+
     private void initComponent() {
         this.setLayout(new GridLayout(5, 2, 10, 10));
         this.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
@@ -35,7 +40,7 @@ public class PanelAddUser extends JPanel {
         txtName = new JTextField();
 
         JLabel lblStatus = new JLabel("Status:");
-        cmbStatus = new JComboBox<>(new String[]{"ACTIVE", "INACTIVE"});
+        cmbStatus = new JComboBox<>(new String[]{"HOATDONG", "KHOA"});
 
         JLabel lblRole = new JLabel("Role:");
         cmbRole = new JComboBox<>();
@@ -53,11 +58,41 @@ public class PanelAddUser extends JPanel {
         this.add(new JLabel()); this.add(btnSave);
     }
 
+    private void initComponent(String userId) {
+        this.setLayout(new GridLayout(5, 2, 10, 10));
+        this.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        JLabel lblLoginName = new JLabel("Login Name:");
+        txtLoginName = new JTextField();
+
+        JLabel lblName = new JLabel("Name:");
+        txtName = new JTextField();
+
+        JLabel lblStatus = new JLabel("Status:");
+        cmbStatus = new JComboBox<>(new String[]{"HOATDONG", "KHOA"});
+
+        JLabel lblRole = new JLabel("Role:");
+        cmbRole = new JComboBox<>();
+        loadRolesToComboBox();
+
+        btnSave = new JButton("Save");
+        btnSave.setBackground(Color.decode("#4caf50"));
+        btnSave.setForeground(Color.WHITE);
+        btnSave.addActionListener(e -> saveUser());
+
+        this.add(lblLoginName); this.add(txtLoginName);
+        this.add(lblName);      this.add(txtName);
+        this.add(lblStatus);    this.add(cmbStatus);
+        this.add(lblRole);      this.add(cmbRole);
+        this.add(new JLabel()); this.add(btnSave);
+        loadUserData(userId);
+    }
+
    private void loadRolesToComboBox() {
-        List<UserDTO> users = userDAL.getAll();
+        List<RoleDTO> roles = roleDAL.getAll();
         cmbRole.removeAllItems();
-        for (UserDTO user : users) {
-            cmbRole.addItem(user.getName());
+        for (RoleDTO role : roles) {
+            cmbRole.addItem(role.getName());
         }
     }
 
@@ -81,17 +116,13 @@ public class PanelAddUser extends JPanel {
         String statusStr = (String) cmbStatus.getSelectedItem();
         String roleName = (String) cmbRole.getSelectedItem();
 
+        System.out.print(roleName);
         if (loginName.isEmpty() || name.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill all fields", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        UserDTO user = new UserDTO();
-        user.setLoginName(loginName);
-        user.setName(name);
-        user.setStatus(Enums.StatusValue.valueOf(statusStr)); 
-        RoleDTO role = roleDAL.getByName(roleName);
-
+        UserDTO user = new UserDTO(loginName, name, "12345", Enums.StatusValue.valueOf(statusStr), roleDAL.getByName(roleName));
         boolean success;
         if (isEditMode) {
             success = userDAL.update(user);
