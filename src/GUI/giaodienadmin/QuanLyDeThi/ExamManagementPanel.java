@@ -2,6 +2,7 @@ package GUI.giaodienadmin.QuanLyDeThi;
 
 import DAL.ExamStructDAL;
 import DTO.ExamStructDTO;
+import GUI.MakeColor.Ulti;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 public class ExamManagementPanel extends JPanel implements ActionListener {
@@ -34,10 +36,12 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
     private void initComponent() {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.decode("#ecf0f1"));
+        setBackground(Ulti.MainColor);
 
         this.add(menuPanel, BorderLayout.WEST);
         // Top panel for buttons and search
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         topPanel.setBackground(Color.decode("#bdc3c7"));
 
         addButton = createButton("Add New");
@@ -79,6 +83,9 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
         examTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(examTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        scrollPane.setBackground(Ulti.MainColor);
+
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BorderLayout());
         centerPanel.add(topPanel, BorderLayout.NORTH);

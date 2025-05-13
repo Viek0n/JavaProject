@@ -1,11 +1,13 @@
 package GUI.UserPanel;
 
+import GUI.MakeColor.RoundedPanel;
 import GUI.MakeColor.Ulti;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 public class HomePage extends JPanel {
     private JPanel menuPanel;
@@ -25,18 +27,32 @@ public class HomePage extends JPanel {
         setLayout(null);
         setBackground(Ulti.MainColor);
 
-        homeTitle = new JLabel("Stress Portal", SwingConstants.CENTER);
+        // Tạo panel trắng chứa chữ
+        JPanel textPanel = new RoundedPanel(100);
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setBackground(Color.WHITE);
+        textPanel.setBounds(posx, posy, 800, 200); // Panel trắng
+
+        // Tiêu đề
+        homeTitle = new JLabel("Stress Portal");
         homeTitle.setFont(new Font("Arial", Font.BOLD, 60));
         homeTitle.setForeground(Color.BLACK);
-        homeTitle.setBounds(posx, posy, 808, 155);
+        homeTitle.setAlignmentX(CENTER_ALIGNMENT); // Căn giữa theo trục X
 
-        descLabel = new JLabel("Stress Portal", SwingConstants.CENTER);
+        // Mô tả
+        descLabel = new JLabel("Nơi áp lực thi cử được giải tỏa, không phải gia tăng!");
         descLabel.setFont(new Font("Arial", Font.BOLD, 30));
         descLabel.setForeground(Color.BLACK);
-        descLabel.setBounds(posx, posy+50, 808, 155);
+        descLabel.setAlignmentX(CENTER_ALIGNMENT); // Căn giữa theo trục X
 
-        add(homeTitle);
-        add(descLabel);
-        add(menuPanel);
+        // Khoảng cách giữa 2 dòng
+        textPanel.add(Box.createVerticalStrut(20));
+        textPanel.add(homeTitle);
+        textPanel.add(Box.createVerticalStrut(10));
+        textPanel.add(descLabel);
+
+        add(textPanel); // Thêm panel trắng vào màn hình
+        add(menuPanel); // Giữ nguyên menuPanel
     }
+
 }
