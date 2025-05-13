@@ -21,18 +21,21 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
     private ExamStructDAL examStructDAL;
     private ArrayList<ExamStructDTO> exams;
     private AddExamDialog dialog;
+    private EditExamDialog Edit;
+    private JPanel menuPanel;
 
-    public ExamManagementPanel() {
+    public ExamManagementPanel(JPanel menuPanel) {
         examStructDAL = new ExamStructDAL();
         exams = examStructDAL.getAll();
-        
+        this.menuPanel = menuPanel;
         initComponent();
     }
 
     private void initComponent() {
-        this.setLayout(new BorderLayout(10, 10));
+        this.setLayout(new BorderLayout());
         this.setBackground(Color.decode("#ecf0f1"));
 
+        this.add(menuPanel, BorderLayout.WEST);
         // Top panel for buttons and search
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setBackground(Color.decode("#bdc3c7"));
@@ -60,8 +63,6 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
         topPanel.add(searchButton);
         topPanel.add(clearSearchButton);
 
-        this.add(topPanel, BorderLayout.NORTH);
-
         // Table for displaying exams
         String[] columnNames = {"Exam ID", "Exam Name", "Start Date", "End Date", "Duration", "Subject", "Description"};
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -78,7 +79,12 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
         examTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(examTable);
-        this.add(scrollPane, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(topPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        add(centerPanel, BorderLayout.CENTER);
 
         // Add action listeners
         addButton.addActionListener(this);
@@ -144,8 +150,8 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
             return;
         }
 
-        EditExamDialog dialog = new EditExamDialog(this, exam);
-        dialog.setVisible(true);
+        Edit=new EditExamDialog(this, examStructDAL);
+        Edit.setVisible(true);
     }
 
     private void deleteExam() {

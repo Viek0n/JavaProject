@@ -1,6 +1,7 @@
 package GUI.UserPanel;
 
 import GUI.MakeColor.*;
+import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
 import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 import MICS.*;
 import java.awt.BorderLayout;
@@ -74,7 +75,10 @@ public class MenuPanel extends JPanel {
         teacherLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
         
 
-        JButton analysis = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "analysis.png", 40, 40), e -> {});
+        JButton analysis = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "analysis.png", 40, 40), e -> {
+            mainFrame.addPanel(new ExamManagementPanel(this), "ExamManage");
+            mainFrame.showPanel("ExamManage");
+        });
         analysis.setText("Đề kiểm tra");
         analysis.setFont(new Font("Arial", Font.BOLD, 14));
         if(mainFrame.userBLL.getCurrent().getRole().getSeeExam()){

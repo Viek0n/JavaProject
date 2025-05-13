@@ -66,6 +66,6 @@ public class UserDTO {
     public void setRole(RoleDTO Role) {
         this.Role = Role;
     }
- 
+  
 
 }
