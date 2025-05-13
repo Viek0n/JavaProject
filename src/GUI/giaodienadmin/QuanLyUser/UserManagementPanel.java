@@ -14,7 +14,7 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
-
+import DAL.RoleDAL;
 
 public class UserManagementPanel extends JPanel implements ActionListener {
     private JTable userTable;
@@ -25,6 +25,8 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     private ArrayList<UserDTO> users;
     private PanelAddUser panelAddUser;
     private JDialog dialog;
+    private EditUser editUserDialog;
+    private RoleDAL roleDAL;
 
     public UserManagementPanel() {
         initComponent();
@@ -32,6 +34,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
 
     private void initComponent() {
         userDAL = new UserDAL();
+        roleDAL = new RoleDAL();
         users = new ArrayList<>();
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.decode("#f0f4f8"));
@@ -246,7 +249,6 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             loadUsers();
         }
     }
-
     private void showAddUserPanel() {
         if (dialog == null || panelAddUser == null) {
             panelAddUser = new PanelAddUser(userDAL);
@@ -263,13 +265,14 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     }
 
     private void showEditUserPanel(String userID) {
-        if (panelAddUser.loadUserData(userID)) {
-            dialog.setTitle("Edit User");
-            dialog.setVisible(true);
-            loadUsers();
-        } else {
+        UserDTO userToEdit = userDAL.getByLoginName(userID);
+        if (userToEdit == null) {
             JOptionPane.showMessageDialog(this, "User not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        EditUser editUserDialog = new EditUser(SwingUtilities.getWindowAncestor(this), userToEdit, userDAL, roleDAL);
+        editUserDialog.setVisible(true);
+        loadUsers();
     }
 
     private void deleteUser() {

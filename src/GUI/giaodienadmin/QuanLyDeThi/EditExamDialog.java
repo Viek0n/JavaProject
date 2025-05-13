@@ -6,115 +6,27 @@ import DAL.ExamStructDAL;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-import java.sql.Time;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
-
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 public class EditExamDialog extends BaseExamDialog implements ActionListener {
-    private JTextField examIdField, examNameField, descriptionField, durationField;
-    private JButton saveButton, cancelButton;
-    private ExamManagementPanel parentPanel;
-    private ExamStructDAL examDAL;
-    private JDatePickerImpl startDatePicker;
-    private JDatePickerImpl endDatePicker;
-    private ExamStructDTO examToEdit;
+    private static final Logger LOGGER = Logger.getLogger(AddExamDialog.class.getName());
 
-    public EditExamDialog(ExamManagementPanel parentPanel, ExamStructDTO examToEdit) {
-        super(parentPanel, new ExamStructDAL(), "Edit Exam");
-        this.parentPanel = parentPanel;
-        this.examToEdit = examToEdit;
-        this.examDAL = new ExamStructDAL();
-        initComponent(); // Initialize UI components
-    }
-
-    private void initComponent() {
-        setTitle("Edit Exam");
-        setSize(400, 400);
-        setLayout(new BorderLayout());
-        setLocationRelativeTo(null);
-        setModal(true);
-
-        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-        // Exam ID
-        inputPanel.add(new JLabel("Exam ID:"));
-        examIdField = new JTextField(examToEdit.getID());
-        examIdField.setEditable(false);
-        inputPanel.add(examIdField);
-
-        // Exam Name
-        inputPanel.add(new JLabel("Exam Name:"));
-        examNameField = new JTextField(examToEdit.getName());
-        examNameField.setToolTipText("Enter exam name (up to 100 characters)");
-        inputPanel.add(examNameField);
-
-        // Description
-        inputPanel.add(new JLabel("Description:"));
-        descriptionField = new JTextField(examToEdit.getDesc());
-        descriptionField.setToolTipText("Enter exam description (optional)");
-        inputPanel.add(descriptionField);
-
-        // Start Date
-        inputPanel.add(new JLabel("Start Date:"));
-        UtilDateModel startDateModel = new UtilDateModel();
-        startDateModel.setValue(examToEdit.getStart());
-        startDateModel.setSelected(true);
-        Properties dateProperties = new Properties();
-        dateProperties.put("text.today", "Today");
-        dateProperties.put("text.month", "Month");
-        dateProperties.put("text.year", "Year");
-        startDatePicker = new JDatePickerImpl(new JDatePanelImpl(startDateModel, dateProperties), new DateLabelFormatter());
-        inputPanel.add(startDatePicker);
-
-        // End Date
-        inputPanel.add(new JLabel("End Date:"));
-        UtilDateModel endDateModel = new UtilDateModel();
-        endDateModel.setValue(examToEdit.getEnd());
-        endDateModel.setSelected(true);
-        endDatePicker = new JDatePickerImpl(new JDatePanelImpl(endDateModel, dateProperties), new DateLabelFormatter());
-        inputPanel.add(endDatePicker);
-
-        // Duration
-        inputPanel.add(new JLabel("Duration (HH:mm:ss):"));
-        durationField = new JTextField(examToEdit.getExamTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        durationField.setToolTipText("Enter duration (e.g., 01:00:00 or 1:00)");
-        inputPanel.add(durationField);
-
-         inputPanel.add(new JLabel("Random Details:"));
-        randomDetailsArea = new JTextArea(3, 20);
-        randomDetailsArea.setToolTipText("Enter random details (format: ChapID,Diff,Quantity; e.g., CH1,EASY,5;CH2,MEDIUM,3)");
-        randomDetailsArea.setLineWrap(true);
-        randomDetailsArea.setWrapStyleWord(true);
-        inputPanel.add(new JScrollPane(randomDetailsArea));
-
-        inputPanel.add(new JLabel("Selected Questions:"));
-        selectedQuestionsArea = new JTextArea(3, 20);
-        selectedQuestionsArea.setToolTipText("Enter selected question IDs (one per line)");
-        selectedQuestionsArea.setLineWrap(true);
-        selectedQuestionsArea.setWrapStyleWord(true);
-        inputPanel.add(new JScrollPane(selectedQuestionsArea));
-
-        // Buttons
-        saveButton = new JButton("Save");
+    public EditExamDialog(ExamManagementPanel parentPanel, ExamStructDAL examDAL) {
+        super(parentPanel, examDAL, "Edit Exam");
         saveButton.addActionListener(this);
-        buttonPanel.add(saveButton);
-
-        cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);
-        buttonPanel.add(cancelButton);
-
-        add(inputPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     @Override
@@ -125,103 +37,111 @@ public class EditExamDialog extends BaseExamDialog implements ActionListener {
             dispose();
         }
     }
-
     private void handleSaveAction() {
-        String examId = examIdField.getText().trim();
-        String examName = examNameField.getText().trim();
-        String description = descriptionField.getText().trim();
-        String durationStr = durationField.getText().trim();
-        Date startDate = (Date) startDatePicker.getModel().getValue();
-        Date endDate = (Date) endDatePicker.getModel().getValue();
+    // Initialize logger
+    Logger logger = Logger.getLogger(getClass().getName());
 
-        // Validate inputs
-        if (examName.isEmpty() || startDate == null || endDate == null || durationStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all required fields!");
+    // Get input values
+    String examName = examNameField.getText().trim();
+    String description = descriptionArea.getText().trim();
+    String durationStr = durationField.getText().trim();
+    Date startDate = (Date) startDatePicker.getModel().getValue();
+    Date endDate = (Date) endDatePicker.getModel().getValue();
+
+    // Validate inputs
+    if (examName.isEmpty() || startDate == null || endDate == null || durationStr.isEmpty() || subjectComboBox.getSelectedItem() == null) {
+        JOptionPane.showMessageDialog(this, "Please fill in all required fields!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        logger.warning("Validation failed: Missing required fields");
+        return;
+    }
+
+    // Validate exam name length and format
+    if (examName.length() > 100) {
+        JOptionPane.showMessageDialog(this, "Exam name must be 100 characters or less.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        logger.warning("Validation failed: Exam name too long");
+        return;
+    }
+    if (!Pattern.matches("^[a-zA-Z0-9\\s-_]+$", examName)) {
+        JOptionPane.showMessageDialog(this, "Exam name can only contain letters, numbers, spaces, hyphens, or underscores.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        logger.warning("Validation failed: Invalid characters in exam name");
+        return;
+    }
+
+    // Check for duplicate exam name (excluding current exam)
+   
+
+    // Validate dates
+    if (startDate.after(endDate)) {
+        JOptionPane.showMessageDialog(this, "End date must be after or equal to start date!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        logger.warning("Validation failed: Invalid date range");
+        return;
+    }
+
+    // Validate duration
+    LocalTime duration;
+    try {
+        duration = LocalTime.parse(durationStr, DateTimeFormatter.ofPattern("HH:mm:ss"));
+        if (duration.toSecondOfDay() < 300) { // Minimum 5 minutes
+            JOptionPane.showMessageDialog(this, "Exam duration must be at least 5 minutes.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            logger.warning("Validation failed: Duration too short");
             return;
         }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Invalid duration format. Use HH:mm:ss.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        logger.warning("Validation failed: Invalid duration format - " + durationStr);
+        return;
+    }
 
-        if (examName.length() > 100) {
-            JOptionPane.showMessageDialog(this, "Exam name must be 100 characters or less.");
-            return;
-        }
+    // Parse selected subject
+    String selectedSubject = (String) subjectComboBox.getSelectedItem();
+    String subjectID = selectedSubject != null ? selectedSubject.split(" - ")[0] : null;
+    SubjectDTO subject = subjectDAL.get(subjectID);
+    if (subject == null) {
+        JOptionPane.showMessageDialog(this, "Invalid subject selected.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        logger.warning("Validation failed: Invalid subject - " + subjectID);
+        return;
+    }
 
-        if (startDate.after(endDate)) {
-            JOptionPane.showMessageDialog(this, "End date must be after or equal to start date!");
-            return;
-        }
+    // Confirmation dialog
+    int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to save changes to this exam?", "Confirm Save", JOptionPane.YES_NO_OPTION);
+    if (confirm != JOptionPane.YES_OPTION) {
+        logger.info("User cancelled save operation");
+        return;
+    }
 
-        // Parse duration
-        LocalTime duration;
-        try {
-            duration = ExamDialogUtils.parseDuration(durationStr);
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
-            return;
-        }
+    // Update DTO
+    ExamStructDTO examDTO = new ExamStructDTO();
+    examDTO.setID(examDAL.getNextId());
+    examDTO.setName(examName);
+    examDTO.setDesc(description.isEmpty() ? null : description);
+    examDTO.setStart(startDate); // Consider converting to UTC or storing timezone
+    examDTO.setEnd(endDate);
+    examDTO.setExamTime(Time.valueOf(duration));
+    examDTO.setSubject(subject);
 
-        // Parse subject
-        String selectedSubject = (String) subjectComboBox.getSelectedItem();
-        if (selectedSubject == null) {
-            JOptionPane.showMessageDialog(this, "Please select a subject!");
-            return;
-        }
-        String subjectID;
-        try {
-            subjectID = selectedSubject.split(" - ")[0];
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid subject format!");
-            return;
-        }
-        SubjectDTO subject = subjectDAL.get(subjectID);
-        if (subject == null) {
-            JOptionPane.showMessageDialog(this, "Selected subject not found!");
-            return;
-        }
+    // Add audit information (assuming user context is available)
+   // examDTO.setLastUpdatedBy(); // Implement getCurrentUserID() as needed
+    //examDTO.setLastUpdatedAt(new Date());
 
-        // Update DTO
-        ExamStructDTO examDTO = new ExamStructDTO();
-        examDTO.setID(examId);
-        examDTO.setName(examName);
-        examDTO.setDesc(description.isEmpty() ? null : description); // Allow null description
-        examDTO.setStart(startDate);
-        examDTO.setEnd(endDate);
-        examDTO.setExamTime(Time.valueOf(duration));
-        examDTO.setSubject(subject);
-
+    // Show progress indicator
+    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    try {
         // Update database
-        try {
-            if (examDAL.update(examDTO)) {
-                JOptionPane.showMessageDialog(this, "Exam updated successfully!");
-                parentPanel.loadExamData();
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to update exam.");
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error updating exam: " + ex.getMessage());
-            ex.printStackTrace(); // Log for debugging
+        if (examDAL.update(examDTO)) {
+            JOptionPane.showMessageDialog(this, "Exam updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            logger.info("Exam updated successfully: " + examName + " (ID: " + examDTO.getID() + ")");
+            parentPanel.loadExamData();
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to update exam.", "Error", JOptionPane.ERROR_MESSAGE);
+            logger.severe("Failed to update exam: " + examName);
         }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error updating exam: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        logger.severe("Exception while updating exam: " + ex.getMessage());
+        ex.printStackTrace();
+    } finally {
+        // Reset cursor
+        setCursor(Cursor.getDefaultCursor());
     }
-
-    private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
-        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-
-        @Override
-        public Object stringToValue(String text) throws ParseException {
-            return dateFormatter.parse(text);
-        }
-
-        @Override
-        public String valueToString(Object value) {
-            if (value != null) {
-                if (value instanceof Calendar) {
-                    return dateFormatter.format(((Calendar) value).getTime());
-                } else if (value instanceof Date) {
-                    return dateFormatter.format(value);
-                }
-            }
-            return "";
-        }
-    }
-}
+}}

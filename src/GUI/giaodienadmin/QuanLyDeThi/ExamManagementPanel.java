@@ -24,6 +24,7 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
     private ExamStructDAL examStructDAL;
     private ArrayList<ExamStructDTO> exams;
     private AddExamDialog dialog;
+    private EditExamDialog Edit;
 
     public ExamManagementPanel() {
         examStructDAL = new ExamStructDAL();
@@ -147,8 +148,8 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
             return;
         }
 
-        EditExamDialog dialog = new EditExamDialog(this, exam);
-        dialog.setVisible(true);
+        Edit=new EditExamDialog(this, examStructDAL);
+        Edit.setVisible(true);
     }
 
     private void deleteExam() {
