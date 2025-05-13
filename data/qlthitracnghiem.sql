@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 06, 2025 lúc 06:44 AM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.0.30
+-- Host: 127.0.0.1
+-- Generation Time: May 13, 2025 at 09:02 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,34 +18,34 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `qlthitracnghiem`
+-- Database: `qlthitracnghiem`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `baikiemtra`
+-- Table structure for table `baikiemtra`
 --
 
 CREATE TABLE `baikiemtra` (
+  `MaBaiKT` varchar(50) NOT NULL,
   `MaCT` varchar(50) NOT NULL,
   `MaND` varchar(50) NOT NULL,
-  `BaiLam` text NOT NULL,
   `Diem` double NOT NULL,
   `ThoiGianLam` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `baikiemtra`
+-- Dumping data for table `baikiemtra`
 --
 
-INSERT INTO `baikiemtra` (`MaCT`, `MaND`, `BaiLam`, `Diem`, `ThoiGianLam`) VALUES
-('CT1', 'Test', 'GG', 0, '00:45:00');
+INSERT INTO `baikiemtra` (`MaBaiKT`, `MaCT`, `MaND`, `Diem`, `ThoiGianLam`) VALUES
+('', 'CT1', 'Test', 0, '00:45:00');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bangchiaquyen`
+-- Table structure for table `bangchiaquyen`
 --
 
 CREATE TABLE `bangchiaquyen` (
@@ -54,7 +54,7 @@ CREATE TABLE `bangchiaquyen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bangchiaquyen`
+-- Dumping data for table `bangchiaquyen`
 --
 
 INSERT INTO `bangchiaquyen` (`MaNQ`, `MaQuyen`) VALUES
@@ -83,13 +83,12 @@ INSERT INTO `bangchiaquyen` (`MaNQ`, `MaQuyen`) VALUES
 (2, 'KT01'),
 (2, 'KT02'),
 (2, 'KT03'),
-(2, 'KT04')
-;
+(2, 'KT04');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bangphancong`
+-- Table structure for table `bangphancong`
 --
 
 CREATE TABLE `bangphancong` (
@@ -98,7 +97,7 @@ CREATE TABLE `bangphancong` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bangphancong`
+-- Dumping data for table `bangphancong`
 --
 
 INSERT INTO `bangphancong` (`MaND`, `MaMH`) VALUES
@@ -108,7 +107,7 @@ INSERT INTO `bangphancong` (`MaND`, `MaMH`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `cauhoi`
+-- Table structure for table `cauhoi`
 --
 
 CREATE TABLE `cauhoi` (
@@ -120,7 +119,7 @@ CREATE TABLE `cauhoi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `cauhoi`
+-- Dumping data for table `cauhoi`
 --
 
 INSERT INTO `cauhoi` (`MaCH`, `NoiDung`, `DoKho`, `MaChuong`, `MaND`) VALUES
@@ -196,7 +195,7 @@ INSERT INTO `cauhoi` (`MaCH`, `NoiDung`, `DoKho`, `MaChuong`, `MaND`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `cauhoituychon`
+-- Table structure for table `cauhoituychon`
 --
 
 CREATE TABLE `cauhoituychon` (
@@ -205,7 +204,7 @@ CREATE TABLE `cauhoituychon` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `cauhoituychon`
+-- Dumping data for table `cauhoituychon`
 --
 
 INSERT INTO `cauhoituychon` (`MaCT`, `MaCH`) VALUES
@@ -217,7 +216,7 @@ INSERT INTO `cauhoituychon` (`MaCT`, `MaCH`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `cautrucde`
+-- Table structure for table `cautrucde`
 --
 
 CREATE TABLE `cautrucde` (
@@ -231,7 +230,7 @@ CREATE TABLE `cautrucde` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `cautrucde`
+-- Dumping data for table `cautrucde`
 --
 
 INSERT INTO `cautrucde` (`MaCT`, `TenCT`, `MoTa`, `ThoiGianBD`, `ThoiGianKT`, `ThoiGianLamBai`, `MonHoc`) VALUES
@@ -242,7 +241,19 @@ INSERT INTO `cautrucde` (`MaCT`, `TenCT`, `MoTa`, `ThoiGianBD`, `ThoiGianKT`, `T
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chitietde`
+-- Table structure for table `chitietbai`
+--
+
+CREATE TABLE `chitietbai` (
+  `MaCH` varchar(50) NOT NULL,
+  `MaBaiKT` varchar(50) NOT NULL,
+  `LuaChon` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chitietde`
 --
 
 CREATE TABLE `chitietde` (
@@ -253,7 +264,7 @@ CREATE TABLE `chitietde` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chitietde`
+-- Dumping data for table `chitietde`
 --
 
 INSERT INTO `chitietde` (`MaCT`, `MaChuong`, `DoKho`, `SoLuong`) VALUES
@@ -268,7 +279,7 @@ INSERT INTO `chitietde` (`MaCT`, `MaChuong`, `DoKho`, `SoLuong`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chuong`
+-- Table structure for table `chuong`
 --
 
 CREATE TABLE `chuong` (
@@ -278,7 +289,7 @@ CREATE TABLE `chuong` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chuong`
+-- Dumping data for table `chuong`
 --
 
 INSERT INTO `chuong` (`MaChuong`, `TenChuong`, `MonHoc`) VALUES
@@ -294,7 +305,7 @@ INSERT INTO `chuong` (`MaChuong`, `TenChuong`, `MonHoc`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `dapan`
+-- Table structure for table `dapan`
 --
 
 CREATE TABLE `dapan` (
@@ -304,7 +315,7 @@ CREATE TABLE `dapan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `dapan`
+-- Dumping data for table `dapan`
 --
 
 INSERT INTO `dapan` (`MaCH`, `NoiDung`, `Dung`) VALUES
@@ -584,7 +595,7 @@ INSERT INTO `dapan` (`MaCH`, `NoiDung`, `Dung`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `monhoc`
+-- Table structure for table `monhoc`
 --
 
 CREATE TABLE `monhoc` (
@@ -593,7 +604,7 @@ CREATE TABLE `monhoc` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `monhoc`
+-- Dumping data for table `monhoc`
 --
 
 INSERT INTO `monhoc` (`MaMH`, `TenMH`) VALUES
@@ -603,7 +614,7 @@ INSERT INTO `monhoc` (`MaMH`, `TenMH`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `nguoidung`
+-- Table structure for table `nguoidung`
 --
 
 CREATE TABLE `nguoidung` (
@@ -615,12 +626,12 @@ CREATE TABLE `nguoidung` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `nguoidung`
+-- Dumping data for table `nguoidung`
 --
 
 INSERT INTO `nguoidung` (`MaND`, `Ten`, `MatKhau`, `TrangThai`, `MaNQ`) VALUES
-('3123560069', 'Nguyễn Thanh Quang', '12345', 'HOATDONG', 1),
-('3123560096', 'NgVi', '12345', 'HOATDONG', 2),
+('3123560069', 'Nguyễn Thanh Quang', '12345', 'HOATDONG', 2),
+('3123560096', 'NgVi', '12345', 'HOATDONG', 3),
 ('3123560097', 'Hoàng Vũ', '12345', 'HOATDONG', 3),
 ('Sys', 'System', '69420', 'HOATDONG', 1),
 ('Test', 'Tester', 'abc', 'HOATDONG', 1);
@@ -628,7 +639,7 @@ INSERT INTO `nguoidung` (`MaND`, `Ten`, `MatKhau`, `TrangThai`, `MaNQ`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `nhomquyen`
+-- Table structure for table `nhomquyen`
 --
 
 CREATE TABLE `nhomquyen` (
@@ -637,7 +648,7 @@ CREATE TABLE `nhomquyen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `nhomquyen`
+-- Dumping data for table `nhomquyen`
 --
 
 INSERT INTO `nhomquyen` (`MaNQ`, `TenNhom`) VALUES
@@ -648,7 +659,19 @@ INSERT INTO `nhomquyen` (`MaNQ`, `TenNhom`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `quyen`
+-- Table structure for table `phanhoi`
+--
+
+CREATE TABLE `phanhoi` (
+  `MaBaiKT` varchar(50) NOT NULL,
+  `MaND` varchar(50) NOT NULL,
+  `NoiDung` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quyen`
 --
 
 CREATE TABLE `quyen` (
@@ -657,7 +680,7 @@ CREATE TABLE `quyen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `quyen`
+-- Dumping data for table `quyen`
 --
 
 INSERT INTO `quyen` (`MaQuyen`, `TenQuyen`) VALUES
@@ -680,32 +703,33 @@ INSERT INTO `quyen` (`MaQuyen`, `TenQuyen`) VALUES
 ('TG01', 'Tham gia bài kiểm tra');
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `baikiemtra`
+-- Indexes for table `baikiemtra`
 --
 ALTER TABLE `baikiemtra`
+  ADD PRIMARY KEY (`MaBaiKT`),
   ADD KEY `fk_baikiemtra_cautrucde` (`MaCT`),
   ADD KEY `fk_baikiemtra_nguoidung` (`MaND`);
 
 --
--- Chỉ mục cho bảng `bangchiaquyen`
+-- Indexes for table `bangchiaquyen`
 --
 ALTER TABLE `bangchiaquyen`
   ADD KEY `fk_bangchiaquyen_nhomquyen` (`MaNQ`),
   ADD KEY `fk_bangchiaquyen_quyen` (`MaQuyen`);
 
 --
--- Chỉ mục cho bảng `bangphancong`
+-- Indexes for table `bangphancong`
 --
 ALTER TABLE `bangphancong`
   ADD KEY `fk_bangphancong_nguoidung` (`MaND`),
   ADD KEY `fk_bangphancong_monhoc` (`MaMH`);
 
 --
--- Chỉ mục cho bảng `cauhoi`
+-- Indexes for table `cauhoi`
 --
 ALTER TABLE `cauhoi`
   ADD PRIMARY KEY (`MaCH`),
@@ -713,143 +737,171 @@ ALTER TABLE `cauhoi`
   ADD KEY `fk_cauhoi_nguoidung` (`MaND`);
 
 --
--- Chỉ mục cho bảng `cauhoituychon`
+-- Indexes for table `cauhoituychon`
 --
 ALTER TABLE `cauhoituychon`
   ADD KEY `fk_cauhoituychon_cauhoi` (`MaCH`),
   ADD KEY `fk_cauhoituychon_cautrucde` (`MaCT`);
 
 --
--- Chỉ mục cho bảng `cautrucde`
+-- Indexes for table `cautrucde`
 --
 ALTER TABLE `cautrucde`
   ADD PRIMARY KEY (`MaCT`),
   ADD KEY `fk_cautrucde_monhoc` (`MonHoc`);
 
 --
--- Chỉ mục cho bảng `chitietde`
+-- Indexes for table `chitietbai`
+--
+ALTER TABLE `chitietbai`
+  ADD KEY `fk_chitietbai_baikiemtra` (`MaBaiKT`),
+  ADD KEY `fk_chitietbai_cauhoi` (`MaCH`);
+
+--
+-- Indexes for table `chitietde`
 --
 ALTER TABLE `chitietde`
   ADD KEY `fk_chitietde_cautrucde` (`MaCT`),
   ADD KEY `fk_chitietde_chuong` (`MaChuong`);
 
 --
--- Chỉ mục cho bảng `chuong`
+-- Indexes for table `chuong`
 --
 ALTER TABLE `chuong`
   ADD PRIMARY KEY (`MaChuong`),
   ADD KEY `fk_chuong_monhoc` (`MonHoc`);
 
 --
--- Chỉ mục cho bảng `dapan`
+-- Indexes for table `dapan`
 --
 ALTER TABLE `dapan`
   ADD KEY `fk_dapan_cauhoi` (`MaCH`);
 
 --
--- Chỉ mục cho bảng `monhoc`
+-- Indexes for table `monhoc`
 --
 ALTER TABLE `monhoc`
   ADD PRIMARY KEY (`MaMH`);
 
 --
--- Chỉ mục cho bảng `nguoidung`
+-- Indexes for table `nguoidung`
 --
 ALTER TABLE `nguoidung`
   ADD PRIMARY KEY (`MaND`),
   ADD KEY `fk_nguoidung_nhomquyen` (`MaNQ`);
 
 --
--- Chỉ mục cho bảng `nhomquyen`
+-- Indexes for table `nhomquyen`
 --
 ALTER TABLE `nhomquyen`
   ADD PRIMARY KEY (`MaNQ`);
 
 --
--- Chỉ mục cho bảng `quyen`
+-- Indexes for table `phanhoi`
+--
+ALTER TABLE `phanhoi`
+  ADD KEY `fk_phanhoi_baikiemtra` (`MaBaiKT`),
+  ADD KEY `fk_phanhoi_nguoidung` (`MaND`);
+
+--
+-- Indexes for table `quyen`
 --
 ALTER TABLE `quyen`
   ADD PRIMARY KEY (`MaQuyen`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `nhomquyen`
+-- AUTO_INCREMENT for table `nhomquyen`
 --
 ALTER TABLE `nhomquyen`
   MODIFY `MaNQ` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `baikiemtra`
+-- Constraints for table `baikiemtra`
 --
 ALTER TABLE `baikiemtra`
   ADD CONSTRAINT `fk_baikiemtra_cautrucde` FOREIGN KEY (`MaCT`) REFERENCES `cautrucde` (`MaCT`),
   ADD CONSTRAINT `fk_baikiemtra_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
--- Các ràng buộc cho bảng `bangchiaquyen`
+-- Constraints for table `bangchiaquyen`
 --
 ALTER TABLE `bangchiaquyen`
   ADD CONSTRAINT `fk_bangchiaquyen_nhomquyen` FOREIGN KEY (`MaNQ`) REFERENCES `nhomquyen` (`MaNQ`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_bangchiaquyen_quyen` FOREIGN KEY (`MaQuyen`) REFERENCES `quyen` (`MaQuyen`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `bangphancong`
+-- Constraints for table `bangphancong`
 --
 ALTER TABLE `bangphancong`
   ADD CONSTRAINT `fk_bangphancong_monhoc` FOREIGN KEY (`MaMH`) REFERENCES `monhoc` (`MaMH`),
   ADD CONSTRAINT `fk_bangphancong_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
--- Các ràng buộc cho bảng `cauhoi`
+-- Constraints for table `cauhoi`
 --
 ALTER TABLE `cauhoi`
   ADD CONSTRAINT `fk_cauhoi_chuong` FOREIGN KEY (`MaChuong`) REFERENCES `chuong` (`MaChuong`),
   ADD CONSTRAINT `fk_cauhoi_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 
 --
--- Các ràng buộc cho bảng `cauhoituychon`
+-- Constraints for table `cauhoituychon`
 --
 ALTER TABLE `cauhoituychon`
   ADD CONSTRAINT `fk_cauhoituychon_cauhoi` FOREIGN KEY (`MaCH`) REFERENCES `cauhoi` (`MaCH`),
   ADD CONSTRAINT `fk_cauhoituychon_cautrucde` FOREIGN KEY (`MaCT`) REFERENCES `cautrucde` (`MaCT`);
 
 --
--- Các ràng buộc cho bảng `cautrucde`
+-- Constraints for table `cautrucde`
 --
 ALTER TABLE `cautrucde`
   ADD CONSTRAINT `fk_cautrucde_monhoc` FOREIGN KEY (`MonHoc`) REFERENCES `monhoc` (`MaMH`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `chitietde`
+-- Constraints for table `chitietbai`
+--
+ALTER TABLE `chitietbai`
+  ADD CONSTRAINT `fk_chitietbai_baikiemtra` FOREIGN KEY (`MaBaiKT`) REFERENCES `baikiemtra` (`MaBaiKT`),
+  ADD CONSTRAINT `fk_chitietbai_cauhoi` FOREIGN KEY (`MaCH`) REFERENCES `cauhoi` (`MaCH`);
+
+--
+-- Constraints for table `chitietde`
 --
 ALTER TABLE `chitietde`
   ADD CONSTRAINT `fk_chitietde_cautrucde` FOREIGN KEY (`MaCT`) REFERENCES `cautrucde` (`MaCT`),
   ADD CONSTRAINT `fk_chitietde_chuong` FOREIGN KEY (`MaChuong`) REFERENCES `chuong` (`MaChuong`);
 
 --
--- Các ràng buộc cho bảng `chuong`
+-- Constraints for table `chuong`
 --
 ALTER TABLE `chuong`
   ADD CONSTRAINT `fk_chuong_monhoc` FOREIGN KEY (`MonHoc`) REFERENCES `monhoc` (`MaMH`);
 
 --
--- Các ràng buộc cho bảng `dapan`
+-- Constraints for table `dapan`
 --
 ALTER TABLE `dapan`
   ADD CONSTRAINT `fk_dapan_cauhoi` FOREIGN KEY (`MaCH`) REFERENCES `cauhoi` (`MaCH`);
 
 --
--- Các ràng buộc cho bảng `nguoidung`
+-- Constraints for table `nguoidung`
 --
 ALTER TABLE `nguoidung`
   ADD CONSTRAINT `fk_nguoidung_nhomquyen` FOREIGN KEY (`MaNQ`) REFERENCES `nhomquyen` (`MaNQ`);
+
+--
+-- Constraints for table `phanhoi`
+--
+ALTER TABLE `phanhoi`
+  ADD CONSTRAINT `fk_phanhoi_baikiemtra` FOREIGN KEY (`MaBaiKT`) REFERENCES `baikiemtra` (`MaBaiKT`),
+  ADD CONSTRAINT `fk_phanhoi_nguoidung` FOREIGN KEY (`MaND`) REFERENCES `nguoidung` (`MaND`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

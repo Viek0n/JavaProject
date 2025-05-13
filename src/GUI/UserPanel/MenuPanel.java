@@ -64,9 +64,18 @@ public class MenuPanel extends JPanel {
         });
         test.setText("Làm bài");
         test.setFont(new Font("Arial", Font.BOLD, 14));
+
+        JButton testHistory = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "test-history.png", 40, 40), e -> {
+            mainFrame.addPanel(new ExamSelect(mainFrame, this), "ExamSelect");
+            mainFrame.showPanel("ExamSelect");
+        });
+        testHistory.setText("Lịch sử làm bài");
+        testHistory.setFont(new Font("Arial", Font.BOLD, 14));
+
         if(mainFrame.userBLL.getCurrent().getRole().getTakeExam()){
             this.add(studentLabel);
             this.add(test);
+            this.add(testHistory);
         }
             
 
@@ -81,9 +90,18 @@ public class MenuPanel extends JPanel {
         });
         analysis.setText("Đề kiểm tra");
         analysis.setFont(new Font("Arial", Font.BOLD, 14));
+
+        JButton feedback = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "feedback.png", 40, 40), e -> {
+            mainFrame.addPanel(new ExamManagementPanel(this), "ExamManage");
+            mainFrame.showPanel("ExamManage");
+        });
+        feedback.setText("Phản hồi");
+        feedback.setFont(new Font("Arial", Font.BOLD, 14));
+        
         if(mainFrame.userBLL.getCurrent().getRole().getSeeExam()){
             this.add(teacherLabel);
             this.add(analysis);
+            this.add(feedback);
         }
 
         JLabel manageLabel = new JLabel("Quản lý");
