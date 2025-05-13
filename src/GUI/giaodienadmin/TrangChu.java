@@ -1,8 +1,9 @@
 package GUI.giaodienadmin;
 
+import GUI.giaodienadmin.QuanLyCauHoi.PanelQuestionDetail;
 import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
 import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
-import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,10 +51,10 @@ public class TrangChu extends JFrame implements ActionListener {
         cardPanel = new JPanel(cardLayout);
 
         // Add panels to CardLayout
-        PanelExemDetail panelExemDetail = new PanelExemDetail(cardPanel, cardLayout);
+        PanelQuestionDetail panelExemDetail = new PanelQuestionDetail(cardPanel, cardLayout);
         cardPanel.add(new QuestionManagementPanel(cardPanel, cardLayout, panelExemDetail), "QuanLyCauHoi");
         cardPanel.add(panelExemDetail, "EditPanel");
-        cardPanel.add(new ExamManagementPanel(), "QuanLyBaiKiemTra");
+        //cardPanel.add(new ExamManagementPanel(), "QuanLyBaiKiemTra");
         this.add(cardPanel, BorderLayout.CENTER);
         setSize(DEFAUT_WIDTH_JFrame, DEFAUT_HEIGHT_JFrame);
         this.setLocationRelativeTo(null);

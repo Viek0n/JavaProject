@@ -10,10 +10,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
+import java.awt.CardLayout;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 public class LoginPanel extends JPanel {
     private JTextField mssvField;
     private JTextField passField;
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
+    private CardLayout cardLayout;
 
     public LoginPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame

@@ -4,7 +4,7 @@ import DAL.*;
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
 import DTO.QuestionDTO;
-import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
+import GUI.MakeColor.Ulti;
 import MICS.Enums;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +17,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import BLL.UserBLL;
 
 public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JTable questionTable;
@@ -26,23 +28,21 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JButton addButton, editButton, deleteButton, searchButton, backButton, filterButton;
     private ArrayList<QuestionDTO> bank;
     private QuestionDAL questionDAL;
-    private JPanel mainPanel;
-    private CardLayout cardLayout;
-    private PanelExemDetail panelExemDetail;
+    private JPanel mainPanel; // Parent panel to swap content
     private JComboBox<Enums.DifficultValue> diffFilterBox;
     private JComboBox<ChapterDTO> chapterFilterBox;
     private boolean isSearchMode = false;
     private List<QuestionDTO> originalBank;
     private JPanel filterPanel;
-    private JDialog addQuestionDialog; 
+    private JDialog addQuestionDialog;
     private JPopupMenu popupMenu;
     private int selectedRow;
-    private JPanel menuPanel;
+    private PanelQuestionDetail panelExemDetail;
+    private UserBLL userBLL;
 
-    public QuestionManagementPanel(JPanel mainPanel, CardLayout cardLayout, PanelExemDetail panelExemDetail) {
+    public QuestionManagementPanel(JPanel mainPanel,UserBLL userBLL) {
         this.mainPanel = mainPanel;
-        this.cardLayout = cardLayout;
-        this.panelExemDetail = panelExemDetail;
+        this.userBLL=userBLL;
         initComponent();
     }
 
@@ -50,10 +50,11 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         questionDAL = new QuestionDAL();
         bank = questionDAL.getAll();
         originalBank = new ArrayList<>(bank);
-        this.setLayout(new BorderLayout(10, 10));
-        this.setBackground(Color.decode("#f0f4f8"));
-
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 15));
+        this.setLayout(new BorderLayout());
+        this.setBackground(Ulti.MainColor);
+        
+        this.add(mainPanel, BorderLayout.WEST);
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
         topPanel.setBackground(Color.decode("#e0e0e0"));
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -89,7 +90,6 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         // Add the panel to the search field
         searchField.setLayout(new BorderLayout());
         searchField.add(searchButtonPanel, BorderLayout.EAST);
-            
 
         backButton = createButton("Trở lại");
         backButton.setBackground(Color.decode("#808080"));
@@ -99,7 +99,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
 
         // Initialize filter button with icon
         filterButton = new JButton("Lọc");
-        filterButton.setBackground(Color.decode("#2196f3")); // Blue
+        filterButton.setBackground(Color.decode("#2196f3"));
         filterButton.setForeground(Color.WHITE);
         filterButton.setFocusPainted(false);
         filterButton.setBorder(new RoundedBorder(8));
@@ -108,20 +108,20 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         diffFilterBox = new JComboBox<>(Enums.DifficultValue.values());
         diffFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
         ((JLabel) diffFilterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        diffFilterBox.setBorder(new RoundedBorder(8)); // Consistent border
+        diffFilterBox.setBorder(new RoundedBorder(8));
 
         ChapterDAL chapterDAL = new ChapterDAL();
         chapterFilterBox = new JComboBox<>();
         chapterFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
         ((JLabel) chapterFilterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         chapterDAL.getAll().forEach(chapterFilterBox::addItem);
-        chapterFilterBox.setBorder(new RoundedBorder(8)); // Consistent border
+        chapterFilterBox.setBorder(new RoundedBorder(8));
 
         filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         filterPanel.add(diffFilterBox);
         filterPanel.add(chapterFilterBox);
         filterPanel.setVisible(false);
-    
+
         topPanel.add(addButton);
         topPanel.add(editButton);
         topPanel.add(deleteButton);
@@ -131,11 +131,10 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         topPanel.add(filterButton);
         topPanel.add(filterPanel);
 
-        this.add(topPanel, BorderLayout.NORTH);
+    
 
         String[] columnNames = {"Mã câu hỏi", "Môn học", "Độ khó", "Chương", "Chi tiết"};
-        tableModel = new DefaultTableModel(columnNames, 0);
-        questionTable = new JTable(tableModel);
+        /*questionTable = new JTable(tableModel);
         questionTable.setRowHeight(35);
         questionTable.setFont(new Font("Arial", Font.PLAIN, 14));
         questionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
@@ -143,9 +142,45 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         questionTable.setBackground(Color.WHITE);
         questionTable.setGridColor(Color.LIGHT_GRAY);
         JScrollPane scrollPane = new JScrollPane(questionTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        this.add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        scrollPane.setBackground(Ulti.MainColor);
+        this.add(scrollPane, BorderLayout.CENTER);*/
+        tableModel = new DefaultTableModel(columnNames, 0);
+        questionTable = new JTable(tableModel);
+        questionTable.setRowHeight(35);
+        questionTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        JTableHeader tableHeader = questionTable.getTableHeader();
+        tableHeader.setFont(new Font("Arial", Font.BOLD, 14));
+        tableHeader.setBackground(Color.decode("#f0f4f8"));
+        tableHeader.setForeground(Color.BLACK);
+        questionTable.setFillsViewportHeight(true);
+        questionTable.setBackground(Color.WHITE);
+        questionTable.setGridColor(Color.LIGHT_GRAY);
+        questionTable.setSelectionBackground(Color.decode("#b0e0e6"));
+        questionTable.setSelectionForeground(Color.BLACK);
 
+        questionTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        questionTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        questionTable.getColumnModel().getColumn(2).setPreferredWidth(100);
+        questionTable.getColumnModel().getColumn(3).setPreferredWidth(100);
+        questionTable.getColumnModel().getColumn(4).setPreferredWidth(80);
+
+        questionTable.getColumnModel().getColumn(0).setCellRenderer(new CustomLabelRenderer());
+        questionTable.getColumnModel().getColumn(1).setCellRenderer(new CustomLabelRenderer());
+        questionTable.getColumnModel().getColumn(2).setCellRenderer(new CustomLabelRenderer());
+        questionTable.getColumnModel().getColumn(3).setCellRenderer(new CustomLabelRenderer());
+        questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+        questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+
+        JScrollPane scrollPane = new JScrollPane(questionTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        scrollPane.setBackground(Ulti.MainColor);
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(topPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        add(centerPanel,BorderLayout.CENTER);
         addButton.addActionListener(this);
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
@@ -190,12 +225,9 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             }
 
             @Override
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            }
-
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
             @Override
-            public void popupMenuCanceled(PopupMenuEvent e) {
-            }
+            public void popupMenuCanceled(PopupMenuEvent e) {}
         });
     }
 
@@ -255,13 +287,11 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             if (filterPanel.isVisible()) {
                 isSearchMode = true;
                 backButton.setVisible(true);
-             
                 Point location = searchField.getLocationOnScreen();
-                // Calculate y-coordinate to position it below searchField
                 int y = location.y + searchField.getHeight();
-                SwingUtilities.convertPointFromScreen(location, this); // Convert to this panel's coordinates
+                SwingUtilities.convertPointFromScreen(location, this);
                 filterPanel.setLocation(location.x, y);
-                this.setComponentZOrder(filterPanel, 0); // Ensure filterPanel is visible
+                this.setComponentZOrder(filterPanel, 0);
                 filterPanel.revalidate();
                 filterPanel.repaint();
             } else {
@@ -279,8 +309,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             return;
         }
         String questionID = tableModel.getValueAt(selectedRow, 0).toString();
-        panelExemDetail.loadQuestionDetails(questionID);
-        cardLayout.show(mainPanel, "EditPanel");
+        showQuestionDetails(questionID);
     }
 
     private void deleteQuestion() {
@@ -355,23 +384,40 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
         questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
     }
-    public void searchID(String ID){
-        //bank=questionDAL.getByID(ID);
+
+    public void searchID(String ID) {
+        // Note: This method seems incomplete or incorrect as it doesn't use the ID parameter
         tableModel.setRowCount(0);
         if (bank != null && !bank.isEmpty()) {
             for (QuestionDTO row : bank) {
-                tableModel.addRow(new Object[]{
-                        row.getID(),
-                        row.getSubject() != null ? row.getSubject().getName() : "N/A",
-                        row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
-                        row.getChapter() != null ? row.getChapter().getName() : "N/A",
-                        "Xem"
-                });
+                if (row.getID().equals(ID)) {
+                    tableModel.addRow(new Object[]{
+                            row.getID(),
+                            row.getSubject() != null ? row.getSubject().getName() : "N/A",
+                            row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
+                            row.getChapter() != null ? row.getChapter().getName() : "N/A",
+                            "Xem"
+                    });
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Không có câu hỏi nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
+        questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+        questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+    }
 
+    private void showQuestionDetails(String questionID) {
+        // Create a new PanelExemDetail instance
+        PanelQuestionDetail panelExemDetail = new PanelQuestionDetail(this, mainPanel);
+        panelExemDetail.loadQuestionDetails(questionID);
+
+        // Replace the content of mainPanel with PanelExemDetail
+        mainPanel.removeAll();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(panelExemDetail, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -419,8 +465,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             if (clicked) {
                 int selectedRow = questionTable.getSelectedRow();
                 String questionID = tableModel.getValueAt(selectedRow, 0).toString();
-                panelExemDetail.loadQuestionDetails(questionID);
-                cardLayout.show(mainPanel, "EditPanel");
+                showQuestionDetails(questionID);
             }
             clicked = false;
             return label;
@@ -464,7 +509,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         chapterDAL.getAll().forEach(chapterBox::addItem);
         chapterBox.setBorder(new RoundedBorder(8));
 
-        JTextField createdByField = new JTextField();
+        JTextField createdByField = new JTextField(userBLL.getCurrent().getLoginName());
         createdByField.setFont(new Font("Arial", Font.PLAIN, 14));
         createdByField.setBorder(new RoundedBorder(8));
 
@@ -484,8 +529,6 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         correctAnswerBox.setFont(new Font("Arial", Font.PLAIN, 14));
         ((JLabel) correctAnswerBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         correctAnswerBox.setBorder(new RoundedBorder(8));
-
-        chapterDAL.getAll().forEach(chapterBox::addItem);
 
         int row = 0;
         gbc.gridx = 0;
@@ -592,8 +635,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
                     || answerA.getText().trim().isEmpty()
                     || answerB.getText().trim().isEmpty()
                     || answerC.getText().trim().isEmpty()
-                    || answerD.getText().trim().isEmpty()
-                    || createdByField.getText().trim().isEmpty()) {
+                    || answerD.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(addQuestionDialog, "Vui lòng điền đầy đủ thông tin.");
                 return;
             }
@@ -636,5 +678,25 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         cancelButton.addActionListener(e -> addQuestionDialog.dispose());
         addQuestionDialog.setUndecorated(true);
         addQuestionDialog.setVisible(true);
+    }
+    class CustomLabelRenderer extends JLabel implements TableCellRenderer {
+        public CustomLabelRenderer() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                      boolean isSelected, boolean hasFocus, int row, int column) {
+            setText(value != null ? value.toString() : "");
+            setFont(new Font("Arial", Font.PLAIN, 14));
+            setForeground(Color.BLACK);
+            setBackground(row % 2 == 0 ? Color.decode("#eaf2f8") : Color.WHITE);
+            if (isSelected) {
+                setBackground(Color.decode("#AED6F1"));
+                setForeground(Color.BLACK);
+            }
+            setHorizontalAlignment(SwingConstants.LEFT);
+            return this;
+        }
     }
 }

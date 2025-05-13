@@ -7,12 +7,14 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.CardLayout;
 
 public class ScorePanel extends JPanel {
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
     private UserDTO user;
     private float score;
     private String time;
+
 
     public ScorePanel(MainFrame mainFrame, UserDTO user, float score, String time) {
         this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame

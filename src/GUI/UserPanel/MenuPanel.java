@@ -3,8 +3,11 @@ package GUI.UserPanel;
 import GUI.MakeColor.*;
 import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
 import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
+import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
+import GUI.giaodienadmin.QuanLyCauHoi.PanelQuestionDetail;
 import MICS.*;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -22,11 +25,13 @@ public class MenuPanel extends JPanel {
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
     private boolean labelPrint;
 
+
     public MenuPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
-        labelPrint = false;
-        init();
-    }
+    this.mainFrame = mainFrame;
+ 
+    labelPrint = false;
+    init();
+}
 
     
     private void init() {
@@ -105,9 +110,20 @@ public class MenuPanel extends JPanel {
         }
             
 
-        JButton manageQues = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "question.png", 40, 40), e -> {});
+        
+        
+
+JButton manageQues = ButtonFactory.createClearButton(mainFrame, 214, 50,
+    AddImage.createImageIcon(Connect.img + "question.png", 40, 40),
+    e -> {
+        QuestionManagementPanel questionManagementPanel = new QuestionManagementPanel(this,mainFrame.userBLL);
+        PanelQuestionDetail panelExemDetail = new PanelQuestionDetail(questionManagementPanel,this);
+        mainFrame.addPanel(questionManagementPanel, "QuestionManage");
+        mainFrame.showPanel("QuestionManage");
+    });
         manageQues.setText("Câu hỏi");
         manageQues.setFont(new Font("Arial", Font.BOLD, 14));
+        
         if(mainFrame.userBLL.getCurrent().getRole().getSeeQuest()){
             if(!labelPrint){
                 labelPrint=true;
@@ -126,8 +142,7 @@ public class MenuPanel extends JPanel {
             }
             this.add(manageRole);
         }
-            
-        // Nút quay lại LoginPanel
+        
         JButton logoutButton = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "logout.png", 40, 40), e -> {
             mainFrame.addPanel(new LoginPanel(mainFrame), "LoginPanel");
             mainFrame.showPanel("LoginPanel");

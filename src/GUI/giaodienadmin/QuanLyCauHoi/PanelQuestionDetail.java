@@ -1,39 +1,48 @@
-package GUI.giaodienadmin.QuanLyDeThi;
+package GUI.giaodienadmin.QuanLyCauHoi;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import BLL.UserBLL;
+
 import java.awt.*;
-
-
 import java.util.ArrayList;
 import DAL.AnswerDAL;
 import DAL.QuestionDAL;
 import DTO.AnswerDTO;
 import DTO.QuestionDTO;
 
-public class PanelExemDetail extends JPanel {
+public class PanelQuestionDetail extends JPanel {
     private JLabel questionIDLabel;
     private JTextField contentField;
     private JTable answerTable;
     private DefaultTableModel tableModel;
     private JButton saveButton, backButton;
     private String currentQuestionID;
+    private QuestionManagementPanel questionManagementPanel;
+    private JPanel mainPanel;
 
 
-    public PanelExemDetail(JPanel mainPanel, CardLayout cardLayout) {
+    public PanelQuestionDetail(QuestionManagementPanel questionManagementPanel, JPanel mainPanel) {
+        this.questionManagementPanel = questionManagementPanel;
+        this.mainPanel = mainPanel;
 
+        initComponents();
+    }
+
+    private void initComponents() {
         this.setLayout(new BorderLayout(10, 10));
-        this.setBackground(Color.decode("#f0f4f8")); // Màu nền nhạt
+        this.setBackground(Color.decode("#f0f4f8")); // Light background
 
         // Top panel
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 15));
-        topPanel.setBackground(Color.decode("#e0e0e0")); // Màu xám nhạt
+        topPanel.setBackground(Color.decode("#e0e0e0")); // Light gray
         questionIDLabel = new JLabel("Question ID: ");
         questionIDLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(questionIDLabel);
+        this.add(topPanel, BorderLayout.NORTH);
 
         // Center panel
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
@@ -52,7 +61,7 @@ public class PanelExemDetail extends JPanel {
         tableModel = new DefaultTableModel(new Object[]{"Answer", "Correct"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 1;
+                return column == 1; // Only the "Correct" column is editable
             }
         };
         answerTable = new JTable(tableModel);
@@ -63,7 +72,6 @@ public class PanelExemDetail extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        this.add(topPanel, BorderLayout.NORTH);
         this.add(centerPanel, BorderLayout.CENTER);
 
         // Bottom panel
@@ -71,23 +79,33 @@ public class PanelExemDetail extends JPanel {
         bottomPanel.setBackground(Color.decode("#e0e0e0"));
         saveButton = new JButton("Save");
         saveButton.setFont(new Font("Arial", Font.BOLD, 14));
-        saveButton.setBackground(Color.decode("#4caf50")); // Màu xanh lá
+        saveButton.setBackground(Color.decode("#4caf50")); // Green
         saveButton.setForeground(Color.WHITE);
         saveButton.setFocusPainted(false);
         backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
-        backButton.setBackground(Color.decode("#f44336")); // Màu đỏ
+        backButton.setBackground(Color.decode("#f44336")); // Red
         backButton.setForeground(Color.WHITE);
         backButton.setFocusPainted(false);
         bottomPanel.add(saveButton);
         bottomPanel.add(backButton);
         this.add(bottomPanel, BorderLayout.SOUTH);
 
-        backButton.addActionListener(e -> cardLayout.show(mainPanel, "QuanLyCauHoi"));
+        // Back button action: Return to QuestionManagementPanel
+        backButton.addActionListener(e -> {
+            mainPanel.removeAll();
+            mainPanel.setLayout(new BorderLayout());
+            mainPanel.add(questionManagementPanel, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        });
+
         saveButton.addActionListener(e -> saveQuestionContent());
+
+        // Set up the "Correct" column editor and renderer
         TableColumn correctColumn = answerTable.getColumnModel().getColumn(1);
         correctColumn.setCellEditor(new DefaultCellEditor(createCorrectComboBox()));
-        correctColumn.setCellRenderer(new CorrectCellRenderer()); // Sử dụng renderer tùy chỉnh
+        correctColumn.setCellRenderer(new CorrectCellRenderer());
     }
 
     public void loadQuestionDetails(String questionID) {
@@ -111,62 +129,67 @@ public class PanelExemDetail extends JPanel {
         }
     }
 
-   
-
     private void saveQuestionContent() {
-    String newText = contentField.getText().trim();
-    if (newText.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Content cannot be empty!", "Validation Error", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    QuestionDAL questionDAL = new QuestionDAL();
-    QuestionDTO updated = questionDAL.getByID(currentQuestionID);
-    if (updated == null) {
-        JOptionPane.showMessageDialog(this, "Question not found!", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    updated.setText(newText);
-
-    // Validate and update answers
-    ArrayList<AnswerDTO> newAnswers = new ArrayList<>();
-    boolean hasCorrectAnswer = false;
-    for (int row = 0; row < tableModel.getRowCount(); row++) {
-        String answerText = (String) tableModel.getValueAt(row, 0);
-        String isCorrectStr = (String) tableModel.getValueAt(row, 1);
-        boolean isCorrect = "Yes".equals(isCorrectStr);
-
-        if (answerText == null || answerText.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Answer text cannot be empty!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+        String newText = contentField.getText().trim();
+        if (newText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Content cannot be empty!", "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (isCorrect) {
-            hasCorrectAnswer = true;
+        QuestionDAL questionDAL = new QuestionDAL();
+        QuestionDTO updated = questionDAL.getByID(currentQuestionID);
+        if (updated == null) {
+            JOptionPane.showMessageDialog(this, "Question not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        AnswerDTO answer = new AnswerDTO();
-        answer.setText(answerText);
-        answer.setRight(isCorrect);
-        newAnswers.add(answer);
+        updated.setText(newText);
+
+        // Validate and update answers
+        ArrayList<AnswerDTO> newAnswers = new ArrayList<>();
+        boolean hasCorrectAnswer = false;
+        for (int row = 0; row < tableModel.getRowCount(); row++) {
+            String answerText = (String) tableModel.getValueAt(row, 0);
+            String isCorrectStr = (String) tableModel.getValueAt(row, 1);
+            boolean isCorrect = "Yes".equals(isCorrectStr);
+
+            if (answerText == null || answerText.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Answer text cannot be empty!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (isCorrect) {
+                hasCorrectAnswer = true;
+            }
+
+            AnswerDTO answer = new AnswerDTO();
+            answer.setText(answerText);
+            answer.setRight(isCorrect);
+            newAnswers.add(answer);
+        }
+
+        if (!hasCorrectAnswer) {
+            JOptionPane.showMessageDialog(this, "At least one answer must be marked as correct!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        updated.setAns(newAnswers);
+
+        boolean success = questionDAL.update(updated);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Question and answers updated successfully.");
+            // Refresh QuestionManagementPanel after saving
+            questionManagementPanel.loadQuestions();
+            // Return to QuestionManagementPanel
+            mainPanel.removeAll();
+            mainPanel.setLayout(new BorderLayout());
+            mainPanel.add(questionManagementPanel, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to update question!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-
-    if (!hasCorrectAnswer) {
-        JOptionPane.showMessageDialog(this, "At least one answer must be marked as correct!", "Validation Error", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    updated.setAns(newAnswers);
-
-    boolean success = questionDAL.update(updated);
-    if (success) {
-        JOptionPane.showMessageDialog(this, "Question and answers updated successfully.");
-    } else {
-        JOptionPane.showMessageDialog(this, "Failed to update question!", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-
 
     private JComboBox<String> createCorrectComboBox() {
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"Yes", "No"});
@@ -174,7 +197,6 @@ public class PanelExemDetail extends JPanel {
         return comboBox;
     }
 
-    // Custom cell renderer for "Correct" column
     private class CorrectCellRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -184,8 +206,8 @@ public class PanelExemDetail extends JPanel {
             } else {
                 label.setForeground(Color.RED);
             }
-            label.setFont(new Font("Arial", Font.BOLD, 14)); // In đậm chữ Yes/No
-            label.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa chữ
+            label.setFont(new Font("Arial", Font.BOLD, 14));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
             return label;
         }
     }
