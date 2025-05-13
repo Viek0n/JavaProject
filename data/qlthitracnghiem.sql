@@ -619,8 +619,8 @@ CREATE TABLE `nguoidung` (
 --
 
 INSERT INTO `nguoidung` (`MaND`, `Ten`, `MatKhau`, `TrangThai`, `MaNQ`) VALUES
-('3123560069', 'Nguyễn Thanh Quang', '12345', 'HOATDONG', 2),
-('3123560096', 'NgVi', '12345', 'HOATDONG', 1),
+('3123560069', 'Nguyễn Thanh Quang', '12345', 'HOATDONG', 1),
+('3123560096', 'NgVi', '12345', 'HOATDONG', 2),
 ('3123560097', 'Hoàng Vũ', '12345', 'HOATDONG', 3),
 ('Sys', 'System', '69420', 'HOATDONG', 1),
 ('Test', 'Tester', 'abc', 'HOATDONG', 1);
