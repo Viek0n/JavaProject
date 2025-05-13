@@ -25,4 +25,13 @@ public class AddImage {
         imageIcon = new ImageIcon(scaledImage);
         return imageIcon;
     }
+    
+    public static ImageIcon createImageIcon(String imagePath, int width, int height) {
+        ImageIcon imageIcon = new ImageIcon(imagePath);
+
+        // Thay đổi kích thước hình ảnh
+        Image scaledImage = imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(scaledImage);
+        return imageIcon;
+    }
 }

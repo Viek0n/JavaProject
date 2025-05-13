@@ -2,17 +2,14 @@ package GUI.giaodienadmin.QuanLyDeThi;
 
 import DAL.ExamStructDAL;
 import DTO.ExamStructDTO;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class ExamManagementPanel extends JPanel implements ActionListener {
     private JTable examTable;
@@ -25,18 +22,20 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
     private ArrayList<ExamStructDTO> exams;
     private AddExamDialog dialog;
     private EditExamDialog Edit;
+    private JPanel menuPanel;
 
-    public ExamManagementPanel() {
+    public ExamManagementPanel(JPanel menuPanel) {
         examStructDAL = new ExamStructDAL();
         exams = examStructDAL.getAll();
-        
+        this.menuPanel = menuPanel;
         initComponent();
     }
 
     private void initComponent() {
-        this.setLayout(new BorderLayout(10, 10));
+        this.setLayout(new BorderLayout());
         this.setBackground(Color.decode("#ecf0f1"));
 
+        this.add(menuPanel, BorderLayout.WEST);
         // Top panel for buttons and search
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setBackground(Color.decode("#bdc3c7"));
@@ -64,8 +63,6 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
         topPanel.add(searchButton);
         topPanel.add(clearSearchButton);
 
-        this.add(topPanel, BorderLayout.NORTH);
-
         // Table for displaying exams
         String[] columnNames = {"Exam ID", "Exam Name", "Start Date", "End Date", "Duration", "Subject", "Description"};
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -82,7 +79,12 @@ public class ExamManagementPanel extends JPanel implements ActionListener {
         examTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(examTable);
-        this.add(scrollPane, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(topPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        add(centerPanel, BorderLayout.CENTER);
 
         // Add action listeners
         addButton.addActionListener(this);

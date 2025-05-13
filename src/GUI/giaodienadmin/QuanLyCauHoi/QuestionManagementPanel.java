@@ -1,24 +1,23 @@
 package GUI.giaodienadmin.QuanLyCauHoi;
 
+import DAL.*;
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
 import DTO.QuestionDTO;
 import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
 import MICS.Enums;
-import DAL.*;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JTable questionTable;
@@ -38,6 +37,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     private JDialog addQuestionDialog; 
     private JPopupMenu popupMenu;
     private int selectedRow;
+    private JPanel menuPanel;
 
     public QuestionManagementPanel(JPanel mainPanel, CardLayout cardLayout, PanelExemDetail panelExemDetail) {
         this.mainPanel = mainPanel;

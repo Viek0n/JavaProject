@@ -44,8 +44,7 @@ public class ExamStructDAL {
                 examStruct.setStart(rs.getDate("ThoiGianBD"));
                 examStruct.setEnd(rs.getDate("ThoiGianKT"));
                 examStruct.setExamTime(rs.getTime("ThoiGianLamBai"));
-                SubjectDTO subject = new SubjectDTO();
-                subject.setID(rs.getString("MonHoc"));
+                SubjectDTO subject = new SubjectDAL().get(rs.getString("MonHoc"));
                 examStruct.setSubject(subject);
                 list.add(examStruct);
             }

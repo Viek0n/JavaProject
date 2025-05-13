@@ -104,7 +104,7 @@ public class TakeExam extends JPanel {
             gbc.gridx = i % columns; // Cột
             gbc.gridy = i / columns; // Hàng
             final int questionIndex = i;
-            cell[i] = ButtonFactory.createConfirmButton(Integer.toString(i+1), e -> {
+            cell[i] = ButtonFactory.createCell(Integer.toString(i+1), e -> {
                 leftField.setText(Integer.toString(questionIndex+1));
                 questionNumberLabel.setText("<html><u><b>Câu " +Integer.toString(questionIndex+1) + ":</b></u></html>");
                 questionLabel.setText("<html>"+exam.getQuestion().get(questionIndex).getText()+"</html>");
@@ -133,7 +133,7 @@ public class TakeExam extends JPanel {
 
 
         RoundedButton submit = new RoundedButton("Nộp bài", 45);
-        submit.setBounds(20, 750, 180, 70);
+        submit.setBounds(20, 770, 180, 70);
         submit.setBackground(Color.GREEN);
         submit.setFont(new Font("Arial", Font.BOLD, 20));
         submit.setForeground(Color.BLACK);
@@ -168,7 +168,7 @@ public class TakeExam extends JPanel {
 
         // Question number label
         questionNumberLabel.setFont(new Font("Arial", Font.BOLD, 40));
-        questionNumberLabel.setBounds(115, 100, 153, 47);
+        questionNumberLabel.setBounds(125, 155, 153, 47);
         Right_panel.add(questionNumberLabel);
 
         // Create RoundedPanel for the question

@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import MICS.Enums;
 public class LoginPanel extends JPanel {
     private JTextField mssvField;
     private JTextField passField;
@@ -63,13 +62,7 @@ public class LoginPanel extends JPanel {
             } else {
                 switch(mainFrame.userBLL.login(mssv, password)){
                     case NORMAL:
-                                    // Tạo một LoginPanel mới
-                    UserList newUserList = new UserList(mainFrame);
-
-                    // Thêm LoginPanel mới vào CardLayout
-                    mainFrame.addPanel(newUserList, "UserListPanel");
-
-                    mainFrame.addPanel(new HomePanel(mainFrame), "HomePanel");
+                    mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame)), "HomePanel");
                     // Chuyển sang LoginPanel mới
                     mainFrame.showPanel("HomePanel");
                     break;
