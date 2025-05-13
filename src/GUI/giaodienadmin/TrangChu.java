@@ -5,6 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
+import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
+import GUI.giaodienadmin.QuanLyDeThi.ExamManagementPanel;
+import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
+import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
+
 public class TrangChu extends JFrame implements ActionListener {
     private JPanel pCenter;
     private JPanel JPHeader;
@@ -47,8 +52,10 @@ public class TrangChu extends JFrame implements ActionListener {
         cardPanel = new JPanel(cardLayout);
 
         // Add panels to CardLayout
-        cardPanel.add(new QuestionManagementPanel(), "QuanLyCauHoi");
-        cardPanel.add(new ExemManagementPanel(), "QuanLyBaiKiemTra");
+        PanelExemDetail panelExemDetail = new PanelExemDetail(cardPanel, cardLayout);
+        cardPanel.add(new QuestionManagementPanel(cardPanel, cardLayout, panelExemDetail), "QuanLyCauHoi");
+        cardPanel.add(panelExemDetail, "EditPanel");
+        cardPanel.add(new ExamManagementPanel(), "QuanLyBaiKiemTra");
         cardPanel.add(new UserManagementPanel(), "QuanLyNguoiDung");
         this.add(cardPanel, BorderLayout.CENTER);
         setSize(DEFAUT_WIDTH_JFrame, DEFAUT_HEIGHT_JFrame);
@@ -64,7 +71,7 @@ public class TrangChu extends JFrame implements ActionListener {
             if (e.getSource() == buttons[i]) {
                 switch (i) {
                     case 0:
-                        cardLayout.show(cardPanel, "QuanLyCauHoi");
+                        cardLayout.show(cardPanel, "QuanLyCauHoi");  
                         break;
                     case 1:
                         cardLayout.show(cardPanel, "QuanLyBaiKiemTra");

@@ -1,5 +1,4 @@
 package GUI.UserPanel;
-
 import GUI.MakeColor.*;
 import MICS.*;
 import java.awt.Color;
@@ -11,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
 public class LoginPanel extends JPanel {
     private JTextField mssvField;
     private JTextField passField;
@@ -63,21 +61,21 @@ public class LoginPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } else {
                 switch(mainFrame.userBLL.login(mssv, password)){
-                    case Enums.UserError.NORMAL:
+                    case NORMAL:
                     mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame)), "HomePanel");
                     // Chuyển sang LoginPanel mới
                     mainFrame.showPanel("HomePanel");
                     break;
 
-                    case Enums.UserError.LOCKED:
+                    case LOCKED:
                         JOptionPane.showMessageDialog(this, "Người dùng đã bị khóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     break;
 
-                    case Enums.UserError.NOUSER:
+                    case NOUSER:
                         JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     break;
 
-                    case Enums.UserError.WRONGPASS:
+                    case WRONGPASS:
                         JOptionPane.showMessageDialog(this, "Sai mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
@@ -94,4 +92,38 @@ public class LoginPanel extends JPanel {
 
         add(loginPanel);
     }
+
+    /*private void extracted() {
+        String mssv = mssvField.getText();
+        String password = passField.getText();
+
+        if (mssv.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            switch(mainFrame.userBLL.login(mssv, password)){
+                case Enums.UserError.NORMAL:
+                                // Tạo một LoginPanel mới
+                UserList newUserList = new UserList(mainFrame);
+
+                // Thêm LoginPanel mới vào CardLayout
+                mainFrame.addPanel(newUserList, "UserListPanel");
+
+                // Chuyển sang LoginPanel mới
+                mainFrame.showPanel("UserListPanel");
+                break;
+
+                case Enums.UserError.LOCKED:
+                    JOptionPane.showMessageDialog(this, "Người dùng đã bị khóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                break;
+
+                case Enums.UserError.NOUSER:
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                break;
+
+                case Enums.UserError.WRONGPASS:
+                    JOptionPane.showMessageDialog(this, "Sai mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                break;
+            }
+        }
+    }*/
 }

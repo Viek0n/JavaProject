@@ -23,9 +23,10 @@ public class ThanhBar extends JPanel implements ActionListener, MouseListener {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         buttonPanel.setOpaque(false);
 
-        btnminimize = createButton("/Icon/minimize.png");
-        btnmaxnimize = createButton("/Icon/maximize.png");
-        btnclose = createButton("/Icon/close.png");
+       
+        btnminimize = createButton("/GUI/giaodienadmin/Icon/minimize.png");
+        btnmaxnimize = createButton("/GUI/giaodienadmin/Icon/maximize.png");
+        btnclose = createButton("/GUI/giaodienadmin/Icon/close.png");
 
         buttonPanel.add(btnminimize);
         buttonPanel.add(btnmaxnimize);
@@ -103,26 +104,26 @@ public class ThanhBar extends JPanel implements ActionListener, MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource() == btnclose || e.getSource() == btnminimize || e.getSource() == btnmaxnimize) {
-            ((JButton) e.getSource()).setBackground(Color.decode("#2c3e50"));
+            ((JButton) e.getSource()).setBackground(Color.red);
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         if (e.getSource() == btnclose) {
-            btnclose.setBackground(Color.decode("#c0392b"));
+            btnclose.setBackground(Color.red);
         }
         if (e.getSource() == btnminimize || e.getSource() == btnmaxnimize) {
-            ((JButton) e.getSource()).setBackground(Color.decode("#3498db"));
+            ((JButton) e.getSource()).setBackground(Color.red);
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         if (e.getSource() == btnclose) {
-            btnclose.setBackground(Color.decode("#e74c3c"));
+            btnclose.setBackground(Color.red);
         } else if (e.getSource() == btnminimize || e.getSource() == btnmaxnimize) {
-            ((JButton) e.getSource()).setBackground(Color.decode("#2c3e50"));
+            ((JButton) e.getSource()).setBackground(Color.red);
         }
     }
 }

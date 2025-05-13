@@ -11,49 +11,51 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class AnswerDAL {
-    public  ArrayList<AnswerDTO> getAllByQId(String ID){
+    // Lấy tất cả các câu trả lời theo ID câu hỏi
+    public ArrayList<AnswerDTO> getAllByQId(String ID) {
         ArrayList<AnswerDTO> array = null;
         String sql = "SELECT * FROM dapan WHERE MaCH = ?";
-        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
             array = new ArrayList<>();
-            while(rs.next()){
+            while (rs.next()) {
                 array.add(new AnswerDTO(rs.getString("NoiDung"), rs.getBoolean("Dung")));
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Kết nối dapan thất bại!");
             e.printStackTrace();
         }
         return array;
     }
-    //Search
-    public  Boolean searchByQID(String id){
+
+    // Tìm kiếm theo ID câu hỏi
+    public Boolean searchByQID(String id) {
         String sql = "SELECT * FROM dapan WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, id);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, id);
 
-                ResultSet rs = stmt.executeQuery();
-                return rs.next();
-            } catch(SQLException e){
-                System.out.println("Kết nối dapan thất bại! Tìm đáp án thất bại");
-                e.printStackTrace();
-            }
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Kết nối dapan thất bại! Tìm đáp án thất bại");
+            e.printStackTrace();
+        }
         return false;
     }
-    //Update 
-    //Add
-    public  Boolean add(AnswerDTO a, String ID){
+
+    // Thêm câu trả lời
+    public Boolean add(AnswerDTO a, String ID) {
         String sql = "INSERT INTO dapan (MaCH, NoiDung, Dung) VALUES (?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, ID);
             stmt.setString(2, a.getText());
             stmt.setInt(3, a.getRight() ? 1 : 0);
-            
+
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Kết nối dapan thất bại! Thêm đáp án thất bại");
@@ -61,11 +63,12 @@ public class AnswerDAL {
         }
         return false;
     }
-    //Delete
-    public  Boolean deleteByQID(String Id){
+
+    // Xóa câu trả lời theo ID câu hỏi
+    public Boolean deleteByQID(String Id) {
         String sql = "DELETE FROM dapan WHERE MaCH = ?";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, Id);
 
             return stmt.executeUpdate() > 0;

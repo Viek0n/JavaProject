@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubjectDAL {
-    public  List<SubjectDTO> getAll() {
-        List<SubjectDTO> subjects = new ArrayList<>();
+    public ArrayList<SubjectDTO> getAll() {
+        ArrayList<SubjectDTO> subjects = new ArrayList<>();
         String sql = "SELECT MaMH, TenMH FROM monhoc";
         try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -27,7 +27,7 @@ public class SubjectDAL {
             System.out.println("Failed to retrieve subjects!");
             e.printStackTrace();
         }
-        return subjects;
+        return subjects; // Ensure the list is returned
     }
     public  boolean add(SubjectDTO subject) {
         String sql = "INSERT INTO monhoc (MaMH, TenMH) VALUES (?, ?)";
@@ -83,7 +83,7 @@ public class SubjectDAL {
             }
                 
         }catch(SQLException e){
-            System.out.println("Kết nối monhoc thất bại!");
+            System.out.println("Failed to retrieve subjects!");
             e.printStackTrace();
         }
         return null;
@@ -99,9 +99,10 @@ public class SubjectDAL {
             if(rs.next())
                 return new SubjectDTO(rs.getString("MaMH"), rs.getString("TenMH"));
         }catch(SQLException e){
-            System.out.println("Kết nối monhoc thất bại!");
+            System.out.println("Failed to retrieve subjects!");
             e.printStackTrace();
         }
         return null;
     }
+    
 }
