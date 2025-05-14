@@ -4,13 +4,8 @@ import DAL.*;
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
 import DTO.QuestionDTO;
-import GUI.MakeColor.Ulti;
 import MICS.Enums;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import BLL.UserBLL;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -19,44 +14,57 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
-import BLL.UserBLL;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 public class QuestionManagementPanel extends JPanel implements ActionListener {
+    private static final Logger LOGGER = Logger.getLogger(QuestionManagementPanel.class.getName());
+
     private JTable questionTable;
     private DefaultTableModel tableModel;
     private JTextField searchField;
     private JButton addButton, editButton, deleteButton, searchButton, backButton, filterButton;
     private ArrayList<QuestionDTO> bank;
     private QuestionDAL questionDAL;
-    private JPanel mainPanel; // Parent panel to swap content
+    private JPanel mainPanel;
     private JComboBox<Enums.DifficultValue> diffFilterBox;
     private JComboBox<ChapterDTO> chapterFilterBox;
-    private boolean isSearchMode = false;
-    private List<QuestionDTO> originalBank;
     private JPanel filterPanel;
+    private boolean isSearchMode = false;
     private JDialog addQuestionDialog;
     private JPopupMenu popupMenu;
     private int selectedRow;
-    private PanelQuestionDetail panelExemDetail;
     private UserBLL userBLL;
 
-    public QuestionManagementPanel(JPanel mainPanel,UserBLL userBLL) {
+    public QuestionManagementPanel(JPanel mainPanel, UserBLL userBLL) {
         this.mainPanel = mainPanel;
-        this.userBLL=userBLL;
-        initComponent();
+        this.userBLL = userBLL;
+        this.questionDAL = new QuestionDAL();
+        try {
+            initComponent();
+        } catch (Exception e) {
+            LOGGER.severe("Failed to initialize QuestionManagementPanel: " + e.getMessage());
+            throw new RuntimeException("Initialization failed", e);
+        }
     }
 
     private void initComponent() {
-        questionDAL = new QuestionDAL();
-        bank = questionDAL.getAll();
-        originalBank = new ArrayList<>(bank);
-        this.setLayout(new BorderLayout());
-        this.setBackground(Ulti.MainColor);
-        
-        this.add(mainPanel, BorderLayout.WEST);
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+        setLayout(new BorderLayout());
+        setBackground(Color.decode("#f0f4f8"));
+        add(mainPanel, BorderLayout.WEST);
+        // Top panel
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBackground(Color.decode("#e0e0e0"));
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+        buttonPanel.setBackground(Color.decode("#e0e0e0"));
 
         addButton = createButton("+ THÊM MỚI");
         addButton.setBackground(Color.decode("#4caf50"));
@@ -68,42 +76,29 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         deleteButton.setBackground(Color.decode("#f44336"));
         deleteButton.setForeground(Color.WHITE);
 
-        // Initialize searchField
         searchField = new JTextField(20);
         searchField.setFont(new Font("Arial", Font.PLAIN, 14));
         searchField.setBorder(new RoundedBorder(8));
 
-        // Create a panel for the search button
-        JPanel searchButtonPanel = new JPanel();
-        searchButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-
-        // Create the search button
+        JPanel searchButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         searchButton = createButton("Tìm kiếm");
         searchButton.setBackground(Color.decode("#ffc107"));
         searchButton.setForeground(Color.BLACK);
         searchButton.setPreferredSize(new Dimension(100, 30));
-        searchButton.setBorder(new RoundedBorder(8));
-
-        // Add the button to the panel
         searchButtonPanel.add(searchButton);
 
-        // Add the panel to the search field
         searchField.setLayout(new BorderLayout());
-        searchField.add(searchButtonPanel, BorderLayout.EAST);
+        //searchField.add(searchButtonPanel, BorderLayout.EAST);
 
         backButton = createButton("Trở lại");
         backButton.setBackground(Color.decode("#808080"));
         backButton.setForeground(Color.WHITE);
         backButton.setVisible(false);
-        backButton.addActionListener(this);
 
-        // Initialize filter button with icon
-        filterButton = new JButton("Lọc");
+        filterButton = createButton("Lọc");
         filterButton.setBackground(Color.decode("#2196f3"));
         filterButton.setForeground(Color.WHITE);
-        filterButton.setFocusPainted(false);
         filterButton.setBorder(new RoundedBorder(8));
-        filterButton.addActionListener(this);
 
         diffFilterBox = new JComboBox<>(Enums.DifficultValue.values());
         diffFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -118,33 +113,23 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         chapterFilterBox.setBorder(new RoundedBorder(8));
 
         filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        filterPanel.setBackground(Color.decode("#e0e0e0"));
         filterPanel.add(diffFilterBox);
         filterPanel.add(chapterFilterBox);
         filterPanel.setVisible(false);
 
-        topPanel.add(addButton);
-        topPanel.add(editButton);
-        topPanel.add(deleteButton);
-        topPanel.add(searchField);
-        topPanel.add(searchButton);
-        topPanel.add(backButton);
-        topPanel.add(filterButton);
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(searchField);
+        buttonPanel.add(searchButtonPanel);
+        buttonPanel.add(backButton);
+        buttonPanel.add(filterButton);
+        topPanel.add(buttonPanel);
         topPanel.add(filterPanel);
 
-    
-
+        // Table setup
         String[] columnNames = {"Mã câu hỏi", "Môn học", "Độ khó", "Chương", "Chi tiết"};
-        /*questionTable = new JTable(tableModel);
-        questionTable.setRowHeight(35);
-        questionTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        questionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        questionTable.setFillsViewportHeight(true);
-        questionTable.setBackground(Color.WHITE);
-        questionTable.setGridColor(Color.LIGHT_GRAY);
-        JScrollPane scrollPane = new JScrollPane(questionTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        scrollPane.setBackground(Ulti.MainColor);
-        this.add(scrollPane, BorderLayout.CENTER);*/
         tableModel = new DefaultTableModel(columnNames, 0);
         questionTable = new JTable(tableModel);
         questionTable.setRowHeight(35);
@@ -174,27 +159,28 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
 
         JScrollPane scrollPane = new JScrollPane(questionTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        scrollPane.setBackground(Ulti.MainColor);
+        scrollPane.setBackground(Color.decode("#f0f4f8"));
 
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BorderLayout());
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.setBackground(Color.decode("#f0f4f8"));
         centerPanel.add(topPanel, BorderLayout.NORTH);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
-        add(centerPanel,BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
+
+        // Action listeners
         addButton.addActionListener(this);
         editButton.addActionListener(this);
         deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
-        loadQuestions();
+        backButton.addActionListener(this);
+        filterButton.addActionListener(this);
 
-        // Popup Menu
+        // Popup menu
         popupMenu = new JPopupMenu();
         JMenuItem editMenuItem = new JMenuItem("Sửa câu hỏi");
         JMenuItem deleteMenuItem = new JMenuItem("Xóa câu hỏi");
-
         editMenuItem.addActionListener(e -> editQuestion());
         deleteMenuItem.addActionListener(e -> deleteQuestion());
-
         popupMenu.add(editMenuItem);
         popupMenu.add(deleteMenuItem);
         questionTable.setComponentPopupMenu(popupMenu);
@@ -215,13 +201,8 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                if (questionTable.getSelectedRow() == -1) {
-                    editMenuItem.setEnabled(false);
-                    deleteMenuItem.setEnabled(false);
-                } else {
-                    editMenuItem.setEnabled(true);
-                    deleteMenuItem.setEnabled(true);
-                }
+                editMenuItem.setEnabled(questionTable.getSelectedRow() != -1);
+                deleteMenuItem.setEnabled(questionTable.getSelectedRow() != -1);
             }
 
             @Override
@@ -229,6 +210,8 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {}
         });
+
+        loadQuestions();
     }
 
     private JButton createButton(String text) {
@@ -239,8 +222,8 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         return button;
     }
 
-    private static class RoundedBorder extends LineBorder {
-        private int radius;
+    public static class RoundedBorder extends LineBorder {
+        private final int radius;
 
         public RoundedBorder(int radius) {
             super(Color.GRAY);
@@ -258,7 +241,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
 
         @Override
         public Insets getBorderInsets(Component c) {
-            return new Insets(this.radius + 2, this.radius + 2, this.radius + 2, this.radius + 2);
+            return new Insets(radius + 2, radius + 2, radius + 2, radius + 2);
         }
 
         @Override
@@ -287,13 +270,6 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             if (filterPanel.isVisible()) {
                 isSearchMode = true;
                 backButton.setVisible(true);
-                Point location = searchField.getLocationOnScreen();
-                int y = location.y + searchField.getHeight();
-                SwingUtilities.convertPointFromScreen(location, this);
-                filterPanel.setLocation(location.x, y);
-                this.setComponentZOrder(filterPanel, 0);
-                filterPanel.revalidate();
-                filterPanel.repaint();
             } else {
                 isSearchMode = false;
                 backButton.setVisible(false);
@@ -303,9 +279,9 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     }
 
     private void editQuestion() {
-        int selectedRow = questionTable.getSelectedRow();
+        selectedRow = questionTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một câu hỏi để sửa!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một câu hỏi để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
         String questionID = tableModel.getValueAt(selectedRow, 0).toString();
@@ -313,22 +289,45 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     }
 
     private void deleteQuestion() {
-        int selectedRow = questionTable.getSelectedRow();
+        selectedRow = questionTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một câu hỏi để xóa!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một câu hỏi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
         int choice = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa câu hỏi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
             String questionIdToDelete = tableModel.getValueAt(selectedRow, 0).toString();
-            if (questionDAL.delete(questionIdToDelete)) {
-                tableModel.removeRow(selectedRow);
-                bank.removeIf(q -> q.getID().equals(questionIdToDelete));
-                JOptionPane.showMessageDialog(this, "Xóa câu hỏi thành công!");
-                loadQuestions();
-            } else {
-                JOptionPane.showMessageDialog(this, "Không thể xóa câu hỏi!");
-            }
+            SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Boolean doInBackground() {
+                    try {
+                        return questionDAL.delete(questionIdToDelete);
+                    } catch (Exception e) {
+                        LOGGER.severe("Error deleting question: " + e.getMessage());
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        if (get()) {
+                            tableModel.removeRow(selectedRow);
+                            bank.removeIf(q -> q.getID().equals(questionIdToDelete));
+                            JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                                "Xóa câu hỏi thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                                "Không thể xóa câu hỏi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        LOGGER.severe("Error deleting question: " + e.getMessage());
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                            "Lỗi khi xóa câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            };
+            worker.execute();
         }
     }
 
@@ -340,42 +339,110 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         Enums.DifficultValue selectedDifficulty = (Enums.DifficultValue) diffFilterBox.getSelectedItem();
         ChapterDTO selectedChapter = (ChapterDTO) chapterFilterBox.getSelectedItem();
 
-        List<QuestionDTO> searchResults = questionDAL.search(keyword, selectedDifficulty, selectedChapter);
+        SwingWorker<List<QuestionDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected List<QuestionDTO> doInBackground() {
+                try {
+                    return questionDAL.search(keyword, selectedDifficulty, selectedChapter);
+                } catch (Exception e) {
+                    LOGGER.severe("Error searching questions: " + e.getMessage());
+                    return null;
+                }
+            }
 
-        if (searchResults != null && !searchResults.isEmpty()) {
-            loadSearchResults(searchResults);
-        } else {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy câu hỏi nào phù hợp với tiêu chí.", "Kết quả tìm kiếm", JOptionPane.INFORMATION_MESSAGE);
-            loadQuestions();
-        }
+            @Override
+            protected void done() {
+                try {
+                    List<QuestionDTO> searchResults = get();
+                    if (searchResults != null && !searchResults.isEmpty()) {
+                        populateTable(searchResults);
+                    } else {
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                            "Không tìm thấy câu hỏi nào phù hợp với tiêu chí.", "Kết quả tìm kiếm", JOptionPane.INFORMATION_MESSAGE);
+                        tableModel.setRowCount(0);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    LOGGER.severe("Error searching questions: " + e.getMessage());
+                    JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                        "Lỗi khi tìm kiếm câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
     }
 
-    private void loadSearchResults(List<QuestionDTO> results) {
+    public void loadQuestions() {
+        SwingWorker<ArrayList<QuestionDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<QuestionDTO> doInBackground() {
+                try {
+                    return questionDAL.getAll();
+                } catch (Exception e) {
+                    LOGGER.severe("Error loading questions: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    bank = get();
+                    populateTable(bank);
+                } catch (InterruptedException | ExecutionException e) {
+                    LOGGER.severe("Error loading questions: " + e.getMessage());
+                    JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                        "Lỗi khi tải câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    public void searchID(String ID) {
+        SwingWorker<QuestionDTO, Void> worker = new SwingWorker<>() {
+            @Override
+            protected QuestionDTO doInBackground() {
+                try {
+                    return questionDAL.getByID(ID);
+                } catch (Exception e) {
+                    LOGGER.severe("Error searching question by ID: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    QuestionDTO question = get();
+                    List<QuestionDTO> result = new ArrayList<>();
+                    if (question != null) {
+                        result.add(question);
+                    }
+                    populateTable(result);
+                    if (question == null) {
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                            "Không tìm thấy câu hỏi với ID: " + ID, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    LOGGER.severe("Error searching question by ID: " + e.getMessage());
+                    JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                        "Lỗi khi tìm kiếm câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    private void populateTable(List<QuestionDTO> questions) {
         tableModel.setRowCount(0);
-        for (QuestionDTO question : results) {
-            tableModel.addRow(new Object[]{
+        if (questions != null && !questions.isEmpty()) {
+            for (QuestionDTO question : questions) {
+                tableModel.addRow(new Object[]{
                     question.getID(),
                     question.getSubject() != null ? question.getSubject().getName() : "N/A",
                     question.getDifficult() != null ? question.getDifficult().toString() : "N/A",
                     question.getChapter() != null ? question.getChapter().getName() : "N/A",
                     "Xem"
-            });
-        }
-        questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
-    }
-
-    public void loadQuestions() {
-        bank = questionDAL.getAll();
-        tableModel.setRowCount(0);
-        if (bank != null && !bank.isEmpty()) {
-            for (QuestionDTO row : bank) {
-                tableModel.addRow(new Object[]{
-                        row.getID(),
-                        row.getSubject() != null ? row.getSubject().getName() : "N/A",
-                        row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
-                        row.getChapter() != null ? row.getChapter().getName() : "N/A",
-                        "Xem"
                 });
             }
         } else {
@@ -385,97 +452,18 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
     }
 
-    public void searchID(String ID) {
-        // Note: This method seems incomplete or incorrect as it doesn't use the ID parameter
-        tableModel.setRowCount(0);
-        if (bank != null && !bank.isEmpty()) {
-            for (QuestionDTO row : bank) {
-                if (row.getID().equals(ID)) {
-                    tableModel.addRow(new Object[]{
-                            row.getID(),
-                            row.getSubject() != null ? row.getSubject().getName() : "N/A",
-                            row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
-                            row.getChapter() != null ? row.getChapter().getName() : "N/A",
-                            "Xem"
-                    });
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Không có câu hỏi nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        }
-        questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
-    }
-
     private void showQuestionDetails(String questionID) {
-        // Create a new PanelExemDetail instance
-        PanelQuestionDetail panelExemDetail = new PanelQuestionDetail(this, mainPanel);
-        panelExemDetail.loadQuestionDetails(questionID);
+        JFrame detailFrame = new JFrame("Question Details");
+        detailFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        detailFrame.setSize(800, 600);
+        detailFrame.setLocationRelativeTo(null);
 
-        // Replace the content of mainPanel with PanelExemDetail
-        mainPanel.removeAll();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(panelExemDetail, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
+        PanelQuestionDetail panelQuestionDetail = new PanelQuestionDetail(this, mainPanel, detailFrame);
+        panelQuestionDetail.loadQuestionDetails(questionID);
 
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setFont(new Font("Arial", Font.BOLD, 14));
-            setForeground(Color.WHITE);
-            setBackground(Color.decode("#008cba"));
-            setBorder(new RoundedBorder(8));
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText((value == null) ? "Xem" : value.toString());
-            return this;
-        }
-    }
-
-    class ButtonEditor extends DefaultCellEditor {
-        private JButton button;
-        private String label;
-        private boolean clicked;
-
-        public ButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            button = new JButton();
-            button.setOpaque(true);
-            button.setFont(new Font("Arial", Font.BOLD, 14));
-            button.setForeground(Color.WHITE);
-            button.setBackground(Color.decode("#008cba"));
-            button.setBorder(new RoundedBorder(8));
-            button.addActionListener(e -> fireEditingStopped());
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = (value == null) ? "Xem" : value.toString();
-            button.setText(label);
-            clicked = true;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            if (clicked) {
-                int selectedRow = questionTable.getSelectedRow();
-                String questionID = tableModel.getValueAt(selectedRow, 0).toString();
-                showQuestionDetails(questionID);
-            }
-            clicked = false;
-            return label;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            clicked = false;
-            return super.stopCellEditing();
-        }
+        detailFrame.setLayout(new BorderLayout());
+        detailFrame.add(panelQuestionDetail, BorderLayout.CENTER);
+        detailFrame.setVisible(true);
     }
 
     private void addQuestion() {
@@ -509,9 +497,10 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         chapterDAL.getAll().forEach(chapterBox::addItem);
         chapterBox.setBorder(new RoundedBorder(8));
 
-        JTextField createdByField = new JTextField(userBLL.getCurrent().getLoginName());
+        JTextField createdByField = new JTextField(userBLL.getCurrent() != null ? userBLL.getCurrent().getLoginName() : "");
         createdByField.setFont(new Font("Arial", Font.PLAIN, 14));
         createdByField.setBorder(new RoundedBorder(8));
+        createdByField.setEditable(false);
 
         JTextField answerA = new JTextField();
         answerA.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -605,19 +594,12 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-        JButton saveButton = new JButton("Lưu");
-        saveButton.setFont(new Font("Arial", Font.BOLD, 14));
+        JButton saveButton = createButton("Lưu");
         saveButton.setBackground(Color.decode("#4caf50"));
         saveButton.setForeground(Color.WHITE);
-        saveButton.setFocusPainted(false);
-        saveButton.setBorder(new RoundedBorder(8));
-
-        JButton cancelButton = new JButton("Hủy");
-        cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
-        cancelButton.setBackground(Color.decode("#f44336"));
+        JButton cancelButton = createButton("Hủy");
+        cancelButton.setBackground(Color.decode("#808080"));
         cancelButton.setForeground(Color.WHITE);
-        cancelButton.setFocusPainted(false);
-        cancelButton.setBorder(new RoundedBorder(8));
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
 
@@ -631,68 +613,145 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         addQuestionDialog.setContentPane(scrollPane);
 
         saveButton.addActionListener(e -> {
-            if (contentField.getText().trim().isEmpty()
-                    || answerA.getText().trim().isEmpty()
-                    || answerB.getText().trim().isEmpty()
-                    || answerC.getText().trim().isEmpty()
-                    || answerD.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(addQuestionDialog, "Vui lòng điền đầy đủ thông tin.");
+            String content = contentField.getText().trim();
+            String answerAText = answerA.getText().trim();
+            String answerBText = answerB.getText().trim();
+            String answerCText = answerC.getText().trim();
+            String answerDText = answerD.getText().trim();
+            ChapterDTO chapter = (ChapterDTO) chapterBox.getSelectedItem();
+
+            if (content.isEmpty() || answerAText.isEmpty() || answerBText.isEmpty() ||
+                answerCText.isEmpty() || answerDText.isEmpty() || chapter == null) {
+                JOptionPane.showMessageDialog(addQuestionDialog, "Vui lòng điền đầy đủ thông tin.", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            QuestionDTO newQues = new QuestionDTO();
-            newQues.setText(contentField.getText().trim());
-            newQues.setDifficult((Enums.DifficultValue) diffBox.getSelectedItem());
-            newQues.setChapter((ChapterDTO) chapterBox.getSelectedItem());
-            newQues.setCreatedBy(createdByField.getText().trim());
+            SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Boolean doInBackground() {
+                    try {
+                        QuestionDTO newQues = new QuestionDTO();
+                        newQues.setText(content);
+                        newQues.setDifficult((Enums.DifficultValue) diffBox.getSelectedItem());
+                        newQues.setChapter(chapter);
+                        newQues.setCreatedBy(createdByField.getText().trim());
 
-            ArrayList<AnswerDTO> answers = new ArrayList<>();
-            String[] answerTexts = {
-                    answerA.getText().trim(),
-                    answerB.getText().trim(),
-                    answerC.getText().trim(),
-                    answerD.getText().trim()
+                        ArrayList<AnswerDTO> answers = new ArrayList<>();
+                        String[] answerTexts = {answerAText, answerBText, answerCText, answerDText};
+                        String correct = (String) correctAnswerBox.getSelectedItem();
+                        String[] labels = {"A", "B", "C", "D"};
+                        for (int i = 0; i < 4; i++) {
+                            AnswerDTO ans = new AnswerDTO();
+                            ans.setText(answerTexts[i]);
+                            ans.setRight(correct.equals(labels[i]));
+                            answers.add(ans);
+                        }
+                        newQues.setAns(answers);
+
+                        return questionDAL.add(newQues);
+                    } catch (Exception ex) {
+                        LOGGER.severe("Error adding question: " + ex.getMessage());
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        if (get()) {
+                            JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                                "Thêm câu hỏi thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                            loadQuestions();
+                            addQuestionDialog.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                                "Không thể thêm câu hỏi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (InterruptedException | ExecutionException ex) {
+                        LOGGER.severe("Error adding question: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                            "Lỗi khi thêm câu hỏi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             };
-
-            String correct = (String) correctAnswerBox.getSelectedItem();
-            String[] labels = {"A", "B", "C", "D"};
-            for (int i = 0; i < 4; i++) {
-                AnswerDTO ans = new AnswerDTO();
-                ans.setText(answerTexts[i]);
-                ans.setRight(correct.equals(labels[i]));
-                answers.add(ans);
-            }
-
-            newQues.setAns(answers);
-
-            if (questionDAL.add(newQues)) {
-                JOptionPane.showMessageDialog(this, "Thêm câu hỏi thành công!");
-                bank = questionDAL.getAll();
-                loadQuestions();
-                addQuestionDialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Không thể thêm câu hỏi.");
-            }
+            worker.execute();
         });
 
         cancelButton.addActionListener(e -> addQuestionDialog.dispose());
-        addQuestionDialog.setUndecorated(true);
         addQuestionDialog.setVisible(true);
     }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setFont(new Font("Arial", Font.BOLD, 14));
+            setForeground(Color.WHITE);
+            setBackground(Color.decode("#008cba"));
+            setBorder(new RoundedBorder(8));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText((value == null) ? "Xem" : value.toString());
+            return this;
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        private JButton button;
+        private String label;
+        private boolean clicked;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.setFont(new Font("Arial", Font.BOLD, 14));
+            button.setForeground(Color.WHITE);
+            button.setBackground(Color.decode("#008cba"));
+            button.setBorder(new RoundedBorder(8));
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            label = (value == null) ? "Xem" : value.toString();
+            button.setText(label);
+            clicked = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (clicked) {
+                int selectedRow = questionTable.getSelectedRow();
+                String questionID = tableModel.getValueAt(selectedRow, 0).toString();
+                showQuestionDetails(questionID);
+            }
+            clicked = false;
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            clicked = false;
+            return super.stopCellEditing();
+        }
+    }
+
     class CustomLabelRenderer extends JLabel implements TableCellRenderer {
         public CustomLabelRenderer() {
             setOpaque(true);
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                      boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             setText(value != null ? value.toString() : "");
             setFont(new Font("Arial", Font.PLAIN, 14));
             setForeground(Color.BLACK);
             setBackground(row % 2 == 0 ? Color.decode("#eaf2f8") : Color.WHITE);
             if (isSelected) {
-                setBackground(Color.decode("#AED6F1"));
+                setBackground(Color.decode("#b0e0e6"));
                 setForeground(Color.BLACK);
             }
             setHorizontalAlignment(SwingConstants.LEFT);

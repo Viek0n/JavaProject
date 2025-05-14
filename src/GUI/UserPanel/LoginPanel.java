@@ -19,7 +19,7 @@ public class LoginPanel extends JPanel {
     private JTextField passField;
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
     private CardLayout cardLayout;
-
+    private JPanel contentPanel;
     public LoginPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
         init();
@@ -67,7 +67,7 @@ public class LoginPanel extends JPanel {
             } else {
                 switch(mainFrame.userBLL.login(mssv, password)){
                     case NORMAL:
-                    mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame)), "HomePanel");
+                    mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame,contentPanel)), "HomePanel");
                     // Chuyển sang LoginPanel mới
                     mainFrame.showPanel("HomePanel");
                     break;

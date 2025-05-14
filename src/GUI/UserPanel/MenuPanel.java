@@ -20,15 +20,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
-
 public class MenuPanel extends JPanel {
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
     private boolean labelPrint;
+     private JPanel contentPanel;
 
 
-    public MenuPanel(MainFrame mainFrame) {
+    public MenuPanel(MainFrame mainFrame,JPanel contentPanel) {
     this.mainFrame = mainFrame;
- 
+    this.contentPanel = contentPanel;
     labelPrint = false;
     init();
 }
@@ -117,7 +117,6 @@ JButton manageQues = ButtonFactory.createClearButton(mainFrame, 214, 50,
     AddImage.createImageIcon(Connect.img + "question.png", 40, 40),
     e -> {
         QuestionManagementPanel questionManagementPanel = new QuestionManagementPanel(this,mainFrame.userBLL);
-        PanelQuestionDetail panelExemDetail = new PanelQuestionDetail(questionManagementPanel,this);
         mainFrame.addPanel(questionManagementPanel, "QuestionManage");
         mainFrame.showPanel("QuestionManage");
     });

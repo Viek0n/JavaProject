@@ -14,7 +14,7 @@ public class ScorePanel extends JPanel {
     private UserDTO user;
     private float score;
     private String time;
-
+    private JPanel contentPanel;
 
     public ScorePanel(MainFrame mainFrame, UserDTO user, float score, String time) {
         this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
@@ -54,7 +54,7 @@ public class ScorePanel extends JPanel {
         add(Timer);
 
         JButton CheckButton = ButtonFactory.createConfirmButton(mainFrame, 20, 700, 679, 250, 75,Ulti.BananaLeaf,e -> {
-            mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame)), "HomePanel");
+            mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame,contentPanel)), "HomePanel");
             mainFrame.showPanel("HomePanel");
         });
         CheckButton.setText("Thoát");
