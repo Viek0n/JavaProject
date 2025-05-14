@@ -1,5 +1,6 @@
 package GUI.giaodienadmin.QuanLyCauHoi;
 
+import MICS.*;
 import DAL.*;
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
@@ -45,12 +46,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         this.mainPanel = mainPanel;
         this.userBLL = userBLL;
         this.questionDAL = new QuestionDAL();
-        try {
-            initComponent();
-        } catch (Exception e) {
-            LOGGER.severe("Failed to initialize QuestionManagementPanel: " + e.getMessage());
-            throw new RuntimeException("Initialization failed", e);
-        }
+        initComponent();
     }
 
     private void initComponent() {
@@ -79,16 +75,14 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         searchField = new JTextField(20);
         searchField.setFont(new Font("Arial", Font.PLAIN, 14));
         searchField.setBorder(new RoundedBorder(8));
-
         JPanel searchButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         searchButton = createButton("Tìm kiếm");
         searchButton.setBackground(Color.decode("#ffc107"));
         searchButton.setForeground(Color.BLACK);
         searchButton.setPreferredSize(new Dimension(100, 30));
-        searchButtonPanel.add(searchButton);
-
+         //searchButtonPanel.add(searchButton);
         searchField.setLayout(new BorderLayout());
-        //searchField.add(searchButtonPanel, BorderLayout.EAST);
+        searchField.add(searchButtonPanel, BorderLayout.EAST); // Fixed search button placement
 
         backButton = createButton("Trở lại");
         backButton.setBackground(Color.decode("#808080"));
@@ -100,16 +94,43 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         filterButton.setForeground(Color.WHITE);
         filterButton.setBorder(new RoundedBorder(8));
 
-        diffFilterBox = new JComboBox<>(Enums.DifficultValue.values());
+        // Difficulty filter JComboBox
+        diffFilterBox = new JComboBox<>();
+        diffFilterBox.addItem(null); // Default "Tất cả"
+        diffFilterBox.addItem(Enums.DifficultValue.DE);
+        diffFilterBox.addItem(Enums.DifficultValue.TRUNGBINH);
+        diffFilterBox.addItem(Enums.DifficultValue.KHO);
+        diffFilterBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value == null) {
+                    value = "Tất cả";
+                }
+                return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            }
+        });
         diffFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
         ((JLabel) diffFilterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         diffFilterBox.setBorder(new RoundedBorder(8));
 
-        ChapterDAL chapterDAL = new ChapterDAL();
+        // Chapter filter JComboBox
         chapterFilterBox = new JComboBox<>();
+        chapterFilterBox.addItem(null); // Default "Tất cả"
+        ChapterDAL chapterDAL = new ChapterDAL();
+        chapterDAL.getAll().forEach(chapterFilterBox::addItem);
+        chapterFilterBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value == null) {
+                    value = "Tất cả";
+                } else if (value instanceof ChapterDTO) {
+                    value = ((ChapterDTO) value).getName();
+                }
+                return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            }
+        });
         chapterFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
         ((JLabel) chapterFilterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        chapterDAL.getAll().forEach(chapterFilterBox::addItem);
         chapterFilterBox.setBorder(new RoundedBorder(8));
 
         filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
@@ -122,9 +143,10 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(searchField);
-        buttonPanel.add(searchButtonPanel);
-        buttonPanel.add(backButton);
+        buttonPanel.add(searchButton);
         buttonPanel.add(filterButton);
+        buttonPanel.add(backButton); // Added back button to UI
+
         topPanel.add(buttonPanel);
         topPanel.add(filterPanel);
 
@@ -264,6 +286,9 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             isSearchMode = false;
             backButton.setVisible(false);
             filterPanel.setVisible(false);
+            searchField.setText("");
+            diffFilterBox.setSelectedItem(null);
+            chapterFilterBox.setSelectedItem(null);
             loadQuestions();
         } else if (e.getSource() == filterButton) {
             filterPanel.setVisible(!filterPanel.isVisible());
@@ -339,6 +364,12 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         Enums.DifficultValue selectedDifficulty = (Enums.DifficultValue) diffFilterBox.getSelectedItem();
         ChapterDTO selectedChapter = (ChapterDTO) chapterFilterBox.getSelectedItem();
 
+        // If both filters are "Tất cả" and keyword is non-empty, search by ID only
+        if (selectedDifficulty == null && selectedChapter == null && !keyword.isEmpty()) {
+            searchID(keyword);
+            return;
+        }
+
         SwingWorker<List<QuestionDTO>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<QuestionDTO> doInBackground() {
@@ -399,38 +430,81 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     }
 
     public void searchID(String ID) {
-        SwingWorker<QuestionDTO, Void> worker = new SwingWorker<>() {
-            @Override
-            protected QuestionDTO doInBackground() {
-                try {
-                    return questionDAL.getByID(ID);
-                } catch (Exception e) {
-                    LOGGER.severe("Error searching question by ID: " + e.getMessage());
-                    return null;
-                }
-            }
+        if (ID == null || ID.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập ID câu hỏi!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-            @Override
-            protected void done() {
-                try {
-                    QuestionDTO question = get();
-                    List<QuestionDTO> result = new ArrayList<>();
-                    if (question != null) {
-                        result.add(question);
+        Enums.DifficultValue selectedDifficulty = (Enums.DifficultValue) diffFilterBox.getSelectedItem();
+        ChapterDTO selectedChapter = (ChapterDTO) chapterFilterBox.getSelectedItem();
+
+        // If both filters are "Tất cả", search by ID only
+        if (selectedDifficulty == null && selectedChapter == null) {
+            SwingWorker<QuestionDTO, Void> worker = new SwingWorker<>() {
+                @Override
+                protected QuestionDTO doInBackground() {
+                    try {
+                        return questionDAL.getByID(ID.trim());
+                    } catch (Exception e) {
+                        LOGGER.severe("Error searching question by ID: " + e.getMessage());
+                        return null;
                     }
-                    populateTable(result);
-                    if (question == null) {
-                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
-                            "Không tìm thấy câu hỏi với ID: " + ID, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    LOGGER.severe("Error searching question by ID: " + e.getMessage());
-                    JOptionPane.showMessageDialog(QuestionManagementPanel.this,
-                        "Lỗi khi tìm kiếm câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-        };
-        worker.execute();
+
+                @Override
+                protected void done() {
+                    try {
+                        QuestionDTO question = get();
+                        List<QuestionDTO> result = new ArrayList<>();
+                        if (question != null) {
+                            result.add(question);
+                        }
+                        populateTable(result);
+                        if (question == null) {
+                            JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                                "Không tìm thấy câu hỏi với ID: " + ID, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        LOGGER.severe("Error searching question by ID: " + e.getMessage());
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                            "Lỗi khi tìm kiếm câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            };
+            worker.execute();
+        } else {
+            // Use search with filters
+            SwingWorker<List<QuestionDTO>, Void> worker = new SwingWorker<>() {
+                @Override
+                protected List<QuestionDTO> doInBackground() {
+                    try {
+                        return questionDAL.search(ID.trim(), selectedDifficulty, selectedChapter);
+                    } catch (Exception e) {
+                        LOGGER.severe("Error searching questions: " + e.getMessage());
+                        return null;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        List<QuestionDTO> searchResults = get();
+                        if (searchResults != null && !searchResults.isEmpty()) {
+                            populateTable(searchResults);
+                        } else {
+                            JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                                "Không tìm thấy câu hỏi với ID: " + ID, "Kết quả tìm kiếm", JOptionPane.INFORMATION_MESSAGE);
+                            tableModel.setRowCount(0);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        LOGGER.severe("Error searching questions: " + e.getMessage());
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this,
+                            "Lỗi khi tìm kiếm câu hỏi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            };
+            worker.execute();
+        }
     }
 
     private void populateTable(List<QuestionDTO> questions) {
@@ -497,7 +571,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         chapterDAL.getAll().forEach(chapterBox::addItem);
         chapterBox.setBorder(new RoundedBorder(8));
 
-        JTextField createdByField = new JTextField(userBLL.getCurrent() != null ? userBLL.getCurrent().getLoginName() : "");
+        JTextField createdByField = new JTextField(userBLL.getCurrent() != null ? userBLL.getCurrent().getLoginName() : "SYSTEM");
         createdByField.setFont(new Font("Arial", Font.PLAIN, 14));
         createdByField.setBorder(new RoundedBorder(8));
         createdByField.setEditable(false);
