@@ -15,6 +15,10 @@ public class ExamStructBLL {
     public ExamStructDTO get(String id){
         return examStructDAL.get(id);
     }
+
+    public String getNextId(){
+        return examStructDAL.getNextId();
+    }
     //Insert
     public Boolean add(ExamStructDTO exam){
         return examStructDAL.add(exam);

@@ -1,640 +1,300 @@
 package GUI.giaodienadmin.QuanLyCauHoi;
 
-import DAL.*;
-import DTO.AnswerDTO;
-import DTO.ChapterDTO;
+import BLL.QuestionBLL;
 import DTO.QuestionDTO;
-import GUI.giaodienadmin.QuanLyDeThi.PanelExemDetail;
-import MICS.Enums;
+import GUI.MakeColor.AddImage;
+import GUI.MakeColor.ButtonFactory;
+import GUI.MakeColor.Ulti;
+import GUI.UserPanel.MenuPanel;
+import GUI.giaodienadmin.RoundedBorder;
+import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+
 public class QuestionManagementPanel extends JPanel implements ActionListener {
-    private JTable questionTable;
+    private JTable table;
     private DefaultTableModel tableModel;
     private JTextField searchField;
-    private JButton addButton, editButton, deleteButton, searchButton, backButton, filterButton;
-    private ArrayList<QuestionDTO> bank;
-    private QuestionDAL questionDAL;
-    private JPanel mainPanel;
-    private CardLayout cardLayout;
-    private PanelExemDetail panelExemDetail;
-    private JComboBox<Enums.DifficultValue> diffFilterBox;
-    private JComboBox<ChapterDTO> chapterFilterBox;
-    private boolean isSearchMode = false;
-    private List<QuestionDTO> originalBank;
-    private JPanel filterPanel;
-    private JDialog addQuestionDialog; 
-    private JPopupMenu popupMenu;
-    private int selectedRow;
-    private JPanel menuPanel;
+    private JButton addButton, searchButton, clearButton;
+    private QuestionBLL questionBLL;
+    private ArrayList<QuestionDTO> question;
+    private QuestionPanel panelQuestion;
+    private JDialog dialog;
+    private MenuPanel menuPanel;
 
-    public QuestionManagementPanel(JPanel mainPanel, CardLayout cardLayout, PanelExemDetail panelExemDetail) {
-        this.mainPanel = mainPanel;
-        this.cardLayout = cardLayout;
-        this.panelExemDetail = panelExemDetail;
+    public QuestionManagementPanel(MenuPanel menuPanel) {
+        this.menuPanel = menuPanel;
+        this.questionBLL = new QuestionBLL();
         initComponent();
     }
 
     private void initComponent() {
-        questionDAL = new QuestionDAL();
-        bank = questionDAL.getAll();
-        originalBank = new ArrayList<>(bank);
-        this.setLayout(new BorderLayout(10, 10));
-        this.setBackground(Color.decode("#f0f4f8"));
+        question = new ArrayList<>();
+        setLayout(new BorderLayout());
+        setBackground(Ulti.MainColor);
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 15));
-        topPanel.setBackground(Color.decode("#e0e0e0"));
+        // Menu panel
+        add(menuPanel, BorderLayout.WEST);
+
+        // ===== Top Panel =====
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        topPanel.setBackground(Ulti.LightGray);
 
-        addButton = createButton("+ THÊM MỚI");
-        addButton.setBackground(Color.decode("#4caf50"));
-        addButton.setForeground(Color.WHITE);
-        editButton = createButton("Sửa");
-        editButton.setBackground(Color.decode("#008cba"));
-        editButton.setForeground(Color.WHITE);
-        deleteButton = createButton("Xóa");
-        deleteButton.setBackground(Color.decode("#f44336"));
-        deleteButton.setForeground(Color.WHITE);
+        addButton = createButton("Tạo", Ulti.LightGreen);
+        searchField = createSearchField();
+        searchButton = createButton("Tìm", Ulti.Yellow);
+        clearButton = createButton("Tải lại", Ulti.Blue);
 
-        // Initialize searchField
-        searchField = new JTextField(20);
-        searchField.setFont(new Font("Arial", Font.PLAIN, 14));
-        searchField.setBorder(new RoundedBorder(8));
-
-        // Create a panel for the search button
-        JPanel searchButtonPanel = new JPanel();
-        searchButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-
-        // Create the search button
-        searchButton = createButton("Tìm kiếm");
-        searchButton.setBackground(Color.decode("#ffc107"));
-        searchButton.setForeground(Color.BLACK);
-        searchButton.setPreferredSize(new Dimension(100, 30));
-        searchButton.setBorder(new RoundedBorder(8));
-
-        // Add the button to the panel
-        searchButtonPanel.add(searchButton);
-
-        // Add the panel to the search field
-        searchField.setLayout(new BorderLayout());
-        searchField.add(searchButtonPanel, BorderLayout.EAST);
-            
-
-        backButton = createButton("Trở lại");
-        backButton.setBackground(Color.decode("#808080"));
-        backButton.setForeground(Color.WHITE);
-        backButton.setVisible(false);
-        backButton.addActionListener(this);
-
-        // Initialize filter button with icon
-        filterButton = new JButton("Lọc");
-        filterButton.setBackground(Color.decode("#2196f3")); // Blue
-        filterButton.setForeground(Color.WHITE);
-        filterButton.setFocusPainted(false);
-        filterButton.setBorder(new RoundedBorder(8));
-        filterButton.addActionListener(this);
-
-        diffFilterBox = new JComboBox<>(Enums.DifficultValue.values());
-        diffFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        ((JLabel) diffFilterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        diffFilterBox.setBorder(new RoundedBorder(8)); // Consistent border
-
-        ChapterDAL chapterDAL = new ChapterDAL();
-        chapterFilterBox = new JComboBox<>();
-        chapterFilterBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        ((JLabel) chapterFilterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        chapterDAL.getAll().forEach(chapterFilterBox::addItem);
-        chapterFilterBox.setBorder(new RoundedBorder(8)); // Consistent border
-
-        filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        filterPanel.add(diffFilterBox);
-        filterPanel.add(chapterFilterBox);
-        filterPanel.setVisible(false);
-    
         topPanel.add(addButton);
-        topPanel.add(editButton);
-        topPanel.add(deleteButton);
         topPanel.add(searchField);
         topPanel.add(searchButton);
-        topPanel.add(backButton);
-        topPanel.add(filterButton);
-        topPanel.add(filterPanel);
+        topPanel.add(clearButton);
 
-        this.add(topPanel, BorderLayout.NORTH);
+        String[] columnNames = {"Mã câu hỏi", "Nội Dung", "Độ khó", "Chương", "Môn", "Hành động"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 5;
+            }
+        };
 
-        String[] columnNames = {"Mã câu hỏi", "Môn học", "Độ khó", "Chương", "Chi tiết"};
-        tableModel = new DefaultTableModel(columnNames, 0);
-        questionTable = new JTable(tableModel);
-        questionTable.setRowHeight(35);
-        questionTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        questionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        questionTable.setFillsViewportHeight(true);
-        questionTable.setBackground(Color.WHITE);
-        questionTable.setGridColor(Color.LIGHT_GRAY);
-        JScrollPane scrollPane = new JScrollPane(questionTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        this.add(scrollPane, BorderLayout.CENTER);
+        table = new JTable(tableModel);
+        table.setRowHeight(30);
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setFillsViewportHeight(true);
+        table.setBackground(Color.WHITE);
+        table.setGridColor(Color.black);
+        table.setShowVerticalLines(false);
+        table.setSelectionBackground(Color.lightGray);
 
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setFont(new Font("Arial", Font.BOLD, 14));
+        tableHeader.setForeground(Color.BLACK);
+        tableHeader.setReorderingAllowed(false);
+        tableHeader.setResizingAllowed(false);
+        tableHeader.setBackground(Ulti.LightGray);
+
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount()-1; i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        table.getColumnModel().getColumn(5).setCellRenderer(new ButtonPanelRenderer());
+        table.getColumnModel().getColumn(5).setCellEditor(new ButtonPanelEditor(table));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        scrollPane.setBackground(Ulti.MainColor);
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(topPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        add(centerPanel, BorderLayout.CENTER);
+
+        // Add action listeners
         addButton.addActionListener(this);
-        editButton.addActionListener(this);
-        deleteButton.addActionListener(this);
         searchButton.addActionListener(this);
-        loadQuestions();
+        clearButton.addActionListener(this);
 
-        // Popup Menu
-        popupMenu = new JPopupMenu();
-        JMenuItem editMenuItem = new JMenuItem("Sửa câu hỏi");
-        JMenuItem deleteMenuItem = new JMenuItem("Xóa câu hỏi");
-
-        editMenuItem.addActionListener(e -> editQuestion());
-        deleteMenuItem.addActionListener(e -> deleteQuestion());
-
-        popupMenu.add(editMenuItem);
-        popupMenu.add(deleteMenuItem);
-        questionTable.setComponentPopupMenu(popupMenu);
-
-        questionTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int row = questionTable.rowAtPoint(evt.getPoint());
-                questionTable.clearSelection();
-                questionTable.setRowSelectionInterval(row, row);
-                if (evt.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-                    selectedRow = row;
-                    popupMenu.show(questionTable, evt.getX(), evt.getY());
-                }
-            }
-        });
-
-        popupMenu.addPopupMenuListener(new PopupMenuListener() {
-            @Override
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                if (questionTable.getSelectedRow() == -1) {
-                    editMenuItem.setEnabled(false);
-                    deleteMenuItem.setEnabled(false);
-                } else {
-                    editMenuItem.setEnabled(true);
-                    deleteMenuItem.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            }
-
-            @Override
-            public void popupMenuCanceled(PopupMenuEvent e) {
-            }
-        });
+        // Load users
+        loadExam();
     }
 
-    private JButton createButton(String text) {
+
+    private JButton createButton(String text, Color color) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(new RoundedBorder(8));
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return button;
     }
 
-    private static class RoundedBorder extends LineBorder {
-        private int radius;
-
-        public RoundedBorder(int radius) {
-            super(Color.GRAY);
-            this.radius = radius;
-        }
-
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(getLineColor());
-            g2d.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-            g2d.dispose();
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(this.radius + 2, this.radius + 2, this.radius + 2, this.radius + 2);
-        }
-
-        @Override
-        public boolean isBorderOpaque() {
-            return true;
-        }
+    private JTextField createSearchField() {
+        JTextField textField = new JTextField(20);
+        textField.setFont(new Font("Arial", Font.PLAIN, 14));
+        textField.setBorder(new CompoundBorder(
+                new RoundedBorder(8),
+                new EmptyBorder(0, 10, 0, 10)
+        ));
+        textField.setBackground(Color.WHITE);
+        textField.setForeground(Color.decode("#2c3e50"));
+        textField.setPreferredSize(new Dimension(200, 35));
+        return textField;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == addButton) {
-            addQuestion();
-        } else if (e.getSource() == editButton) {
-            editQuestion();
-        } else if (e.getSource() == deleteButton) {
-            deleteQuestion();
-        } else if (e.getSource() == searchButton) {
-            searchQuestion();
-        } else if (e.getSource() == backButton) {
-            isSearchMode = false;
-            backButton.setVisible(false);
-            filterPanel.setVisible(false);
-            loadQuestions();
-        } else if (e.getSource() == filterButton) {
-            filterPanel.setVisible(!filterPanel.isVisible());
-            if (filterPanel.isVisible()) {
-                isSearchMode = true;
-                backButton.setVisible(true);
-             
-                Point location = searchField.getLocationOnScreen();
-                // Calculate y-coordinate to position it below searchField
-                int y = location.y + searchField.getHeight();
-                SwingUtilities.convertPointFromScreen(location, this); // Convert to this panel's coordinates
-                filterPanel.setLocation(location.x, y);
-                this.setComponentZOrder(filterPanel, 0); // Ensure filterPanel is visible
-                filterPanel.revalidate();
-                filterPanel.repaint();
-            } else {
-                isSearchMode = false;
-                backButton.setVisible(false);
-                loadQuestions();
-            }
-        }
+    private void ShowAddQuestion() {
+        panelQuestion = new QuestionPanel(menuPanel.mainFrame.userBLL.getCurrent().getLoginName(), false);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm câu hỏi", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.getContentPane().add(panelQuestion);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        loadExam();
     }
 
-    private void editQuestion() {
-        int selectedRow = questionTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một câu hỏi để sửa!");
-            return;
-        }
-        String questionID = tableModel.getValueAt(selectedRow, 0).toString();
-        panelExemDetail.loadQuestionDetails(questionID);
-        cardLayout.show(mainPanel, "EditPanel");
+    private void ShowEditQuestion(String quesId) {
+        panelQuestion = new QuestionPanel(quesId, true);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Chỉnh sửa câu hỏi", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.getContentPane().add(panelQuestion);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        loadExam();
     }
 
-    private void deleteQuestion() {
-        int selectedRow = questionTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một câu hỏi để xóa!");
-            return;
-        }
-        int choice = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa câu hỏi này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+    private void delete(String quesId) {
+       int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Xóa câu hỏi " + quesId + "?",
+                "Xóa",
+                JOptionPane.YES_NO_OPTION
+        );
+
         if (choice == JOptionPane.YES_OPTION) {
-            String questionIdToDelete = tableModel.getValueAt(selectedRow, 0).toString();
-            if (questionDAL.delete(questionIdToDelete)) {
-                tableModel.removeRow(selectedRow);
-                bank.removeIf(q -> q.getID().equals(questionIdToDelete));
-                JOptionPane.showMessageDialog(this, "Xóa câu hỏi thành công!");
-                loadQuestions();
-            } else {
-                JOptionPane.showMessageDialog(this, "Không thể xóa câu hỏi!");
+            try {
+                if (questionBLL.delete(quesId)) {
+                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                    loadExam();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không thể xóa!");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error deleting exam: " + ex.getMessage());
             }
         }
     }
 
-    private void searchQuestion() {
-        isSearchMode = true;
-        backButton.setVisible(true);
-
+    private void search() {
         String keyword = searchField.getText().trim();
-        Enums.DifficultValue selectedDifficulty = (Enums.DifficultValue) diffFilterBox.getSelectedItem();
-        ChapterDTO selectedChapter = (ChapterDTO) chapterFilterBox.getSelectedItem();
-
-        List<QuestionDTO> searchResults = questionDAL.search(keyword, selectedDifficulty, selectedChapter);
-
-        if (searchResults != null && !searchResults.isEmpty()) {
-            loadSearchResults(searchResults);
-        } else {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy câu hỏi nào phù hợp với tiêu chí.", "Kết quả tìm kiếm", JOptionPane.INFORMATION_MESSAGE);
-            loadQuestions();
+        if (keyword.isEmpty()) {
+            loadExam();
+            return;
         }
-    }
 
-    private void loadSearchResults(List<QuestionDTO> results) {
-        tableModel.setRowCount(0);
-        for (QuestionDTO question : results) {
-            tableModel.addRow(new Object[]{
-                    question.getID(),
-                    question.getSubject() != null ? question.getSubject().getName() : "N/A",
-                    question.getDifficult() != null ? question.getDifficult().toString() : "N/A",
-                    question.getChapter() != null ? question.getChapter().getName() : "N/A",
-                    "Xem"
-            });
-        }
-        questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
-    }
-
-    public void loadQuestions() {
-        bank = questionDAL.getAll();
-        tableModel.setRowCount(0);
-        if (bank != null && !bank.isEmpty()) {
-            for (QuestionDTO row : bank) {
+        try {
+            ArrayList<QuestionDTO> searchResults = questionBLL.search(keyword);
+            tableModel.setRowCount(0);
+            if (searchResults.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng nào!", "Tìm kiếm người dùng", JOptionPane.INFORMATION_MESSAGE);
+            }
+            for (QuestionDTO ques : searchResults) {
                 tableModel.addRow(new Object[]{
-                        row.getID(),
-                        row.getSubject() != null ? row.getSubject().getName() : "N/A",
-                        row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
-                        row.getChapter() != null ? row.getChapter().getName() : "N/A",
-                        "Xem"
+                        ques.getID(),
+                        ques.getText(),
+                        ques.getDifficult().toString(),
+                        ques.getChapter(),
+                        ques.getSubject(),
+                        "Edit"
                 });
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Không có câu hỏi nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        questionTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        questionTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
     }
-    public void searchID(String ID){
-        //bank=questionDAL.getByID(ID);
+
+    private void loadExam() {
+        question = questionBLL.getAll();
         tableModel.setRowCount(0);
-        if (bank != null && !bank.isEmpty()) {
-            for (QuestionDTO row : bank) {
+        if (!question.isEmpty()) {
+            for (QuestionDTO ques : question) {
                 tableModel.addRow(new Object[]{
-                        row.getID(),
-                        row.getSubject() != null ? row.getSubject().getName() : "N/A",
-                        row.getDifficult() != null ? row.getDifficult().toString() : "N/A",
-                        row.getChapter() != null ? row.getChapter().getName() : "N/A",
-                        "Xem"
-                });
+                        ques.getID(),
+                        ques.getText(),
+                        ques.getDifficult().toString(),
+                        ques.getChapter(),
+                        ques.getSubject(),
+                        "Edit"});
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Không có câu hỏi nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        }
-
+         }
     }
 
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setFont(new Font("Arial", Font.BOLD, 14));
-            setForeground(Color.WHITE);
-            setBackground(Color.decode("#008cba"));
-            setBorder(new RoundedBorder(8));
+    class ButtonPanelRenderer extends JPanel implements TableCellRenderer {
+        public ButtonPanelRenderer() {
+            setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            JButton edit = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "edit.png", 20, 20));
+            JButton delete =  ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "delete.png", 20, 20));
+            add(edit);
+            add(delete);
+            setBackground(Color.WHITE);
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText((value == null) ? "Xem" : value.toString());
+        public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
             return this;
         }
     }
 
-    class ButtonEditor extends DefaultCellEditor {
-        private JButton button;
-        private String label;
-        private boolean clicked;
+    class ButtonPanelEditor extends AbstractCellEditor implements TableCellEditor {
+        private final JPanel panel;
+        private final JButton editButton;
+        private final JButton deleteButton;
+        private int row;
 
-        public ButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            button = new JButton();
-            button.setOpaque(true);
-            button.setFont(new Font("Arial", Font.BOLD, 14));
-            button.setForeground(Color.WHITE);
-            button.setBackground(Color.decode("#008cba"));
-            button.setBorder(new RoundedBorder(8));
-            button.addActionListener(e -> fireEditingStopped());
+        public ButtonPanelEditor(JTable table) {
+            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            panel.setBackground(Color.WHITE);
+            editButton = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "edit.png", 20, 20));
+            deleteButton = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "delete.png", 20, 20));
+
+            editButton.addActionListener(e -> {
+                String quesId = table.getValueAt(row, 0).toString();
+                ShowEditQuestion(quesId);
+                stopCellEditing();
+            });
+
+            deleteButton.addActionListener(e -> {
+                String quesId = table.getValueAt(row, 0).toString();
+                delete(quesId);
+                stopCellEditing();
+            });
+
+            panel.add(editButton);
+            panel.add(deleteButton);
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = (value == null) ? "Xem" : value.toString();
-            button.setText(label);
-            clicked = true;
-            return button;
+        public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column) {
+            this.row = row;
+            return panel;
         }
 
         @Override
         public Object getCellEditorValue() {
-            if (clicked) {
-                int selectedRow = questionTable.getSelectedRow();
-                String questionID = tableModel.getValueAt(selectedRow, 0).toString();
-                panelExemDetail.loadQuestionDetails(questionID);
-                cardLayout.show(mainPanel, "EditPanel");
-            }
-            clicked = false;
-            return label;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            clicked = false;
-            return super.stopCellEditing();
+            return null;
         }
     }
 
-    private void addQuestion() {
-        addQuestionDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm câu hỏi mới", true);
-        addQuestionDialog.setSize(600, 600);
-        addQuestionDialog.setLocationRelativeTo(this);
-
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-
-        ChapterDAL chapterDAL = new ChapterDAL();
-
-        JTextArea contentField = new JTextArea(3, 20);
-        contentField.setFont(new Font("Arial", Font.PLAIN, 14));
-        JScrollPane contentScrollPane = new JScrollPane(contentField);
-        contentScrollPane.setBorder(new RoundedBorder(8));
-
-        JComboBox<Enums.DifficultValue> diffBox = new JComboBox<>(Enums.DifficultValue.values());
-        diffBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        ((JLabel) diffBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        diffBox.setBorder(new RoundedBorder(8));
-
-        JComboBox<ChapterDTO> chapterBox = new JComboBox<>();
-        chapterBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        ((JLabel) chapterBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        chapterDAL.getAll().forEach(chapterBox::addItem);
-        chapterBox.setBorder(new RoundedBorder(8));
-
-        JTextField createdByField = new JTextField();
-        createdByField.setFont(new Font("Arial", Font.PLAIN, 14));
-        createdByField.setBorder(new RoundedBorder(8));
-
-        JTextField answerA = new JTextField();
-        answerA.setFont(new Font("Arial", Font.PLAIN, 14));
-        answerA.setBorder(new RoundedBorder(8));
-        JTextField answerB = new JTextField();
-        answerB.setFont(new Font("Arial", Font.PLAIN, 14));
-        answerB.setBorder(new RoundedBorder(8));
-        JTextField answerC = new JTextField();
-        answerC.setFont(new Font("Arial", Font.PLAIN, 14));
-        answerC.setBorder(new RoundedBorder(8));
-        JTextField answerD = new JTextField();
-        answerD.setFont(new Font("Arial", Font.PLAIN, 14));
-        answerD.setBorder(new RoundedBorder(8));
-        JComboBox<String> correctAnswerBox = new JComboBox<>(new String[]{"A", "B", "C", "D"});
-        correctAnswerBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        ((JLabel) correctAnswerBox.getRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        correctAnswerBox.setBorder(new RoundedBorder(8));
-
-        chapterDAL.getAll().forEach(chapterBox::addItem);
-
-        int row = 0;
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        JLabel contentLabel = new JLabel("Nội dung:");
-        contentLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(contentLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(contentScrollPane, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel diffLabel = new JLabel("Độ khó:");
-        diffLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(diffLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(diffBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel chapterLabel = new JLabel("Chương:");
-        chapterLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(chapterLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(chapterBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel createdByLabel = new JLabel("Người tạo (UserID):");
-        createdByLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(createdByLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(createdByField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel answerALabel = new JLabel("Đáp án A:");
-        answerALabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(answerALabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(answerA, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel answerBLabel = new JLabel("Đáp án B:");
-        answerBLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(answerBLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(answerB, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel answerCLabel = new JLabel("Đáp án C:");
-        answerCLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(answerCLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(answerC, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel answerDLabel = new JLabel("Đáp án D:");
-        answerDLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(answerDLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(answerD, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        JLabel correctAnswerLabel = new JLabel("Đáp án đúng:");
-        correctAnswerLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(correctAnswerLabel, gbc);
-        gbc.gridx = 1;
-        formPanel.add(correctAnswerBox, gbc);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-        JButton saveButton = new JButton("Lưu");
-        saveButton.setFont(new Font("Arial", Font.BOLD, 14));
-        saveButton.setBackground(Color.decode("#4caf50"));
-        saveButton.setForeground(Color.WHITE);
-        saveButton.setFocusPainted(false);
-        saveButton.setBorder(new RoundedBorder(8));
-
-        JButton cancelButton = new JButton("Hủy");
-        cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
-        cancelButton.setBackground(Color.decode("#f44336"));
-        cancelButton.setForeground(Color.WHITE);
-        cancelButton.setFocusPainted(false);
-        cancelButton.setBorder(new RoundedBorder(8));
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-
-        gbc.gridx = 0;
-        gbc.gridy = ++row;
-        gbc.gridwidth = 2;
-        formPanel.add(buttonPanel, gbc);
-
-        JScrollPane scrollPane = new JScrollPane(formPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        addQuestionDialog.setContentPane(scrollPane);
-
-        saveButton.addActionListener(e -> {
-            if (contentField.getText().trim().isEmpty()
-                    || answerA.getText().trim().isEmpty()
-                    || answerB.getText().trim().isEmpty()
-                    || answerC.getText().trim().isEmpty()
-                    || answerD.getText().trim().isEmpty()
-                    || createdByField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(addQuestionDialog, "Vui lòng điền đầy đủ thông tin.");
-                return;
-            }
-
-            QuestionDTO newQues = new QuestionDTO();
-            newQues.setText(contentField.getText().trim());
-            newQues.setDifficult((Enums.DifficultValue) diffBox.getSelectedItem());
-            newQues.setChapter((ChapterDTO) chapterBox.getSelectedItem());
-            newQues.setCreatedBy(createdByField.getText().trim());
-
-            ArrayList<AnswerDTO> answers = new ArrayList<>();
-            String[] answerTexts = {
-                    answerA.getText().trim(),
-                    answerB.getText().trim(),
-                    answerC.getText().trim(),
-                    answerD.getText().trim()
-            };
-
-            String correct = (String) correctAnswerBox.getSelectedItem();
-            String[] labels = {"A", "B", "C", "D"};
-            for (int i = 0; i < 4; i++) {
-                AnswerDTO ans = new AnswerDTO();
-                ans.setText(answerTexts[i]);
-                ans.setRight(correct.equals(labels[i]));
-                answers.add(ans);
-            }
-
-            newQues.setAns(answers);
-
-            if (questionDAL.add(newQues)) {
-                JOptionPane.showMessageDialog(this, "Thêm câu hỏi thành công!");
-                bank = questionDAL.getAll();
-                loadQuestions();
-                addQuestionDialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Không thể thêm câu hỏi.");
-            }
-        });
-
-        cancelButton.addActionListener(e -> addQuestionDialog.dispose());
-        addQuestionDialog.setUndecorated(true);
-        addQuestionDialog.setVisible(true);
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == addButton) {
+            ShowAddQuestion();
+        } else if (e.getSource() == searchButton) {
+            search();
+        } else if (e.getSource() == clearButton) {
+            searchField.setText("");
+            loadExam();
+        }
     }
 }

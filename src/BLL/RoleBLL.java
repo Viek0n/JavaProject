@@ -2,11 +2,20 @@ package BLL;
 
 import DAL.RoleDAL;
 import DTO.RoleDTO;
+import java.util.List;
 
 public class RoleBLL {
     final private RoleDAL roleDAL;
     public RoleBLL(){
         roleDAL = new RoleDAL();
+    }
+
+    public List<RoleDTO> getAll(){
+        return roleDAL.getAll();
+    }
+
+    public RoleDTO getByName(String roleName){
+        return roleDAL.getByName(roleName);
     }
     //Insert
     public Boolean add(RoleDTO a){

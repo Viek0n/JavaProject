@@ -75,23 +75,26 @@ public class ExamStructDAL {
     }
 
     public  boolean add(ExamStructDTO examStruct) {
-        String query = "INSERT INTO cautrucde (MaCT, TenCT, MoTa, ThoiGianBD, ThoiGianKT, ThoiGianLamBai, MonHoc) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO cautrucde (MaCT, TenCT, MoTa, XemDapAn, ThoiGianBD, ThoiGianKT, ThoiGianLamBai, MonHoc, MaND) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
             examStruct.setID(getNextId());
             pstmt.setString(1, examStruct.getID());
             pstmt.setString(2, examStruct.getName());
             pstmt.setString(3, examStruct.getDesc());
-            pstmt.setDate(4, new java.sql.Date(examStruct.getStart().getTime()));
-            pstmt.setDate(5, new java.sql.Date(examStruct.getEnd().getTime()));
-            pstmt.setTime(6, examStruct.getExamTime());
-            pstmt.setString(7, examStruct.getSubject().getID());
+            pstmt.setBoolean(4, examStruct.getAnswerAllow());
+            pstmt.setDate(5, new java.sql.Date(examStruct.getStart().getTime()));
+            pstmt.setDate(6, new java.sql.Date(examStruct.getEnd().getTime()));
+            pstmt.setTime(7, examStruct.getExamTime());
+            pstmt.setString(8, examStruct.getSubject().getID());
+            pstmt.setString(9, examStruct.getUserId());
+            int result = pstmt.executeUpdate();
 
             for(ExamStructDetailDTO x : examStruct.getRandomDetail())
                 examStructDetailDAL.add(new ExamStructDetailDTO(x.getChapID(), x.getDiff(), x.getExamStructID(), x.getQuantity()));
             for(ExamStructSelectedDTO x: examStruct.getSelectDetail())
                 examStructSelectedDAL.add(new ExamStructSelectedDTO(x.getExamStructID(), x.getQuestID()));
-            return pstmt.executeUpdate() > 0;
+            return result > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -99,17 +102,19 @@ public class ExamStructDAL {
     }
 
     public  boolean update(ExamStructDTO examStruct) {
-        String query = "UPDATE cautrucde SET TenCT = ?, MoTa = ?, ThoiGianBD = ?, ThoiGianKT = ?, ThoiGianLamBai = ?, MonHoc = ? WHERE MaCT = ?";
+        String query = "UPDATE cautrucde SET TenCT = ?, MoTa = ?, XemDapAn = ?, ThoiGianBD = ?, ThoiGianKT = ?, ThoiGianLamBai = ?, MonHoc = ?, MaND = ? WHERE MaCT = ?";
         try (Connection con = getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
 
             pstmt.setString(1, examStruct.getName());
             pstmt.setString(2, examStruct.getDesc());
-            pstmt.setDate(3, new java.sql.Date(examStruct.getStart().getTime()));
-            pstmt.setDate(4, new java.sql.Date(examStruct.getEnd().getTime()));
-            pstmt.setTime(5, examStruct.getExamTime());
-            pstmt.setString(6, examStruct.getSubject().getID());
-            pstmt.setString(7, examStruct.getID());
+            pstmt.setBoolean(3, examStruct.getAnswerAllow());
+            pstmt.setDate(4, new java.sql.Date(examStruct.getStart().getTime()));
+            pstmt.setDate(5, new java.sql.Date(examStruct.getEnd().getTime()));
+            pstmt.setTime(6, examStruct.getExamTime());
+            pstmt.setString(7, examStruct.getSubject().getID());
+            pstmt.setString(8, examStruct.getID());
+            pstmt.setString(9, examStruct.getUserId());
             
             examStructDetailDAL.deleteAll(examStruct.getID());
             examStructSelectedDAL.deleteAll(examStruct.getID());
@@ -149,11 +154,13 @@ public class ExamStructDAL {
                     examStruct.setID(rs.getString("MaCT"));
                     examStruct.setName(rs.getString("TenCT"));
                     examStruct.setDesc(rs.getString("MoTa"));
+                    examStruct.setAnswerAllow(rs.getBoolean("XemDapAn"));
                     examStruct.setStart(rs.getDate("ThoiGianBD"));
                     examStruct.setEnd(rs.getDate("ThoiGianKT"));
                     examStruct.setExamTime(rs.getTime("ThoiGianLamBai"));
                     SubjectDTO subject = subjectDAL.get(rs.getString("MonHoc"));
                     examStruct.setSubject(subject);
+                    examStruct.setUserId(rs.getString("MaND"));
                     examStruct.setRandomDetail(examStructDetailDAL.getAll(examStruct.getID()));
                     examStruct.setSelectDetail(examStructSelectedDAL.getAll(examStruct.getID()));
                     return examStruct;
@@ -219,8 +226,9 @@ public class ExamStructDAL {
         }
         return array;
     }
+
     public boolean insert(ExamStructDTO examStruct) {
-    String query = "INSERT INTO cautrucde (MaCT, TenCT, MoTa, ThoiGianBD, ThoiGianKT, ThoiGianLamBai, MonHoc) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    String query = "INSERT INTO cautrucde (MaCT, TenCT, MoTa, XemDapAn, ThoiGianBD, ThoiGianKT, ThoiGianLamBai, MonHoc, MaND) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     try (Connection con = getConnection();
          PreparedStatement pstmt = con.prepareStatement(query)) {
 
@@ -228,10 +236,12 @@ public class ExamStructDAL {
         pstmt.setString(1, examStruct.getID());
         pstmt.setString(2, examStruct.getName());
         pstmt.setString(3, examStruct.getDesc());
-        pstmt.setDate(4, new java.sql.Date(examStruct.getStart().getTime()));
-        pstmt.setDate(5, new java.sql.Date(examStruct.getEnd().getTime()));
-        pstmt.setTime(6, examStruct.getExamTime());
-        pstmt.setString(7, examStruct.getSubject().getID());
+        pstmt.setBoolean(4, examStruct.getAnswerAllow());
+        pstmt.setDate(5, new java.sql.Date(examStruct.getStart().getTime()));
+        pstmt.setDate(6, new java.sql.Date(examStruct.getEnd().getTime()));
+        pstmt.setTime(7, examStruct.getExamTime());
+        pstmt.setString(8, examStruct.getSubject().getID());
+        pstmt.setString(9, examStruct.getUserId());
 
         // Thực thi câu lệnh SQL
         return pstmt.executeUpdate() > 0;

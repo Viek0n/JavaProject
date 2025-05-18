@@ -7,8 +7,6 @@ public class UserDTO {
     private String Pass;
     private Enums.StatusValue Status;
     private RoleDTO Role;
-    
-    
 
     @Override
     public String toString(){

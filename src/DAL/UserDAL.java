@@ -127,26 +127,27 @@ public class UserDAL {
 }
     //searchUser
     public ArrayList<UserDTO> searchUser(String keyword) {
-    ArrayList<UserDTO> results = new ArrayList<>();
-    String sql = "SELECT * FROM nguoidung WHERE Ten LIKE ? OR MaND LIKE ?";
-    try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, "%" + keyword + "%");
-        stmt.setString(2, "%" + keyword + "%");
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            results.add(new UserDTO(rs.getString("MaND"),
-                    rs.getString("Ten"),
-                    rs.getString("MatKhau"),
-                    Enums.StatusValue.valueOf(rs.getString("TrangThai")),
-                    roleDal.getByID(rs.getInt("MaNQ"))));
+        ArrayList<UserDTO> results = new ArrayList<>();
+        String sql = "SELECT * FROM nguoidung WHERE Ten LIKE ? OR MaND LIKE ?";
+        try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + keyword + "%");
+            stmt.setString(2, "%" + keyword + "%");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new UserDTO(rs.getString("MaND"),
+                        rs.getString("Ten"),
+                        rs.getString("MatKhau"),
+                        Enums.StatusValue.valueOf(rs.getString("TrangThai")),
+                        roleDal.getByID(rs.getInt("MaNQ"))));
+            }
+        } catch (SQLException e) {
+            System.out.println("Tìm kiếm người dùng thất bại!");
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        System.out.println("Tìm kiếm người dùng thất bại!");
-        e.printStackTrace();
+        return results;
     }
-    return results;
-}
+    
    public UserDTO getByID(String LoginName) {
     String sql = "SELECT * FROM nguoidung WHERE MaND = ?";
     try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
