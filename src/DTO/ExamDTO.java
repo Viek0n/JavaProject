@@ -30,8 +30,8 @@ public class ExamDTO {
             int input = choice.get(i);
             if(input != -1 && quest.getAns().get(input).getRight()) right++;
         }
-
-        return Math.round(((float)right/question.size())*10);
+        Score = Math.round(((float) right / question.size()) * 10 * 100) / 100f;
+        return Score;
     }
 
     public String getExamStructID() {

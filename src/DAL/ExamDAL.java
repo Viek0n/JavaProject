@@ -139,6 +139,7 @@ public class ExamDAL {
                     exam.setUserID(rs.getString("MaND"));
                     exam.setRemainingTime(rs.getTime("ThoiGianLam"));
                     exam.setScore(rs.getFloat("Diem"));
+                    getDetail(exam, exam.getExamId());
                     return exam;
                 }
             }

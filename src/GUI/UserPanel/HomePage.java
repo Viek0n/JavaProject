@@ -2,24 +2,20 @@ package GUI.UserPanel;
 
 import GUI.MakeColor.RoundedPanel;
 import GUI.MakeColor.Ulti;
-import java.awt.Color;
-import java.awt.Font;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import MICS.Connect;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.*;
 
 public class HomePage extends JPanel {
     private JPanel menuPanel;
     private JLabel homeTitle, descLabel;
-    private MainFrame mainFrame; // Tham chiếu đến MainFrame
-    private int posx, posy;
+    private MainFrame mainFrame;
 
     public HomePage(MainFrame mainFrame, JPanel menuPanel) {
-        this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
+        this.mainFrame = mainFrame;
         this.menuPanel = menuPanel;
-        posx = 525;
-        posy = 300;
         init();
     }
 
@@ -27,32 +23,49 @@ public class HomePage extends JPanel {
         setLayout(null);
         setBackground(Ulti.MainColor);
 
-        // Tạo panel trắng chứa chữ
-        JPanel textPanel = new RoundedPanel(100);
+        int panelWidth = 800;
+        int panelHeight = 300;
+        
+        JPanel textPanel = new RoundedPanel(200);
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setBackground(Color.WHITE);
-        textPanel.setBounds(posx, posy, 800, 200); // Panel trắng
+        textPanel.setSize(panelWidth, panelHeight);
+        centerPanel(textPanel);
 
-        // Tiêu đề
-        homeTitle = new JLabel("Stress Portal");
-        homeTitle.setFont(new Font("Arial", Font.BOLD, 60));
-        homeTitle.setForeground(Color.BLACK);
-        homeTitle.setAlignmentX(CENTER_ALIGNMENT); // Căn giữa theo trục X
+        ImageIcon logoIcon = new ImageIcon(Connect.img + "logo.png"); // Adjust path if needed
+        Image scaledImage = logoIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(scaledImage));
+        logoLabel.setAlignmentX(CENTER_ALIGNMENT);
 
-        // Mô tả
         descLabel = new JLabel("Nơi áp lực thi cử được giải tỏa, không phải gia tăng!");
-        descLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        descLabel.setFont(new Font("Arial", Font.BOLD, 26));
         descLabel.setForeground(Color.BLACK);
-        descLabel.setAlignmentX(CENTER_ALIGNMENT); // Căn giữa theo trục X
+        descLabel.setAlignmentX(CENTER_ALIGNMENT);
 
-        // Khoảng cách giữa 2 dòng
         textPanel.add(Box.createVerticalStrut(20));
-        textPanel.add(homeTitle);
-        textPanel.add(Box.createVerticalStrut(10));
+        textPanel.add(logoLabel);
+        textPanel.add(Box.createVerticalStrut(15));
         textPanel.add(descLabel);
+        textPanel.add(Box.createVerticalGlue());
 
-        add(textPanel); // Thêm panel trắng vào màn hình
-        add(menuPanel); // Giữ nguyên menuPanel
+        add(menuPanel);
+        add(textPanel);
+
+        // Recenter when window resizes
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                centerPanel(textPanel);
+            }
+        });
     }
 
+
+    private void centerPanel(JPanel panel) {
+        int menuWidth = 214;
+        int remainingWidth = getWidth() - menuWidth;
+        int x = menuWidth + (remainingWidth - panel.getWidth()) / 2;
+        int y = (getHeight() - panel.getHeight()) / 2;
+        panel.setLocation(x, y);
+    }
 }

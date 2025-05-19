@@ -20,13 +20,17 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
 public class MenuPanel extends JPanel {
     public MainFrame mainFrame; // Tham chiếu đến MainFrame
     private boolean[] labelPrint;
+    private JButton test, testHistory, feedback, exam, manageUser ,asignUser, manageSubject, manageQues, manageRole;
+    private JButton selectedButton = null;
 
     public MainFrame getMainFrame() {
         return mainFrame;
@@ -61,7 +65,14 @@ public class MenuPanel extends JPanel {
         profile.setBorder(BorderFactory.createEmptyBorder(18, 15, 18, 0));
         this.add(profile);
 
-        JButton home = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "homepage.png", 40, 40), e -> {
+        JButton home = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "homepage.png", 40, 40));
+        home.addActionListener(e -> {
+            if (selectedButton != null) {
+                selectedButton.setBackground(Color.LIGHT_GRAY);
+                selectedButton.setForeground(Color.BLACK);
+            }
+            home.setForeground(Color.RED);
+            selectedButton = home;
             mainFrame.addPanel(new HomePage(mainFrame, this), "HomePanel");
             mainFrame.showPanel("HomePanel");
         });
@@ -70,15 +81,15 @@ public class MenuPanel extends JPanel {
         home.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
         this.add(home);
 
-        JButton test = createButton(mainFrame, "test.png", () -> new ExamSelect(mainFrame, this), "ExamSelect", "Làm bài");
-        JButton testHistory = createButton(mainFrame, "test-history.png", () -> new ExamHistoryPanel( this), "ExamHistory", "Lịch sử làm bài");
-        JButton feedback = createButton(mainFrame, "feedback.png", () -> new ExamStructManagementPanel(this), "FeedbackManage", "Phản hồi");
-        JButton exam = createButton(mainFrame, "analysis.png", () -> new ExamStructManagementPanel(this), "ExamManage", "Đề kiểm tra");
-        JButton manageUser = createButton(mainFrame, "user-manage.png", () -> new UserManagementPanel(this), "UserManage", "Người dùng");
-        JButton asignUser = createButton(mainFrame, "assign.png", () -> new AsignManagementPanel(this), "AsignManagement", "Phân công");
-        JButton manageSubject = createButton(mainFrame, "subject.png", () -> new SubjectManagementPanel(this), "SubjectManage", "Môn học");
-        JButton manageQues = createButton(mainFrame, "question.png", () -> new QuestionManagementPanel(this), "QuestionManage", "Câu hỏi");
-        JButton manageRole = createButton(mainFrame, "group.png", () -> new RoleManagementPanel(this), "RoleManage", "Phân quyền");
+        test = createButton(mainFrame, "test.png", () -> new ExamSelect(mainFrame, this), "ExamSelect", "Làm bài");
+        testHistory = createButton(mainFrame, "test-history.png", () -> new ExamHistoryPanel( this), "ExamHistory", "Lịch sử làm bài");
+        feedback = createButton(mainFrame, "feedback.png", () -> new ExamStructManagementPanel(this), "FeedbackManage", "Phản hồi");
+        exam = createButton(mainFrame, "analysis.png", () -> new ExamStructManagementPanel(this), "ExamManage", "Đề kiểm tra");
+        manageUser = createButton(mainFrame, "user-manage.png", () -> new UserManagementPanel(this), "UserManage", "Người dùng");
+        asignUser = createButton(mainFrame, "assign.png", () -> new AsignManagementPanel(this), "AsignManagement", "Phân công");
+        manageSubject = createButton(mainFrame, "subject.png", () -> new SubjectManagementPanel(this), "SubjectManage", "Môn học");
+        manageQues = createButton(mainFrame, "question.png", () -> new QuestionManagementPanel(this), "QuestionManage", "Câu hỏi");
+        manageRole = createButton(mainFrame, "group.png", () -> new RoleManagementPanel(this), "RoleManage", "Phân quyền");
 
         if(mainFrame.userBLL.getCurrent().getRole().getTakeExam()){
             if(!labelPrint[0]){
@@ -93,13 +104,13 @@ public class MenuPanel extends JPanel {
             if(!labelPrint[1]){
                 this.add(teacherLabel);
                 labelPrint[1] = true;
+                this.add(exam);
             }
-            this.add(feedback);
+            //this.add(feedback);
             if(!labelPrint[2]){
                 this.add(manageLabel);
                 labelPrint[2] = true;
             }
-            this.add(exam);
         }
         
         if(mainFrame.userBLL.getCurrent().getRole().getSeeQuest()){
@@ -123,14 +134,24 @@ public class MenuPanel extends JPanel {
 
         // Nút quay lại LoginPanel
         JButton logoutButton = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + "logout.png", 40, 40), e -> {
-            mainFrame.addPanel(new LoginPanel(mainFrame), "LoginPanel");
-            mainFrame.showPanel("LoginPanel");
+            int choice = JOptionPane.showConfirmDialog(
+                null,
+                "Đăng xuất?",
+                "Đăng xuất",
+                JOptionPane.YES_NO_OPTION
+            );
+            if (choice == JOptionPane.YES_OPTION) {
+                mainFrame.addPanel(new LoginPanel(mainFrame), "LoginPanel");
+                mainFrame.showPanel("LoginPanel");
+                JOptionPane.showMessageDialog(this, "Đăng xuất thành công!");
+            }
         });
         this.add(Box.createVerticalGlue());
         logoutButton.setText("Đăng xuất");
         logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
         logoutButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(logoutButton, BorderLayout.SOUTH);
+        home.doClick();
     }
 
     private JLabel createLabel(String str){
@@ -139,12 +160,20 @@ public class MenuPanel extends JPanel {
         label.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
         return label;
     }
+    private JButton createButton(MainFrame mainFrame, String src, Supplier<JPanel> panelSupplier, String panelName, String text) {
+        JButton button = ButtonFactory.createClearButton(mainFrame, 214, 50, AddImage.createImageIcon(Connect.img + src, 40, 40));
+        button.addActionListener(e -> {
+            if (selectedButton != null) {
+                selectedButton.setBackground(Color.LIGHT_GRAY);
+                selectedButton.setForeground(Color.BLACK);
+            }
+            button.setForeground(Color.RED);
+            selectedButton = button;
 
-    private JButton createButton(MainFrame mainFrame, String src,  Supplier<JPanel> panelSupplier, String panelName, String text){
-        JButton button = ButtonFactory.createClearButton(mainFrame, 214, 50,AddImage.createImageIcon(Connect.img + src, 40, 40), e -> {
             mainFrame.addPanel(panelSupplier.get(), panelName);
             mainFrame.showPanel(panelName);
         });
+        
         button.setText(text);
         button.setFont(new Font("Arial", Font.BOLD, 14));
         return button;

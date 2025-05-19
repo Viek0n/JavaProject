@@ -22,7 +22,7 @@ public class TaskDAL {
 
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
-                task.add(new TaskDTO(new UserBLL().getByLoginName(rs.getString(0)), new SubjectBLL().get(rs.getString(1))));
+                task.add(new TaskDTO(new UserBLL().getByLoginName(rs.getString(1)), new SubjectBLL().get(rs.getString(2))));
             }
         }catch (SQLException e) {
             System.out.println("Kết nối bangphancong thất bại!");

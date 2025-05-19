@@ -1,11 +1,13 @@
 package GUI.giaodienadmin.QuanLyPhanCong;
 
 import BLL.TaskBLL;
+import DTO.SubjectDTO;
 import DTO.TaskDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.UserPanel.MenuPanel;
+import GUI.giaodienadmin.QuanLyMonHoc.SubjectManagementPanel;
 import GUI.giaodienadmin.QuanLyMonHoc.SubjectPanel;
 import GUI.giaodienadmin.RoundedBorder;
 import MICS.Connect;
@@ -31,6 +33,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -168,16 +171,36 @@ public class AsignManagementPanel extends JPanel implements ActionListener{
     }
 
     private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tableModel.setRowCount(0);
-        tasks = taskBLL.getAll();
-        if (!tasks.isEmpty()) {
-            for (TaskDTO task : tasks) {
-                tableModel.addRow(new Object[]{
-                        task.getUser().getLoginName() + " - " + task.getUser().getName(),
-                        task.getSubject().getID() + " - " + task.getSubject().getName(),
-                        "Edit"});
+        SwingWorker<ArrayList<TaskDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<TaskDTO> doInBackground() throws Exception {
+                return taskBLL.getAll();
             }
-         }
+
+            @Override
+            protected void done() {
+                try {
+                    tasks = get();
+                    if (!tasks.isEmpty()) {
+                        for (TaskDTO task : tasks) {
+                            tableModel.addRow(new Object[]{
+                            task.getUser().getLoginName() + " - " + task.getUser().getName(),
+                            task.getSubject().getID() + " - " + task.getSubject().getName(),
+                            "Edit"});
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(AsignManagementPanel.this, "No subject found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(AsignManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }  finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
+            }
+        };
+        worker.execute();
     }
 
     class ButtonPanelRenderer extends JPanel implements TableCellRenderer {

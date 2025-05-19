@@ -32,6 +32,7 @@ import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.giaodienadmin.RoundedBorder;
 import GUI.giaodienadmin.QuanLyMonHoc.SubjectPanel;
+import GUI.giaodienadmin.QuanLyPhanCong.AsignManagementPanel;
 import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 import GUI.giaodienadmin.QuanLyUser.UserPanel;
 import MICS.Connect;
@@ -185,16 +186,36 @@ public class RoleManagementPanel extends JPanel implements ActionListener{
     }
 
     private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tableModel.setRowCount(0);
-        roles = new ArrayList<>(roleBLL.getAll());
-        if (!roles.isEmpty()) {
-            for (RoleDTO role : roles) {
-                tableModel.addRow(new Object[]{
-                        role.getID(),
-                        role.getName(),
-                        "Edit"});
+        SwingWorker<ArrayList<RoleDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<RoleDTO> doInBackground() throws Exception {
+                return new ArrayList<>(roleBLL.getAll());
             }
-         }
+
+            @Override
+            protected void done() {
+                try {
+                    roles = get();
+                    if (!roles.isEmpty()) {
+                        for (RoleDTO role : roles) {
+                            tableModel.addRow(new Object[]{
+                                    role.getID(),
+                                    role.getName(),
+                                    "Edit"});
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(RoleManagementPanel.this, "No subject found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(RoleManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
+            }
+        };
+        worker.execute();
     }
 
     class ButtonPanelRenderer extends JPanel implements TableCellRenderer {

@@ -193,6 +193,11 @@ public class SubjectPanel extends JPanel {
         String name = txtName.getText();
         ArrayList<ChapterDTO> chaps = new ArrayList<>();
 
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không được bỏ trống!","Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         for (int i = 0; i < chapTableModel.getRowCount(); i++) {
             String chapId = (String) chapTableModel.getValueAt(i, 0);
             String chapName = (String) chapTableModel.getValueAt(i, 1);
@@ -211,16 +216,11 @@ public class SubjectPanel extends JPanel {
             chaps.add(dto);
         }
 
-        if (name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được bỏ trống!","Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         if(chaps.isEmpty()){
             JOptionPane.showMessageDialog(this, "Vui lòng thêm chương!","Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chứ?", "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) {
             return;

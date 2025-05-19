@@ -2,11 +2,13 @@ package GUI.giaodienadmin.QuanLyCauHoi;
 
 import BLL.QuestionBLL;
 import DTO.QuestionDTO;
+import DTO.UserDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.UserPanel.MenuPanel;
 import GUI.giaodienadmin.RoundedBorder;
+import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -112,7 +114,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         clearButton.addActionListener(this);
 
         // Load users
-        loadExam();
+        load();
     }
 
 
@@ -147,7 +149,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadExam();
+        load();
     }
 
     private void ShowEditQuestion(String quesId) {
@@ -158,7 +160,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadExam();
+        load();
     }
 
     private void delete(String quesId) {
@@ -173,7 +175,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             try {
                 if (questionBLL.delete(quesId)) {
                     JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    loadExam();
+                    load();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xóa!");
                 }
@@ -186,7 +188,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     private void search() {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
-            loadExam();
+            load();
             return;
         }
 
@@ -211,20 +213,41 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void loadExam() {
-        question = questionBLL.getAll();
+    private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tableModel.setRowCount(0);
-        if (!question.isEmpty()) {
-            for (QuestionDTO ques : question) {
-                tableModel.addRow(new Object[]{
-                        ques.getID(),
-                        ques.getText(),
-                        ques.getDifficult().toString(),
-                        ques.getChapter(),
-                        ques.getSubject(),
-                        "Edit"});
+        SwingWorker<ArrayList<QuestionDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<QuestionDTO> doInBackground() throws Exception {
+                return questionBLL.getAll();
             }
-         }
+
+            @Override
+            protected void done() {
+                try {
+                    question = get();
+                    tableModel.setRowCount(0);
+                    if (!question.isEmpty()) {
+                       for (QuestionDTO ques : question) {
+                            tableModel.addRow(new Object[]{
+                            ques.getID(),
+                            ques.getText(),
+                            ques.getDifficult().toString(),
+                            ques.getChapter(),
+                            ques.getSubject(),
+                            "Edit"});
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this, "No users found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(QuestionManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
+            }
+        };
+        worker.execute();
     }
 
     class ButtonPanelRenderer extends JPanel implements TableCellRenderer {
@@ -294,7 +317,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
             search();
         } else if (e.getSource() == clearButton) {
             searchField.setText("");
-            loadExam();
+            load();
         }
     }
 }

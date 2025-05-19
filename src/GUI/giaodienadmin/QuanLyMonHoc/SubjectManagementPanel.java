@@ -4,12 +4,14 @@ import BLL.ChapterBLL;
 import BLL.QuestionBLL;
 import BLL.SubjectBLL;
 import DTO.ChapterDTO;
+import DTO.ExamStructDTO;
 import DTO.SubjectDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.UserPanel.MenuPanel;
 import GUI.giaodienadmin.RoundedBorder;
+import GUI.giaodienadmin.QuanLyDeThi.ExamStructManagementPanel;
 import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -118,7 +120,7 @@ public class SubjectManagementPanel extends JPanel implements ActionListener  {
         clearButton.addActionListener(this);
 
         // Load users
-        loadExam();
+        load();
     }
 
 
@@ -153,7 +155,7 @@ public class SubjectManagementPanel extends JPanel implements ActionListener  {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadExam();
+        load();
     }
 
     private void ShowEditSubject(String subjectId) {
@@ -164,7 +166,7 @@ public class SubjectManagementPanel extends JPanel implements ActionListener  {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadExam();
+        load();
     }
 
     private void delete(String subjectId) {
@@ -194,7 +196,7 @@ public class SubjectManagementPanel extends JPanel implements ActionListener  {
     private void search() {
         /*String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
-            loadExam();
+            load();
             return;
         }
 
@@ -219,17 +221,37 @@ public class SubjectManagementPanel extends JPanel implements ActionListener  {
         }*/
     }
 
-    private void loadExam() {
+    private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tableModel.setRowCount(0);
-        subjects = new ArrayList<>(subjectBLL.getAll());
-        if (!subjects.isEmpty()) {
-            for (SubjectDTO sub : subjects) {
-                tableModel.addRow(new Object[]{
-                        sub.getID(),
-                        sub.getName(),
-                        "Edit"});
+        SwingWorker<ArrayList<SubjectDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<SubjectDTO> doInBackground() throws Exception {
+                return new ArrayList<>(subjectBLL.getAll());
             }
-         }
+
+            @Override
+            protected void done() {
+                try {
+                    subjects = get();
+                    if (!subjects.isEmpty()) {
+                        for (SubjectDTO sub : subjects) {
+                            tableModel.addRow(new Object[]{
+                                    sub.getID(),
+                                    sub.getName(),
+                                    "Edit"});
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(SubjectManagementPanel.this, "No subject found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(SubjectManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
+            }
+        };
+        worker.execute();
     }
 
     class ButtonPanelRenderer extends JPanel implements TableCellRenderer {
@@ -305,7 +327,7 @@ public class SubjectManagementPanel extends JPanel implements ActionListener  {
             search();
         } else if (e.getSource() == clearButton) {
             searchField.setText("");
-            loadExam();
+            load();
         }
     }
 }

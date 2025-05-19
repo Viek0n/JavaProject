@@ -4,6 +4,7 @@ import BLL.ChapterBLL;
 import BLL.ExamStructBLL;
 import BLL.QuestionBLL;
 import BLL.SubjectBLL;
+import BLL.TaskBLL;
 import DAL.ExamStructDAL;
 import DAL.ExamStructSelectedDAL;
 import DAL.RoleDAL;
@@ -15,6 +16,7 @@ import DTO.ExamStructDetailDTO;
 import DTO.ExamStructSelectedDTO;
 import DTO.QuestionDTO;
 import DTO.SubjectDTO;
+import DTO.TaskDTO;
 import DTO.UserDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonEditor;
@@ -52,6 +54,7 @@ public class ExamStructPanel extends JPanel {
     private JCheckBox answerAllow;
     private JComboBox<String> subjectCmb, timeCmb;
     private JDatePickerImpl startDatePicker, endDatePicker;
+    private UtilDateModel startDateModel, endDateModel;
     private JTable randomQues, selectQues;
     private boolean isEditMode = false;
     private JButton saveButton, nextButton, prevButton, addButton;
@@ -69,6 +72,7 @@ public class ExamStructPanel extends JPanel {
     private ExamStructBLL examStructBLL;
     private ChapterBLL chapterBLL;
     private QuestionBLL questionBLL;
+    private TaskBLL taskBLL;
     private ExamStructDTO examStruct;
 
     public ExamStructPanel(String str, Boolean mode) {
@@ -76,16 +80,18 @@ public class ExamStructPanel extends JPanel {
         examStructBLL = new ExamStructBLL();
         chapterBLL = new ChapterBLL();
         questionBLL = new QuestionBLL();
+        taskBLL = new TaskBLL();
 
-        initComponent();
         isEditMode = mode;
         if(isEditMode){
             examStruct = examStructBLL.get(str);
+            initComponent();
             loadExamStructData();
         }
         else{
             examStruct = new ExamStructDTO();
             examStruct.setUserId(str);
+            initComponent();
             txtUser.setText(str);
         }
     }
@@ -127,7 +133,7 @@ public class ExamStructPanel extends JPanel {
 
 
         lbstart = new JLabel("Bắt đầu: ");
-        UtilDateModel startDateModel = new UtilDateModel(new Date());
+        startDateModel = new UtilDateModel(new Date());
         Properties startDateProperties = new Properties();
         startDateProperties.put("text.today", "Today");
         startDateProperties.put("text.month", "Month");
@@ -137,7 +143,7 @@ public class ExamStructPanel extends JPanel {
         startDatePicker.setToolTipText("Select start date (yyyy-MM-dd)");
 
         lbend = new JLabel("Kết thúc: ");
-        UtilDateModel endDateModel = new UtilDateModel(new Date());
+        endDateModel = new UtilDateModel(new Date());
         Properties endDateProperties = new Properties();
         endDateProperties.put("text.today", "Today");
         endDateProperties.put("text.month", "Month");
@@ -238,7 +244,10 @@ public class ExamStructPanel extends JPanel {
     }
 
    private void loadSubjectToComboBox() {
-        List<SubjectDTO> subjects = subjectBLL.getAll();
+        List<TaskDTO> tasks = taskBLL.get(examStruct.getUserId());
+        ArrayList<SubjectDTO> subjects = new ArrayList<>();
+        for(TaskDTO task : tasks)
+            subjects.add(subjectBLL.get(task.getSubject().getID()));
         subjectCmb.addItem("Select a subject");
         for (SubjectDTO subject : subjects) {
             subjectCmb.addItem(subject.getID() + " - " + subject.getName());

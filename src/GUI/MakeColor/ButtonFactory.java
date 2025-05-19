@@ -117,6 +117,29 @@ public class ButtonFactory {
         return clearButton;
     }
 
+    public static JButton createClearButton(MainFrame mainFrame, int width,int height, ImageIcon icon) {
+        JButton clearButton = new JButton();
+        clearButton.setHorizontalAlignment(SwingConstants.LEFT);  
+        clearButton.setPreferredSize(new Dimension(width, height));
+        clearButton.setOpaque(false);
+        clearButton.setIcon(icon);
+        clearButton.setContentAreaFilled(false);
+        clearButton.setBorderPainted(false);
+        clearButton.setFocusPainted(false);   
+        clearButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                clearButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                clearButton.setCursor(Cursor.getDefaultCursor());
+            }
+        });
+        return clearButton;
+    }
+
     public static JButton createClearButton(ImageIcon icon) {
         JButton clearButton = new JButton();
         clearButton.setHorizontalAlignment(SwingConstants.LEFT);  

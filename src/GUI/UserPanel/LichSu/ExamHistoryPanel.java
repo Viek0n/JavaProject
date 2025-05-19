@@ -2,14 +2,18 @@ package GUI.UserPanel.LichSu;
 
 import BLL.ExamBLL;
 import DTO.ExamDTO;
+import DTO.RoleDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.UserPanel.MenuPanel;
+import GUI.giaodienadmin.QuanLyPhanQuyen.RoleManagementPanel;
 import MICS.Connect;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.ArrayList;
@@ -17,10 +21,13 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -34,7 +41,7 @@ public class ExamHistoryPanel extends JPanel{
     private ExamBLL examBLL;
 
     private ArrayList<ExamDTO> exams;
-   // private HistoryPanel panelHistory;
+    private HistoryPanel panelHistory;
     private JDialog dialog;
     private MenuPanel menuPanel;
 
@@ -100,34 +107,52 @@ public class ExamHistoryPanel extends JPanel{
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         add(centerPanel, BorderLayout.CENTER);
-        // Load users
         load();
     }
 
-    private void showHistory() {
-        /*panelHistory = new HistoryPanel();
+    private void showHistory(String examId) {
+        panelHistory = new HistoryPanel(examId);
         dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Bài kiểm tra", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.getContentPane().add(panelHistory);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        load();*/
     }
 
     private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         tableModel.setRowCount(0);
-        exams = new ArrayList<>(examBLL.getFromUser(menuPanel.mainFrame.userBLL.getCurrent().getLoginName()));
-        if (!exams.isEmpty()) {
-            for (ExamDTO exam : exams) {
-                tableModel.addRow(new Object[]{
-                        exam.getExamId(),
-                        exam.getExamStructID(),
-                        exam.getScore(),
-                        exam.getRemainingTime(),
-                        "Edit"});
+        SwingWorker<ArrayList<ExamDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<ExamDTO> doInBackground() throws Exception {
+                return new ArrayList<>(examBLL.getFromUser(menuPanel.mainFrame.userBLL.getCurrent().getLoginName()));
             }
-         }
+
+            @Override
+            protected void done() {
+                try {
+                    exams = get();
+                    if (!exams.isEmpty()) {
+                        for (ExamDTO exam : exams) {
+                            tableModel.addRow(new Object[]{
+                                    exam.getExamId(),
+                                    exam.getExamStructID(),
+                                    exam.getScore(),
+                                    exam.getRemainingTime(),
+                                    "Edit"});
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(ExamHistoryPanel.this, "Chưa làm bài kiểm tra nào!", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(ExamHistoryPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
+            }
+        };
+        worker.execute();
     }
 
     class ButtonPanelRenderer extends JPanel implements TableCellRenderer {
@@ -156,8 +181,8 @@ public class ExamHistoryPanel extends JPanel{
             editButton = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "test-history.png", 20, 20));
 
             editButton.addActionListener(e -> {
-                String subjectId = table.getValueAt(row, 0).toString();
-                //showHistory(subjectId);
+                String examId = table.getValueAt(row, 0).toString();
+                showHistory(examId);
                 stopCellEditing();
             });
 

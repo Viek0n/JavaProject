@@ -2,11 +2,13 @@ package GUI.giaodienadmin.QuanLyDeThi;
 
 import DAL.ExamStructDAL;
 import DTO.ExamStructDTO;
+import DTO.QuestionDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.UserPanel.MenuPanel;
 import GUI.giaodienadmin.RoundedBorder;
+import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
 import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -115,7 +117,7 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
         clearSearchButton.addActionListener(this);
 
         // Load initial data
-        loadExamData();
+        load();
     }
 
     
@@ -150,7 +152,7 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadExamData();
+        load();
     }
 
     private void showEditExam(String examId) {
@@ -161,7 +163,7 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadExamData();
+        load();
     }
 
     private void deleteExam(String examId) {
@@ -176,7 +178,7 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
             try {
                 if (examStructDAL.delete(examId)) {
                     JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    loadExamData();
+                    load();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xóa!");
                 }
@@ -189,7 +191,7 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
     private void searchExam() {
         String keyword = searchField.getText().trim().toLowerCase();
         if (keyword.isEmpty()) {
-            loadExamData();
+            load();
             return;
         }
 
@@ -217,20 +219,39 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
         }
     }
 
-    public void loadExamData() {
+    public void load() {
         tableModel.setRowCount(0);
-        exams = examStructDAL.getAll();
-        for (ExamStructDTO exam : exams) {
-            tableModel.addRow(new Object[]{
-                    exam.getID(),
-                    exam.getName(),
-                    DATE_FORMATTER.format(exam.getStart()),
-                    DATE_FORMATTER.format(exam.getEnd()),
-                    TIME_FORMATTER.format(exam.getExamTime().toLocalTime()),
-                    exam.getSubject() != null ? exam.getSubject().getName() : "N/A",
-                    "action"
-            });
-        }
+        SwingWorker<ArrayList<ExamStructDTO>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected ArrayList<ExamStructDTO> doInBackground() throws Exception {
+                return examStructDAL.getAll();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    exams = get();
+                    if (!exams.isEmpty()) {
+                        for (ExamStructDTO exam : exams) {
+                            tableModel.addRow(new Object[]{
+                                exam.getID(),
+                                exam.getName(),
+                                DATE_FORMATTER.format(exam.getStart()),
+                                DATE_FORMATTER.format(exam.getEnd()),
+                                TIME_FORMATTER.format(exam.getExamTime().toLocalTime()),
+                                exam.getSubject() != null ? exam.getSubject().getName() : "N/A",
+                                "action"
+                            });
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(ExamStructManagementPanel.this, "No exam found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(ExamStructManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
     }
 
     class ButtonPanelRenderer extends JPanel implements TableCellRenderer {
@@ -298,7 +319,7 @@ public class ExamStructManagementPanel extends JPanel implements ActionListener 
         }  else if (e.getSource() == searchButton) {
             searchExam();
         } else if (e.getSource() == clearSearchButton) {
-            loadExamData();
+            load();
             searchField.setText("");
         }
     }
