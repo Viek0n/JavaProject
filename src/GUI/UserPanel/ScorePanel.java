@@ -32,26 +32,30 @@ public class ScorePanel extends JPanel {
         
         JLabel scoreTitle = new JLabel("Điểm");
         scoreTitle.setFont(new Font("Arial", Font.BOLD, 100));
-        scoreTitle.setBounds(710, 114, 467, 120);
+        scoreTitle.setBounds(710, 174, 467, 120);
+        scoreTitle.setForeground(Color.BLACK);
         add(scoreTitle);
 
         JLabel scoreLabel = new JLabel(Float.toString(score));
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 100));
-        scoreLabel.setBounds(750, 295, 467, 120);
+        scoreLabel.setBounds(750, 355, 467, 120);
+        if(score < 5){
+            scoreLabel.setForeground(Color.RED);
+        }else if(score < 8){
+            scoreLabel.setForeground(Color.yellow);
+        }
+        else{
+            scoreLabel.setForeground(Color.green);
+        }
         add(scoreLabel);
-
-        JLabel underline = new JLabel();
-        underline.setBounds(477, 360, 700, 5);
-        underline.setBackground(Color.BLACK);
-        add(underline); 
 
         JLabel Timer = new JLabel("Thời Gian: " + time);
         Timer.setFont(new Font("Arial", Font.BOLD, 32));
-        Timer.setBounds(700, 595, 500, 88);
+        Timer.setBounds(700, 525, 500, 88);
         Timer.setForeground(Color.BLACK);
         add(Timer);
 
-        JButton CheckButton = ButtonFactory.createConfirmButton(mainFrame, 20, 700, 679, 250, 75,Ulti.BananaLeaf,e -> {
+        JButton CheckButton = ButtonFactory.createConfirmButton(mainFrame, 20, 700, 609, 250, 75,Ulti.BananaLeaf,e -> {
             mainFrame.addPanel(new HomePage(mainFrame, new MenuPanel(mainFrame)), "HomePanel");
             mainFrame.showPanel("HomePanel");
         });

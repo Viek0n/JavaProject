@@ -1,8 +1,12 @@
 package GUI.UserPanel;
 
 import GUI.MakeColor.*;
+import GUI.UserPanel.LichSu.ExamHistoryPanel;
 import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
 import GUI.giaodienadmin.QuanLyDeThi.ExamStructManagementPanel;
+import GUI.giaodienadmin.QuanLyMonHoc.SubjectManagementPanel;
+import GUI.giaodienadmin.QuanLyPhanCong.AsignManagementPanel;
+import GUI.giaodienadmin.QuanLyPhanQuyen.RoleManagementPanel;
 import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 import MICS.*;
 import java.awt.BorderLayout;
@@ -67,14 +71,14 @@ public class MenuPanel extends JPanel {
         this.add(home);
 
         JButton test = createButton(mainFrame, "test.png", () -> new ExamSelect(mainFrame, this), "ExamSelect", "Làm bài");
-        JButton testHistory = createButton(mainFrame, "test-history.png", () -> new ExamSelect(mainFrame, this), "ExamSelect", "Lịch sử làm bài");
-        JButton feedback = createButton(mainFrame, "feedback.png", () -> new ExamStructManagementPanel(this), "ExamManage", "Phản hồi");
+        JButton testHistory = createButton(mainFrame, "test-history.png", () -> new ExamHistoryPanel( this), "ExamHistory", "Lịch sử làm bài");
+        JButton feedback = createButton(mainFrame, "feedback.png", () -> new ExamStructManagementPanel(this), "FeedbackManage", "Phản hồi");
         JButton exam = createButton(mainFrame, "analysis.png", () -> new ExamStructManagementPanel(this), "ExamManage", "Đề kiểm tra");
         JButton manageUser = createButton(mainFrame, "user-manage.png", () -> new UserManagementPanel(this), "UserManage", "Người dùng");
-        JButton asignUser = createButton(mainFrame, "assign.png", () -> new UserManagementPanel(this), "UserManage", "Phân công");
-        JButton manageSubject = createButton(mainFrame, "subject.png", () -> new QuestionManagementPanel(this), "SubjectManage", "Môn học");
+        JButton asignUser = createButton(mainFrame, "assign.png", () -> new AsignManagementPanel(this), "AsignManagement", "Phân công");
+        JButton manageSubject = createButton(mainFrame, "subject.png", () -> new SubjectManagementPanel(this), "SubjectManage", "Môn học");
         JButton manageQues = createButton(mainFrame, "question.png", () -> new QuestionManagementPanel(this), "QuestionManage", "Câu hỏi");
-        JButton manageRole = createButton(mainFrame, "group.png", () -> new ExamSelect(mainFrame, this), "ExamSelect", "Phân quyền");
+        JButton manageRole = createButton(mainFrame, "group.png", () -> new RoleManagementPanel(this), "RoleManage", "Phân quyền");
 
         if(mainFrame.userBLL.getCurrent().getRole().getTakeExam()){
             if(!labelPrint[0]){
@@ -106,7 +110,7 @@ public class MenuPanel extends JPanel {
             this.add(manageQues);
         }
 
-        if(mainFrame.userBLL.getCurrent().getRole().getSeeUser()){
+        if(mainFrame.userBLL.getCurrent().getRole().getAdmin()){
             if(!labelPrint[3]){
                 this.add(adminLabel);
                 labelPrint[3] = true;

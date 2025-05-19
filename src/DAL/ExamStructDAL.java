@@ -113,8 +113,8 @@ public class ExamStructDAL {
             pstmt.setDate(5, new java.sql.Date(examStruct.getEnd().getTime()));
             pstmt.setTime(6, examStruct.getExamTime());
             pstmt.setString(7, examStruct.getSubject().getID());
-            pstmt.setString(8, examStruct.getID());
-            pstmt.setString(9, examStruct.getUserId());
+            pstmt.setString(8, examStruct.getUserId());
+            pstmt.setString(9, examStruct.getID());
             
             examStructDetailDAL.deleteAll(examStruct.getID());
             examStructSelectedDAL.deleteAll(examStruct.getID());

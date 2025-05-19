@@ -105,4 +105,23 @@ public class SubjectDAL {
         return null;
     }
     
+    
+    public String getNextId() {
+        String sql = "SELECT * FROM monhoc ORDER BY CAST(MaMH AS UNSIGNED) DESC LIMIT 1";
+        try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String lastId = rs.getString(1);
+                int number = Integer.parseInt(lastId);
+                String nextId = (number + 1) + "";
+                return nextId;
+            }
+        } catch (SQLException e) {
+            System.out.println("Kết nối monhoc thất bại! Không tìm được Id tiếp theo");
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

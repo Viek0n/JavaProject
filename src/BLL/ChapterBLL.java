@@ -18,8 +18,8 @@ public class ChapterBLL {
         return chapterDAL.getBySubject(ID);
     }
 
-    public Boolean add(ChapterDTO chap){
-        return chapterDAL.add(chap);
+    public Boolean add(ChapterDTO chap, String subjectId){
+        return chapterDAL.add(chap, subjectId);
     }
 
     //Update

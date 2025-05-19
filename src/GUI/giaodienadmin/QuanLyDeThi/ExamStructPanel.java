@@ -85,6 +85,7 @@ public class ExamStructPanel extends JPanel {
         }
         else{
             examStruct = new ExamStructDTO();
+            examStruct.setUserId(str);
             txtUser.setText(str);
         }
     }
@@ -392,6 +393,11 @@ public class ExamStructPanel extends JPanel {
     }
 
     private void saveExam() {
+        if (randomQues.isEditing())
+            randomQues.getCellEditor().stopCellEditing();
+        if (selectQues.isEditing())
+            selectQues.getCellEditor().stopCellEditing();   
+
         String id = txtId.getText().trim();
         String name = txtName.getText().trim();
         String description = descriptionArea.getText().trim();
@@ -478,8 +484,8 @@ public class ExamStructPanel extends JPanel {
         examStruct.setSubject(subject);
         examStruct.setRandomDetail(randomQuestList);
         examStruct.setSelectDetail(selectQuestList);
+        examStruct.setUserId(txtUser.getText());
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
         Boolean success;
         if(isEditMode)
             success = examStructBLL.update(examStruct);

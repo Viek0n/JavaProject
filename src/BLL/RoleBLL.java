@@ -17,6 +17,14 @@ public class RoleBLL {
     public RoleDTO getByName(String roleName){
         return roleDAL.getByName(roleName);
     }
+
+    public RoleDTO get(int roleId){
+        return roleDAL.getByID(roleId);
+    }
+
+    public int getNextId(){
+        return roleDAL.getNextId();
+    }
     //Insert
     public Boolean add(RoleDTO a){
         if(!roleDAL.searchByID(a.getID())){

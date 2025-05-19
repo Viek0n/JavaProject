@@ -2,23 +2,27 @@ package GUI.MakeColor;
 
 import BLL.ExamBLL;
 import DTO.ExamDTO;
+import GUI.UserPanel.MainFrame;
+import GUI.UserPanel.ScorePanel;
 import java.awt.event.*;
 import java.sql.Time;
+import java.time.LocalTime;
 import javax.swing.*;
 
 public class CountdownTimer extends JLabel {
     private long timeRemainingMillis;
     private Timer timer;
     private ExamDTO exam;
-    private JFrame frame;
+    private MainFrame mainFrame;
 
-    public CountdownTimer(Time sqlTime, ExamDTO exam, JFrame frame) {
+    public CountdownTimer(Time sqlTime, ExamDTO exam, MainFrame mainFrame) {
         // Convert java.sql.Time to milliseconds duration
+        LocalTime localTime = sqlTime.toLocalTime();
         this.exam = exam;
-        this.frame = frame;
-        int hour = sqlTime.getHours();
-        int minutes = sqlTime.getMinutes() + hour*60;
-        int seconds = sqlTime.getSeconds();
+        this.mainFrame = mainFrame;
+        int hour = localTime.getHour();
+        int minutes = localTime.getMinute() + hour*60;
+        int seconds = localTime.getSecond();
         timeRemainingMillis = (minutes * 60L + seconds) * 1000;
 
         setText(formatTime(timeRemainingMillis));
@@ -30,11 +34,14 @@ public class CountdownTimer extends JLabel {
                 timeRemainingMillis -= 1000;
 
                 if (timeRemainingMillis <= 0) {
+                    timeRemainingMillis = 0;
                     timer.stop();
                     setText("00:00");
                     JOptionPane.showMessageDialog(null, "Hết giờ!");
-                    JOptionPane.showMessageDialog(null, "Điểm kiểm tra: "+Float.toString(new ExamBLL().calculate(exam)), "Result", JOptionPane.INFORMATION_MESSAGE);
-                    frame.setVisible(false);
+                    exam.setRemainingTime(new java.sql.Time(0,0,0));
+                    mainFrame.addPanel(new ScorePanel(mainFrame, mainFrame.userBLL.getCurrent(), exam.calculateScore(), "00:00"), "ResultPanel");
+                    new ExamBLL().add(exam);
+                    mainFrame.showPanel("ResultPanel");
                 } else {
                     setText(formatTime(timeRemainingMillis));
                 }
@@ -67,7 +74,10 @@ public class CountdownTimer extends JLabel {
         timer.start();
     }
 
-    public long getTimeRemainingMillis() {
-        return timeRemainingMillis;
+    public Time getTimeRemainingMillis() {
+        long seconds = timeRemainingMillis / 1000;
+        LocalTime localTime = LocalTime.ofSecondOfDay(seconds);
+        Time sqlTime = Time.valueOf(localTime);
+        return sqlTime;
     }
 }

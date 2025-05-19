@@ -16,13 +16,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class ExamSelect extends JPanel{
+public class ExamScreen extends JPanel{
     private JPanel menuPanel;
     private RoundedTextField maBaiKT;
     private JLabel textintheBox;
     private MainFrame mainFrame; // Tham chiếu đến MainFrame
 
-    public ExamSelect(MainFrame mainFrame, JPanel menuPanel) {
+    public ExamScreen(MainFrame mainFrame, JPanel menuPanel) {
         this.mainFrame = mainFrame; // Lưu tham chiếu đến MainFrame
         this.menuPanel = menuPanel;
         init();
@@ -57,7 +57,7 @@ public class ExamSelect extends JPanel{
             }
             
         });
-        confirmButton.setText("Xác Nhận");
+        confirmButton.setText("Làm bài");
         confirmButton.setFont(new Font("Arial", Font.BOLD, 38));
         confirmButton.setForeground(Color.BLACK);
 

@@ -63,13 +63,14 @@ public class ChapterDAL {
         return chapters;
     }
 
-    public  boolean add(ChapterDTO chapter) {
-        String sql = "INSERT INTO chuong (MaChuong, TenChuong) VALUES (?, ?)";
+    public  boolean add(ChapterDTO chapter, String subjectId) {
+        String sql = "INSERT INTO chuong (MaChuong, TenChuong, MonHoc) VALUES (?, ?, ?)";
         try (Connection conn = Connect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, chapter.getID());
             stmt.setString(2, chapter.getName());
+            stmt.setString(3, subjectId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error adding chapter: " + chapter);

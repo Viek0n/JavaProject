@@ -1,5 +1,6 @@
 package BLL;
 
+import DAL.ExamDAL;
 import DTO.ExamDTO;
 import DTO.ExamStructDTO;
 import DTO.QuestionDTO;
@@ -8,13 +9,16 @@ import java.util.Collections;
 
 public class ExamBLL {
     private ExamStructBLL examStructBLL;
+    private ExamDAL examDAL;
 
     public ExamBLL() {
         examStructBLL = new ExamStructBLL();
+        examDAL = new ExamDAL();
     }
 
     public ExamDTO gen(String userID, ExamStructDTO examStruct){
         ExamDTO exam = new ExamDTO();
+        exam.setExamId(examDAL.getNextId());
         exam.setUserID(userID);
         exam.setExamStructID(examStruct.getID());
         ArrayList<QuestionDTO> quest = examStructBLL.genRandom(examStruct.getID());
@@ -26,15 +30,15 @@ public class ExamBLL {
         return exam;
     }
 
-    public float calculate(ExamDTO exam){
-        int right = 0;
-        for (int i = 0; i < exam.getQuestion().size(); i++) {
-            QuestionDTO quest = exam.getQuestion().get(i);
-            int choice = exam.getChoice().get(i);
-        
-            if(choice != -1 && quest.getAns().get(choice).getRight()) right++;
-        }
+    public Boolean add(ExamDTO exam){
+        return examDAL.add(exam);
+    }
 
-        return ((float)right/exam.getQuestion().size())*10;
+    public ArrayList<ExamDTO> getFromUser(String id){
+        return examDAL.getAll(id);
+    }
+
+    public ExamDTO get(String id){
+        return examDAL.get(id);
     }
 }

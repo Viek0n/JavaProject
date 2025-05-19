@@ -18,6 +18,10 @@ public class SubjectBLL {
         return subjectDAL.get(subjectId);
     }
 
+    public String getNextId(){
+        return subjectDAL.getNextId();
+    }
+    
     public Boolean add(SubjectDTO subject){
         return subjectDAL.add(subject);
     }

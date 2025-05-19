@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoleDAL {
-    public  ArrayList<RoleDTO> getAll(){
+    public ArrayList<RoleDTO> getAll(){
         ArrayList<RoleDTO> array = new ArrayList<>();
         String sql = "SELECT * FROM nhomquyen";
         try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
@@ -42,6 +42,22 @@ public class RoleDAL {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int getNextId(){
+        String sql = "SELECT * FROM nhomquyen ORDER BY MaNQ DESC LIMIT 1";
+        try(Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+        PreparedStatement stmt = conn.prepareStatement(sql)){
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int number = rs.getInt(1); 
+                return number+1;
+            }
+        }catch(SQLException e){
+            System.out.println("Kết nối nhomquyen thất bại! Không tìm được Id tiếp theo");
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public  Boolean searchByID(int ID){
@@ -92,32 +108,11 @@ public class RoleDAL {
                         case "KT04":
                             Role.setDeleteExam(true);
                             break;
-                        case "ND01":
-                            Role.setSeeUser(true);
-                            break;
-                        case "ND02":
-                            Role.setAddUser(true);
-                            break;
-                        case "ND03":
-                            Role.setUpdateUser(true);
-                            break;
-                        case "ND04":
-                            Role.setDeleteUser(true);
-                            break;
-                        case "NQ01":
-                            Role.setSeeRole(true);
-                            break;
-                        case "NQ02":
-                            Role.setAddRole(true);
-                            break;
-                        case "NQ03":
-                            Role.setUpdateRole(true);
-                            break;
-                        case "NQ04":
-                            Role.setDeleteRole(true);
-                            break;
-                        case "TG01":
+                        case "TG":
                             Role.setTakeExam(true);
+                            break;
+                        case "QT":
+                            Role.setAdmin(true);
                             break;
                         default:
                             System.out.print("Quyền không xác định ");
@@ -155,9 +150,10 @@ public class RoleDAL {
 
             stmt.setString(1, a.getName());
             stmt.setInt(2, a.getID());
-            stmt.executeUpdate();
+            
             clearRolePermit(a.getID());
             uploadRolePermit(a);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Kết nối nhomquyen thất bại!");
             e.printStackTrace();
@@ -186,11 +182,16 @@ public class RoleDAL {
 
             if(a.getTakeExam()){
                 stmt.setInt(1, a.getID());
-                stmt.setString(2, "TG01");
+                stmt.setString(2, "TG");
+                stmt.executeUpdate();
+            }
+            if(a.getAdmin()){
+                stmt.setInt(1, a.getID());
+                stmt.setString(2, "QT");
                 stmt.executeUpdate();
             }
             Boolean tmp[] = a.getPermit();
-            for(int i = 0; i < 16; i++){
+            for(int i = 0; i < 8; i++){
                 switch(i) {
                     case 0:
                         if(a.getSeeQuest()){
@@ -221,86 +222,30 @@ public class RoleDAL {
                         }
                         break;
                     case 4:
-                        if(a.getSeeUser()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "ND01");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 5:
-                        if(a.getAddUser()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "ND02");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 6:
-                        if(a.getUpdateUser()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "ND03");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 7:
-                        if(a.getDeleteUser()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "ND04");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 8:
                         if(a.getSeeExam()){
                             stmt.setInt(1, a.getID());
                             stmt.setString(2, "KT01");
                             stmt.executeUpdate();
                         }
                         break;
-                    case 9:
+                    case 5:
                         if(a.getAddExam()){
                             stmt.setInt(1, a.getID());
                             stmt.setString(2, "KT02");
                             stmt.executeUpdate();
                         }
                         break;
-                    case 10:
+                    case 6:
                         if(a.getUpdateExam()){
                             stmt.setInt(1, a.getID());
                             stmt.setString(2, "KT03");
                             stmt.executeUpdate();
                         }
                         break;
-                    case 11:
+                    case 7:
                         if(a.getDeleteExam()){
                             stmt.setInt(1, a.getID());
                             stmt.setString(2, "KT04");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 12:
-                        if(a.getSeeRole()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "NQ01");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 13:
-                        if(a.getAddRole()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "NQ02");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 14:
-                        if(a.getUpdateRole()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "NQ03");
-                            stmt.executeUpdate();
-                        }
-                        break;
-                    case 15:
-                        if(a.getDeleteRole()){
-                            stmt.setInt(1, a.getID());
-                            stmt.setString(2, "NQ04");
                             stmt.executeUpdate();
                         }
                         break;
@@ -339,5 +284,4 @@ public class RoleDAL {
         }
         return null; // Return null if no matching role is found
     }
-
 }
