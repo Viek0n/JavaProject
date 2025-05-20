@@ -2,6 +2,7 @@ package BLL;
 import DAL.UserDAL;
 import DTO.UserDTO;
 import MICS.Enums;
+import java.util.ArrayList;
 public class UserBLL {
     private UserDTO cur;
     final private UserDAL userDAL;
@@ -14,6 +15,14 @@ public class UserBLL {
     //Get
     public UserDTO getCurrent(){
         return this.cur;
+    }
+
+    public ArrayList<UserDTO> getAll(){
+        return userDAL.getAll();
+    }
+
+    public UserDTO getByLoginName(String name){
+        return userDAL.getByLoginName(name);
     }
     //SelfManage
     public Enums.UserError login(String LoginName, String Pass){
@@ -48,5 +57,9 @@ public class UserBLL {
     //Delete
     public Boolean delete(String LoginName){
         return userDAL.deleteByLoginName(LoginName);
+    }
+
+    public ArrayList<UserDTO> search(String keyword){
+        return userDAL.searchUser(keyword);
     }
 }

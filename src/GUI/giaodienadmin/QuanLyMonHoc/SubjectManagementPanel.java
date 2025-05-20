@@ -1,15 +1,22 @@
-package GUI.giaodienadmin.QuanLyUser;
+package GUI.giaodienadmin.QuanLyMonHoc;
 
-import BLL.UserBLL;
-import DTO.UserDTO;
+import BLL.ChapterBLL;
+import BLL.QuestionBLL;
+import BLL.SubjectBLL;
+import DTO.ChapterDTO;
+import DTO.ExamStructDTO;
+import DTO.SubjectDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
+import GUI.UserPanel.MenuPanel;
 import GUI.giaodienadmin.RoundedBorder;
+import GUI.giaodienadmin.QuanLyDeThi.ExamStructManagementPanel;
 import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -20,26 +27,28 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-
-public class UserManagementPanel extends JPanel implements ActionListener {
+public class SubjectManagementPanel extends JPanel implements ActionListener  {
     private JTable table;
     private DefaultTableModel tableModel;
     private JTextField searchField;
     private JButton addButton, searchButton, clearButton;
-    private UserBLL userBLL;
-    private ArrayList<UserDTO> users;
-    private UserPanel panelAddUser;
-    private JDialog dialog;
-    private JPanel menuPanel;
+    private SubjectBLL subjectBLL;
+    private ChapterBLL chapterBLL;
 
-    public UserManagementPanel(JPanel menuPanel) {
+    private ArrayList<SubjectDTO> subjects;
+    private SubjectPanel panelSubject;
+    private JDialog dialog;
+    private MenuPanel menuPanel;
+
+    public SubjectManagementPanel(MenuPanel menuPanel) {
         this.menuPanel = menuPanel;
-        this.userBLL = new UserBLL();
+        this.subjectBLL = new SubjectBLL();
+        this.chapterBLL = new ChapterBLL();
         initComponent();
     }
 
     private void initComponent() {
-        users = new ArrayList<>();
+        subjects = new ArrayList<>();
         setLayout(new BorderLayout());
         setBackground(Ulti.MainColor);
 
@@ -61,11 +70,11 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         topPanel.add(searchButton);
         topPanel.add(clearButton);
 
-        String[] columnNames = {"Tên đăng nhập", "Tên người dùng", "Trạng thái", "Nhóm quyền", "Hành động"};
+        String[] columnNames = {"Mã môn", "Tên môn", "Hành động"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4;
+                return column == 2;
             }
         };
 
@@ -91,8 +100,8 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         for (int i = 0; i < table.getColumnCount()-1; i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        table.getColumnModel().getColumn(4).setCellRenderer(new ButtonPanelRenderer());
-        table.getColumnModel().getColumn(4).setCellEditor(new ButtonPanelEditor(table));
+        table.getColumnModel().getColumn(2).setCellRenderer(new ButtonPanelRenderer());
+        table.getColumnModel().getColumn(2).setCellEditor(new ButtonPanelEditor(table));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -111,7 +120,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         clearButton.addActionListener(this);
 
         // Load users
-        loadUsers();
+        load();
     }
 
 
@@ -138,105 +147,108 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         return textField;
     }
 
-    private void showAddUserPanel() {
-        panelAddUser = new UserPanel();
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm người dùng", Dialog.ModalityType.APPLICATION_MODAL);
+    private void ShowAddSubject() {
+        panelSubject = new SubjectPanel();
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm môn", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
+        dialog.getContentPane().add(panelSubject);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadUsers();
+        load();
     }
 
-    private void showEditUserPanel(String userID) {
-        panelAddUser = new UserPanel(userID);
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Chỉnh sửa người dùng", Dialog.ModalityType.APPLICATION_MODAL);
+    private void ShowEditSubject(String subjectId) {
+        panelSubject = new SubjectPanel(subjectId);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Chỉnh sửa môn", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
+        dialog.getContentPane().add(panelSubject);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadUsers();
+        load();
     }
 
-    private void deleteUser(String userId) {
-        int choice = JOptionPane.showConfirmDialog(
+    private void delete(String subjectId) {
+       int choice = JOptionPane.showConfirmDialog(
                 this,
-                "Xóa người dùng " + userId + "?",
+                "Xóa môn " + subjectId + "?",
                 "Xóa",
                 JOptionPane.YES_NO_OPTION
         );
 
         if (choice == JOptionPane.YES_OPTION) {
             try {
-                if (userBLL.delete(userId)) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    loadUsers();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Không thể xóa!");
-                }
+                ArrayList<ChapterDTO> chaps = new ArrayList<>(chapterBLL.getBySubject(subjectId));
+                for(ChapterDTO chap: chaps)
+                    chapterBLL.delete(chap.getID());
+                    if (subjectBLL.delete(subjectId)) {
+                        JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Không thể xóa!");
+                    }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error deleting exam: " + ex.getMessage());
             }
         }
     }
 
-    private void searchUser() {
-        String keyword = searchField.getText().trim();
+    private void search() {
+        /*String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) {
-            loadUsers();
+            load();
             return;
         }
 
         try {
-            ArrayList<UserDTO> searchResults = userBLL.search(keyword);
+            ArrayList<QuestionDTO> searchResults = questionBLL.search(keyword);
             tableModel.setRowCount(0);
             if (searchResults.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng nào!", "Tìm kiếm người dùng", JOptionPane.INFORMATION_MESSAGE);
             }
-            for (UserDTO user : searchResults) {
+            for (QuestionDTO ques : searchResults) {
                 tableModel.addRow(new Object[]{
-                        user.getLoginName(),
-                        user.getName(),
-                        user.getStatus().name(),
-                        user.getRole().getName(),
+                        ques.getID(),
+                        ques.getText(),
+                        ques.getDifficult().toString(),
+                        ques.getChapter(),
+                        ques.getSubject(),
                         "Edit"
                 });
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        }*/
     }
 
-    private void loadUsers() {
-        SwingWorker<ArrayList<UserDTO>, Void> worker = new SwingWorker<>() {
+    private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        tableModel.setRowCount(0);
+        SwingWorker<ArrayList<SubjectDTO>, Void> worker = new SwingWorker<>() {
             @Override
-            protected ArrayList<UserDTO> doInBackground() throws Exception {
-                return userBLL.getAll();
+            protected ArrayList<SubjectDTO> doInBackground() throws Exception {
+                return new ArrayList<>(subjectBLL.getAll());
             }
 
             @Override
             protected void done() {
                 try {
-                    users = get();
-                    tableModel.setRowCount(0);
-                    if (!users.isEmpty()) {
-                        for (UserDTO user : users) {
+                    subjects = get();
+                    if (!subjects.isEmpty()) {
+                        for (SubjectDTO sub : subjects) {
                             tableModel.addRow(new Object[]{
-                                    user.getLoginName(),
-                                    user.getName(),
-                                    user.getStatus().name(),
-                                    user.getRole().getName(),
-                                    "Edit"
-                            });
+                                    sub.getID(),
+                                    sub.getName(),
+                                    "Edit"});
                         }
                     } else {
-                        JOptionPane.showMessageDialog(UserManagementPanel.this, "Không tìm thấy người dùng nào!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(SubjectManagementPanel.this, "No subject found!", "Information", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(UserManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                    JOptionPane.showMessageDialog(SubjectManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
             }
         };
         worker.execute();
@@ -272,15 +284,21 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             deleteButton = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "delete.png", 20, 20));
 
             editButton.addActionListener(e -> {
-                String userId = table.getValueAt(row, 0).toString();
-                showEditUserPanel(userId);
+                String subjectId = table.getValueAt(row, 0).toString();
+                ShowEditSubject(subjectId);
                 stopCellEditing();
             });
 
             deleteButton.addActionListener(e -> {
-                String userId = table.getValueAt(row, 0).toString();
-                deleteUser(userId);
+                String subjectId = table.getValueAt(row, 0).toString();
                 stopCellEditing();
+                delete(subjectId);
+                SwingUtilities.invokeLater(() -> {
+                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    if (row >= 0 && row < model.getRowCount()) {
+                        model.removeRow(row);
+                    }
+                });
             });
 
             panel.add(editButton);
@@ -304,12 +322,12 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            showAddUserPanel();
+            ShowAddSubject();
         } else if (e.getSource() == searchButton) {
-            searchUser();
+            search();
         } else if (e.getSource() == clearButton) {
             searchField.setText("");
-            loadUsers();
+            load();
         }
     }
 }

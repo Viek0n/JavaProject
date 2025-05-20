@@ -1,17 +1,20 @@
-package GUI.giaodienadmin.QuanLyUser;
+package GUI.giaodienadmin.QuanLyPhanQuyen;
 
-import BLL.UserBLL;
-import DTO.UserDTO;
-import GUI.MakeColor.AddImage;
-import GUI.MakeColor.ButtonFactory;
-import GUI.MakeColor.Ulti;
-import GUI.giaodienadmin.RoundedBorder;
-import MICS.Connect;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import BLL.RoleBLL;
 import java.util.ArrayList;
-import javax.swing.*;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -20,26 +23,47 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import BLL.UserBLL;
+import DTO.RoleDTO;
+import DTO.TaskDTO;
+import DTO.UserDTO;
+import GUI.MakeColor.AddImage;
+import GUI.MakeColor.ButtonFactory;
+import GUI.MakeColor.Ulti;
+import GUI.giaodienadmin.RoundedBorder;
+import GUI.giaodienadmin.QuanLyMonHoc.SubjectPanel;
+import GUI.giaodienadmin.QuanLyPhanCong.AsignManagementPanel;
+import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
+import GUI.giaodienadmin.QuanLyUser.UserPanel;
+import MICS.Connect;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class UserManagementPanel extends JPanel implements ActionListener {
+public class RoleManagementPanel extends JPanel implements ActionListener{
     private JTable table;
     private DefaultTableModel tableModel;
-    private JTextField searchField;
-    private JButton addButton, searchButton, clearButton;
-    private UserBLL userBLL;
-    private ArrayList<UserDTO> users;
-    private UserPanel panelAddUser;
+    private JButton addButton;
+    private ArrayList<RoleDTO> roles;
+    private RolePanel rolePanel;
     private JDialog dialog;
     private JPanel menuPanel;
+    private RoleBLL roleBLL;
 
-    public UserManagementPanel(JPanel menuPanel) {
+    public RoleManagementPanel(JPanel menuPanel) {
         this.menuPanel = menuPanel;
-        this.userBLL = new UserBLL();
+        this.roleBLL = new RoleBLL();
         initComponent();
     }
 
     private void initComponent() {
-        users = new ArrayList<>();
+        roles = new ArrayList<>();
         setLayout(new BorderLayout());
         setBackground(Ulti.MainColor);
 
@@ -52,20 +76,14 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         topPanel.setBackground(Ulti.LightGray);
 
         addButton = createButton("Tạo", Ulti.LightGreen);
-        searchField = createSearchField();
-        searchButton = createButton("Tìm", Ulti.Yellow);
-        clearButton = createButton("Tải lại", Ulti.Blue);
 
         topPanel.add(addButton);
-        topPanel.add(searchField);
-        topPanel.add(searchButton);
-        topPanel.add(clearButton);
 
-        String[] columnNames = {"Tên đăng nhập", "Tên người dùng", "Trạng thái", "Nhóm quyền", "Hành động"};
+        String[] columnNames = {"Mã nhóm quyền", "Tên nhóm quyền", "Hành động"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4;
+                return column == 2;
             }
         };
 
@@ -91,8 +109,8 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         for (int i = 0; i < table.getColumnCount()-1; i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        table.getColumnModel().getColumn(4).setCellRenderer(new ButtonPanelRenderer());
-        table.getColumnModel().getColumn(4).setCellEditor(new ButtonPanelEditor(table));
+        table.getColumnModel().getColumn(2).setCellRenderer(new ButtonPanelRenderer());
+        table.getColumnModel().getColumn(2).setCellEditor(new ButtonPanelEditor(table));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -107,11 +125,9 @@ public class UserManagementPanel extends JPanel implements ActionListener {
 
         // Add action listeners
         addButton.addActionListener(this);
-        searchButton.addActionListener(this);
-        clearButton.addActionListener(this);
 
         // Load users
-        loadUsers();
+        load();
     }
 
 
@@ -125,43 +141,30 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         return button;
     }
 
-    private JTextField createSearchField() {
-        JTextField textField = new JTextField(20);
-        textField.setFont(new Font("Arial", Font.PLAIN, 14));
-        textField.setBorder(new CompoundBorder(
-                new RoundedBorder(8),
-                new EmptyBorder(0, 10, 0, 10)
-        ));
-        textField.setBackground(Color.WHITE);
-        textField.setForeground(Color.decode("#2c3e50"));
-        textField.setPreferredSize(new Dimension(200, 35));
-        return textField;
-    }
-
-    private void showAddUserPanel() {
-        panelAddUser = new UserPanel();
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm người dùng", Dialog.ModalityType.APPLICATION_MODAL);
+    private void showAddRole() {
+        rolePanel = new RolePanel();
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm nhóm quyền", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
+        dialog.getContentPane().add(rolePanel);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadUsers();
+        load();
     }
 
-    private void showEditUserPanel(String userID) {
-        panelAddUser = new UserPanel(userID);
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Chỉnh sửa người dùng", Dialog.ModalityType.APPLICATION_MODAL);
+    private void showEditRole(int roleName) {
+        rolePanel = new RolePanel(roleName);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Chỉnh sửa nhóm quyền", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
+        dialog.getContentPane().add(rolePanel);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadUsers();
+        load();
     }
 
-    private void deleteUser(String userId) {
-        int choice = JOptionPane.showConfirmDialog(
+    private void delete(int roleId) {
+        /*int choice = JOptionPane.showConfirmDialog(
                 this,
                 "Xóa người dùng " + userId + "?",
                 "Xóa",
@@ -172,71 +175,44 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             try {
                 if (userBLL.delete(userId)) {
                     JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    loadUsers();
+                    load();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xóa!");
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error deleting exam: " + ex.getMessage());
             }
-        }
+        }*/
     }
 
-    private void searchUser() {
-        String keyword = searchField.getText().trim();
-        if (keyword.isEmpty()) {
-            loadUsers();
-            return;
-        }
-
-        try {
-            ArrayList<UserDTO> searchResults = userBLL.search(keyword);
-            tableModel.setRowCount(0);
-            if (searchResults.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng nào!", "Tìm kiếm người dùng", JOptionPane.INFORMATION_MESSAGE);
-            }
-            for (UserDTO user : searchResults) {
-                tableModel.addRow(new Object[]{
-                        user.getLoginName(),
-                        user.getName(),
-                        user.getStatus().name(),
-                        user.getRole().getName(),
-                        "Edit"
-                });
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void loadUsers() {
-        SwingWorker<ArrayList<UserDTO>, Void> worker = new SwingWorker<>() {
+    private void load() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        tableModel.setRowCount(0);
+        SwingWorker<ArrayList<RoleDTO>, Void> worker = new SwingWorker<>() {
             @Override
-            protected ArrayList<UserDTO> doInBackground() throws Exception {
-                return userBLL.getAll();
+            protected ArrayList<RoleDTO> doInBackground() throws Exception {
+                return new ArrayList<>(roleBLL.getAll());
             }
 
             @Override
             protected void done() {
                 try {
-                    users = get();
-                    tableModel.setRowCount(0);
-                    if (!users.isEmpty()) {
-                        for (UserDTO user : users) {
+                    roles = get();
+                    if (!roles.isEmpty()) {
+                        for (RoleDTO role : roles) {
                             tableModel.addRow(new Object[]{
-                                    user.getLoginName(),
-                                    user.getName(),
-                                    user.getStatus().name(),
-                                    user.getRole().getName(),
-                                    "Edit"
-                            });
+                                    role.getID(),
+                                    role.getName(),
+                                    "Edit"});
                         }
                     } else {
-                        JOptionPane.showMessageDialog(UserManagementPanel.this, "Không tìm thấy người dùng nào!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(RoleManagementPanel.this, "No subject found!", "Information", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(UserManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                    JOptionPane.showMessageDialog(RoleManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }   
             }
         };
         worker.execute();
@@ -272,15 +248,21 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             deleteButton = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "delete.png", 20, 20));
 
             editButton.addActionListener(e -> {
-                String userId = table.getValueAt(row, 0).toString();
-                showEditUserPanel(userId);
+                int roleId = Integer.parseInt(table.getValueAt(row, 0).toString());
+                showEditRole(roleId);
                 stopCellEditing();
             });
 
             deleteButton.addActionListener(e -> {
-                String userId = table.getValueAt(row, 0).toString();
-                deleteUser(userId);
+                int roleId = Integer.parseInt(table.getValueAt(row, 0).toString());
                 stopCellEditing();
+                delete(roleId);
+                SwingUtilities.invokeLater(() -> {
+                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    if (row >= 0 && row < model.getRowCount()) {
+                        model.removeRow(row);
+                    }
+                });
             });
 
             panel.add(editButton);
@@ -304,12 +286,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            showAddUserPanel();
-        } else if (e.getSource() == searchButton) {
-            searchUser();
-        } else if (e.getSource() == clearButton) {
-            searchField.setText("");
-            loadUsers();
+            showAddRole();
         }
     }
 }

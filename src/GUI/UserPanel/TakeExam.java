@@ -149,7 +149,10 @@ public class TakeExam extends JPanel {
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
-                mainFrame.addPanel(new ScorePanel(mainFrame, mainFrame.userBLL.getCurrent(), new ExamBLL().calculate(exam), countDown.formatTime()), "ResultPanel");
+                countDown.stop();
+                exam.setRemainingTime(countDown.getTimeRemainingMillis());
+                mainFrame.addPanel(new ScorePanel(mainFrame, mainFrame.userBLL.getCurrent(), exam.calculateScore(), countDown.formatTime()), "ResultPanel");
+                new ExamBLL().add(exam);
                 mainFrame.showPanel("ResultPanel");
             }
         });

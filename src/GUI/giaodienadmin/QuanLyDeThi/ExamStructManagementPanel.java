@@ -1,15 +1,20 @@
-package GUI.giaodienadmin.QuanLyUser;
+package GUI.giaodienadmin.QuanLyDeThi;
 
-import BLL.UserBLL;
-import DTO.UserDTO;
+import DAL.ExamStructDAL;
+import DTO.ExamStructDTO;
+import DTO.QuestionDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
+import GUI.UserPanel.MenuPanel;
 import GUI.giaodienadmin.RoundedBorder;
+import GUI.giaodienadmin.QuanLyCauHoi.QuestionManagementPanel;
 import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -20,52 +25,54 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-
-public class UserManagementPanel extends JPanel implements ActionListener {
+public class ExamStructManagementPanel extends JPanel implements ActionListener {
     private JTable table;
     private DefaultTableModel tableModel;
     private JTextField searchField;
-    private JButton addButton, searchButton, clearButton;
-    private UserBLL userBLL;
-    private ArrayList<UserDTO> users;
-    private UserPanel panelAddUser;
+    private JButton addButton, editButton, deleteButton, searchButton, clearSearchButton;
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private ExamStructDAL examStructDAL;
+    private ArrayList<ExamStructDTO> exams;
     private JDialog dialog;
-    private JPanel menuPanel;
+    private MenuPanel menuPanel;
+    private ExamStructPanel examStructPanel;
 
-    public UserManagementPanel(JPanel menuPanel) {
+    public ExamStructManagementPanel(MenuPanel menuPanel) {
+        examStructDAL = new ExamStructDAL();
+        exams = examStructDAL.getAll();
         this.menuPanel = menuPanel;
-        this.userBLL = new UserBLL();
         initComponent();
     }
 
     private void initComponent() {
-        users = new ArrayList<>();
-        setLayout(new BorderLayout());
+        this.setLayout(new BorderLayout());
         setBackground(Ulti.MainColor);
 
-        // Menu panel
-        add(menuPanel, BorderLayout.WEST);
-
-        // ===== Top Panel =====
+        this.add(menuPanel, BorderLayout.WEST);
+        // Top panel for buttons and search
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         topPanel.setBackground(Ulti.LightGray);
 
-        addButton = createButton("Tạo", Ulti.LightGreen);
+        addButton = createButton("Thêm",Ulti.LightGreen);
+        editButton = createButton("Edit", Ulti.Yellow);
+        deleteButton = createButton("Delete", Ulti.BoldRed);
         searchField = createSearchField();
-        searchButton = createButton("Tìm", Ulti.Yellow);
-        clearButton = createButton("Tải lại", Ulti.Blue);
+        searchButton = createButton("Tìm",Ulti.Blue);
+        clearSearchButton = createButton("Tải lại", Ulti.Blue);
 
         topPanel.add(addButton);
         topPanel.add(searchField);
         topPanel.add(searchButton);
-        topPanel.add(clearButton);
+        topPanel.add(clearSearchButton);
 
-        String[] columnNames = {"Tên đăng nhập", "Tên người dùng", "Trạng thái", "Nhóm quyền", "Hành động"};
+        // Table for displaying exams
+        String[] columnNames = {"Mã đề", "Tên đề", "Ngày bắt đầu", "Ngày kết thúc", "Thời lượng", "Môn", "Hành động"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4;
+                return column == 6;
             }
         };
 
@@ -85,14 +92,13 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         tableHeader.setResizingAllowed(false);
         tableHeader.setBackground(Ulti.LightGray);
 
-
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < table.getColumnCount()-1; i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        table.getColumnModel().getColumn(4).setCellRenderer(new ButtonPanelRenderer());
-        table.getColumnModel().getColumn(4).setCellEditor(new ButtonPanelEditor(table));
+        table.getColumnModel().getColumn(6).setCellRenderer(new ButtonPanelRenderer());
+        table.getColumnModel().getColumn(6).setCellEditor(new ButtonPanelEditor(table));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -108,23 +114,13 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         // Add action listeners
         addButton.addActionListener(this);
         searchButton.addActionListener(this);
-        clearButton.addActionListener(this);
+        clearSearchButton.addActionListener(this);
 
-        // Load users
-        loadUsers();
+        // Load initial data
+        load();
     }
 
-
-    private JButton createButton(String text, Color color) {
-        JButton button = new JButton(text);
-        button.setBackground(color);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return button;
-    }
-
+    
     private JTextField createSearchField() {
         JTextField textField = new JTextField(20);
         textField.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -137,42 +133,52 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         textField.setPreferredSize(new Dimension(200, 35));
         return textField;
     }
+    
+    private JButton createButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return button;
+    }
 
-    private void showAddUserPanel() {
-        panelAddUser = new UserPanel();
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm người dùng", Dialog.ModalityType.APPLICATION_MODAL);
+    private void showAddExam() {
+        examStructPanel = new ExamStructPanel(menuPanel.mainFrame.userBLL.getCurrent().getLoginName(), false);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Thêm đề", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
+        dialog.getContentPane().add(examStructPanel);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadUsers();
+        load();
     }
 
-    private void showEditUserPanel(String userID) {
-        panelAddUser = new UserPanel(userID);
-        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Chỉnh sửa người dùng", Dialog.ModalityType.APPLICATION_MODAL);
+    private void showEditExam(String examId) {
+        examStructPanel = new ExamStructPanel(examId, true);
+        dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Sửa đề", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.getContentPane().add(panelAddUser);
+        dialog.getContentPane().add(examStructPanel);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        loadUsers();
+        load();
     }
 
-    private void deleteUser(String userId) {
+    private void deleteExam(String examId) {
         int choice = JOptionPane.showConfirmDialog(
                 this,
-                "Xóa người dùng " + userId + "?",
+                "Xóa đề " + examId + "?",
                 "Xóa",
                 JOptionPane.YES_NO_OPTION
         );
 
         if (choice == JOptionPane.YES_OPTION) {
             try {
-                if (userBLL.delete(userId)) {
+                if (examStructDAL.delete(examId)) {
                     JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    loadUsers();
+                    load();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xóa!");
                 }
@@ -182,60 +188,66 @@ public class UserManagementPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void searchUser() {
-        String keyword = searchField.getText().trim();
+    private void searchExam() {
+        String keyword = searchField.getText().trim().toLowerCase();
         if (keyword.isEmpty()) {
-            loadUsers();
+            load();
             return;
         }
 
-        try {
-            ArrayList<UserDTO> searchResults = userBLL.search(keyword);
-            tableModel.setRowCount(0);
-            if (searchResults.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng nào!", "Tìm kiếm người dùng", JOptionPane.INFORMATION_MESSAGE);
-            }
-            for (UserDTO user : searchResults) {
+        tableModel.setRowCount(0);
+        for (ExamStructDTO exam : exams) {
+            if (exam.getID().toLowerCase().contains(keyword) ||
+                exam.getName().toLowerCase().contains(keyword) ||
+                DATE_FORMATTER.format(exam.getStart()).toLowerCase().contains(keyword) ||
+                DATE_FORMATTER.format(exam.getEnd()).toLowerCase().contains(keyword) ||
+                TIME_FORMATTER.format(exam.getExamTime().toLocalTime()).toLowerCase().contains(keyword)) {
                 tableModel.addRow(new Object[]{
-                        user.getLoginName(),
-                        user.getName(),
-                        user.getStatus().name(),
-                        user.getRole().getName(),
-                        "Edit"
+                        exam.getID(),
+                        exam.getName(),
+                        DATE_FORMATTER.format(exam.getStart()),
+                        DATE_FORMATTER.format(exam.getEnd()),
+                        TIME_FORMATTER.format(exam.getExamTime().toLocalTime()),
+                        exam.getSubject() != null ? exam.getSubject().getName() : "N/A",
+                        exam.getDesc() != null ? exam.getDesc() : "No description"
                 });
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No exams found matching the keyword!");
         }
     }
 
-    private void loadUsers() {
-        SwingWorker<ArrayList<UserDTO>, Void> worker = new SwingWorker<>() {
+    public void load() {
+        tableModel.setRowCount(0);
+        SwingWorker<ArrayList<ExamStructDTO>, Void> worker = new SwingWorker<>() {
             @Override
-            protected ArrayList<UserDTO> doInBackground() throws Exception {
-                return userBLL.getAll();
+            protected ArrayList<ExamStructDTO> doInBackground() throws Exception {
+                return examStructDAL.getAll();
             }
 
             @Override
             protected void done() {
                 try {
-                    users = get();
-                    tableModel.setRowCount(0);
-                    if (!users.isEmpty()) {
-                        for (UserDTO user : users) {
+                    exams = get();
+                    if (!exams.isEmpty()) {
+                        for (ExamStructDTO exam : exams) {
                             tableModel.addRow(new Object[]{
-                                    user.getLoginName(),
-                                    user.getName(),
-                                    user.getStatus().name(),
-                                    user.getRole().getName(),
-                                    "Edit"
+                                exam.getID(),
+                                exam.getName(),
+                                DATE_FORMATTER.format(exam.getStart()),
+                                DATE_FORMATTER.format(exam.getEnd()),
+                                TIME_FORMATTER.format(exam.getExamTime().toLocalTime()),
+                                exam.getSubject() != null ? exam.getSubject().getName() : "N/A",
+                                "action"
                             });
                         }
                     } else {
-                        JOptionPane.showMessageDialog(UserManagementPanel.this, "Không tìm thấy người dùng nào!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(ExamStructManagementPanel.this, "No exam found!", "Information", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(UserManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(ExamStructManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
@@ -272,14 +284,14 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             deleteButton = ButtonFactory.createClearButton(AddImage.createImageIcon(Connect.img + "delete.png", 20, 20));
 
             editButton.addActionListener(e -> {
-                String userId = table.getValueAt(row, 0).toString();
-                showEditUserPanel(userId);
+                String examId = table.getValueAt(row, 0).toString();
+                showEditExam(examId);
                 stopCellEditing();
             });
 
             deleteButton.addActionListener(e -> {
-                String userId = table.getValueAt(row, 0).toString();
-                deleteUser(userId);
+                String examId = table.getValueAt(row, 0).toString();
+                deleteExam(examId);
                 stopCellEditing();
             });
 
@@ -299,17 +311,16 @@ public class UserManagementPanel extends JPanel implements ActionListener {
             return null;
         }
     }
-
     
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            showAddUserPanel();
-        } else if (e.getSource() == searchButton) {
-            searchUser();
-        } else if (e.getSource() == clearButton) {
+            showAddExam();
+        }  else if (e.getSource() == searchButton) {
+            searchExam();
+        } else if (e.getSource() == clearSearchButton) {
+            load();
             searchField.setText("");
-            loadUsers();
         }
     }
 }

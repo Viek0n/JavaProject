@@ -3,6 +3,7 @@ package DAL;
 import DTO.AnswerDTO;
 import DTO.ChapterDTO;
 import DTO.QuestionDTO;
+import DTO.UserDTO;
 import MICS.Connect;
 import MICS.Enums;
 
@@ -93,6 +94,31 @@ public class QuestionDAL {
         return "";
     }
 
+    public ArrayList<QuestionDTO> search(String keyword) {
+        ArrayList<QuestionDTO> results = new ArrayList<>();
+        String sql = "SELECT * FROM cauhoi WHERE MaCH LIKE ? OR NoiDung LIKE ?";
+        try (Connection conn = DriverManager.getConnection(Connect.url, Connect.user, Connect.pass);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + keyword + "%");
+            stmt.setString(2, "%" + keyword + "%");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                QuestionDTO newQues = new QuestionDTO(rs.getString("MaCH"),
+                        chapterDAL.get(rs.getString("MaChuong")),
+                        rs.getString("MaND"),
+                        Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                        rs.getString("NoiDung"));
+                        newQues.setAns(answerDAL.getAllByQId(newQues.getID()));
+                        newQues.setSubject(subjectDAL.getByChapID(newQues.getChapter().getID()));
+                results.add(newQues);
+            }
+        } catch (SQLException e) {
+            System.out.println("Tìm kiếm câu hỏi thất bại!");
+            e.printStackTrace();
+        }
+        return results;
+    }
+
     //Update
     public Boolean update(QuestionDTO a) {
         String sql = "UPDATE cauhoi SET NoiDung = ?, DoKho = ?, MaChuong = ? WHERE MaCH = ?";
@@ -152,7 +178,28 @@ public class QuestionDAL {
     }
 
     public List<QuestionDTO> getByChapter(String ID) {
-        return getAll().stream().filter(question -> ID.equals(question.getChapter().getID())).collect(Collectors.toList());
+        ArrayList<QuestionDTO> array = new ArrayList<>();
+        String sql = "SELECT * FROM cauhoi WHERE MaChuong = ?";
+        try (Connection conn = Connect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+            stmt.setString(1, ID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                QuestionDTO ques = new QuestionDTO(rs.getString("MaCH"),
+                        chapterDAL.get(rs.getString("MaChuong")),
+                        rs.getString("MaND"),
+                        Enums.DifficultValue.valueOf(rs.getString("DoKho")),
+                        rs.getString("NoiDung"));
+                ques.setAns(answerDAL.getAllByQId(ques.getID()));
+                ques.setSubject(subjectDAL.getByChapID(ques.getChapter().getID()));
+                array.add(ques);
+            }
+        } catch (SQLException e) {
+            System.out.println("Kết nối cauhoi thất bại!");
+            e.printStackTrace();
+        }
+        return array;
     }
 
     public List<QuestionDTO> getByDiff(Enums.DifficultValue diff) {

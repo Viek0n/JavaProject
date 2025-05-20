@@ -8,6 +8,8 @@ public class ExamStructDTO {
     String ID;
     String Name;
     String Desc;
+    String UserId;
+    Boolean answerAllow;
     Date Start, End;
     Time ExamTime;
     SubjectDTO subject;
@@ -101,6 +103,22 @@ public class ExamStructDTO {
 
     public void setSelectDetail(ArrayList<ExamStructSelectedDTO> selectDetail) {
         this.selectDetail = selectDetail;
+    }
+
+    public Boolean getAnswerAllow() {
+        return answerAllow;
+    }
+
+    public void setAnswerAllow(Boolean answerAllow) {
+        this.answerAllow = answerAllow;
+    }
+
+    public String getUserId() {
+        return UserId;
+    }
+
+    public void setUserId(String userId) {
+        UserId = userId;
     }
 
 }
