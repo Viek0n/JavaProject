@@ -1,14 +1,13 @@
 package GUI.giaodienadmin.QuanLyUser;
 
-import BLL.UserBLL;
 import BLL.RoleBLL;
+import BLL.UserBLL;
 import DTO.RoleDTO;
 import DTO.UserDTO;
 import MICS.*;
 import java.awt.*;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import javax.swing.*;
 
 public class UserPanel extends JPanel {
@@ -96,7 +95,7 @@ public class UserPanel extends JPanel {
         String pass = txtPass.getText().trim();
 
         if (loginName.isEmpty() || name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được bỏ trống!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Không được bỏ trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -105,7 +104,7 @@ public class UserPanel extends JPanel {
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chứ?", "Confirm", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chứ?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
@@ -122,7 +121,7 @@ public class UserPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
             SwingUtilities.getWindowAncestor(this).dispose(); 
         } else {
-            JOptionPane.showMessageDialog(this, "Thất bại", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

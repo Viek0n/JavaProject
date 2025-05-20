@@ -391,10 +391,10 @@ public class ExamStructPanel extends JPanel {
     private void addRow(){
         switch(showMode){
             case 2:
-                randomTable.addRow(new Object[]{"","","",""});
+                randomTable.addRow(new Object[]{"Chọn chương","Chọn độ khó","Nhập số lượng",""});
                 break;
             case 3:
-                selectTable.addRow(new Object[]{"",""});
+                selectTable.addRow(new Object[]{"Chọn câu hỏi",""});
                 break;
             default:
                 break;

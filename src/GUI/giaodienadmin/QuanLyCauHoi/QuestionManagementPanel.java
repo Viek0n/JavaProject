@@ -2,13 +2,11 @@ package GUI.giaodienadmin.QuanLyCauHoi;
 
 import BLL.QuestionBLL;
 import DTO.QuestionDTO;
-import DTO.UserDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.UserPanel.MenuPanel;
 import GUI.giaodienadmin.RoundedBorder;
-import GUI.giaodienadmin.QuanLyUser.UserManagementPanel;
 import MICS.Connect;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -238,7 +236,7 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
                             "Edit"});
                         }
                     } else {
-                        JOptionPane.showMessageDialog(QuestionManagementPanel.this, "No users found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(QuestionManagementPanel.this, "Không tìm thấy câu hỏi nào!", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(QuestionManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -312,7 +310,10 @@ public class QuestionManagementPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton) {
-            ShowAddQuestion();
+           if(menuPanel.mainFrame.userBLL.getCurrent().getRole().getAddQuest()){
+             ShowAddQuestion();
+           }else
+            JOptionPane.showMessageDialog(QuestionManagementPanel.this, "Không đủ quyền!", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
         } else if (e.getSource() == searchButton) {
             search();
         } else if (e.getSource() == clearButton) {

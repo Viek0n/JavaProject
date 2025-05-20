@@ -3,19 +3,16 @@ package GUI.UserPanel;
 import BLL.ExamBLL;
 import BLL.ExamStructBLL;
 import DTO.ExamStructDTO;
-import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.RoundedPanel;
 import GUI.MakeColor.RoundedTextField;
 import GUI.MakeColor.Ulti;
-import MICS.Connect;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.*;
 
 public class ExamSelect extends JPanel {
     private JPanel menuPanel;
@@ -75,8 +72,10 @@ public class ExamSelect extends JPanel {
                         cal.set(Calendar.MILLISECOND, 0);
                         Date today = cal.getTime();
 
-                        if (today.before(examStruct.getStart()) || today.after(examStruct.getEnd())) {
-                            JOptionPane.showMessageDialog(this, "Chưa tới lúc kiểm tra!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        if (today.before(examStruct.getStart())) {
+                            JOptionPane.showMessageDialog(this, "Đề kiểm tra chưa mở!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }else if(today.after(examStruct.getEnd())){
+                            JOptionPane.showMessageDialog(this, "Đề kiểm tra hết hạn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                         }
                         else{
                             int choice = JOptionPane.showConfirmDialog(

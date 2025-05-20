@@ -1,20 +1,17 @@
 package GUI.giaodienadmin.QuanLyUser;
 
 import BLL.UserBLL;
-import DAL.UserDAL;
 import DTO.UserDTO;
 import GUI.MakeColor.AddImage;
 import GUI.MakeColor.ButtonFactory;
 import GUI.MakeColor.Ulti;
 import GUI.giaodienadmin.RoundedBorder;
 import MICS.Connect;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -235,7 +232,7 @@ public class UserManagementPanel extends JPanel implements ActionListener {
                             });
                         }
                     } else {
-                        JOptionPane.showMessageDialog(UserManagementPanel.this, "No users found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(UserManagementPanel.this, "Không tìm thấy người dùng nào!", "Information", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(UserManagementPanel.this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
